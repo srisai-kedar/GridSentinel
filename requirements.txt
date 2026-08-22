@@ -1,0 +1,29 @@
+# GridSentinel — Backend dependencies
+# Python 3.11+ (tested on 3.13)
+
+# Core power-systems simulation
+pandapower>=2.13.1
+
+# Web framework & live WebSocket
+fastapi==0.115.6
+uvicorn[standard]==0.32.1
+websockets>=13.0
+
+# Data validation
+pydantic==2.10.4
+
+# Industrial OT protocol simulation (Modbus TCP)
+pymodbus>=3.6.0,<4.0.0
+
+# Numerical computing
+numpy>=2.0.0
+
+# Testing
+pytest==8.3.4
+pytest-asyncio==0.24.0
+httpx==0.28.1          # required by FastAPI TestClient
+
+# Utilities
+scipy>=1.13.0
+networkx>=3.4.0
+pandas>=2.2.0
