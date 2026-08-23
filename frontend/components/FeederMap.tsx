@@ -12,6 +12,7 @@ import {
 } from "@/lib/types";
 import { getTopology } from "@/lib/api";
 import { getVerdictColor, SCADA_COLORS } from "@/lib/alertText";
+import { FeederMapFallback } from "./FeederMapFallback";
 import {
   Activity,
   AlertCircle,
@@ -28,16 +29,21 @@ interface FeederMapProps {
   latestState: LiveSocketPayload | null;
   selectedBusId?: number | null;
   onSelectBus?: (busIndex: number | null) => void;
+  forceFallback?: boolean;
+  onToggleForceFallback?: () => void;
 }
 
 // Center anchor point (e.g., Central Indian Power Grid Node: Nagpur/Hyderabad region)
 const ANCHOR_CENTER: [number, number] = [78.4867, 17.385]; // [lng, lat]
 const COORDINATE_SCALE = 0.015; // Maps abstract (x,y) to GIS lat/lng offsets
+const MAPBOX_LOAD_TIMEOUT_MS = 6000; // 6s timeout before falling back
 
 export const FeederMap: React.FC<FeederMapProps> = ({
   latestState,
   selectedBusId: externalSelectedBus,
   onSelectBus,
+  forceFallback = false,
+  onToggleForceFallback,
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
@@ -45,27 +51,26 @@ export const FeederMap: React.FC<FeederMapProps> = ({
 
   const [topology, setTopology] = useState<TopologyResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [loadError, setLoadError] = useState<string | null>(null);
   const [internalSelectedBus, setInternalSelectedBus] = useState<number | null>(null);
   const [showSatellite, setShowSatellite] = useState<boolean>(false);
+  const [useFallback, setUseFallback] = useState<boolean>(false);
+  const [mapboxError, setMapboxError] = useState<string | null>(null);
 
   const selectedBus = externalSelectedBus !== undefined ? externalSelectedBus : internalSelectedBus;
-
   const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN?.trim() || "";
 
-  // Bus ID to RTU ID mapping (from rtu_server.py)
-  // Substation Bus 1 -> RTU 1
-  // Bus 2 (Feeder A) -> RTU 2
-  // Bus 3 (Feeder B) -> RTU 3
-  // Bus 4 (Feeder C) -> RTU 4
-  // Bus 5 (Feeder A2) -> RTU 5
-  const busToRtuMap = useMemo<Record<number, number>>(() => ({
-    1: 1,
-    2: 2,
-    3: 3,
-    4: 4,
-    5: 5,
-  }), []);
+  const isFallbackActive = forceFallback || useFallback || !mapboxToken;
+
+  const busToRtuMap = useMemo<Record<number, number>>(
+    () => ({
+      1: 1,
+      2: 2,
+      3: 3,
+      4: 4,
+      5: 5,
+    }),
+    []
+  );
 
   // Fetch topology once on mount
   useEffect(() => {
@@ -76,12 +81,10 @@ export const FeederMap: React.FC<FeederMapProps> = ({
         const data = await getTopology();
         if (mounted) {
           setTopology(data);
-          setLoadError(null);
         }
       } catch (err) {
         if (mounted) {
-          // Fallback topology matching 11kV Feeder specification if backend is starting
-          console.warn("[FeederMap] Could not fetch topology from backend, using default radial topology:", err);
+          // Fallback topology matching 11kV Feeder specification if backend is offline
           setTopology({
             feeder_name: "GridSentinel-Feeder",
             total_buses: 7,
@@ -143,27 +146,51 @@ export const FeederMap: React.FC<FeederMapProps> = ({
     return getVerdictColor(verdict.verdict);
   };
 
-  // Initialize Mapbox if token is present
+  // Initialize Mapbox with error detection and timeout fallback
   useEffect(() => {
-    if (!mapboxToken || !mapContainerRef.current || !topology) return;
+    if (isFallbackActive || !mapboxToken || !mapContainerRef.current || !topology) return;
 
+    let styleLoaded = false;
     mapboxgl.accessToken = mapboxToken;
 
     const styleUrl = showSatellite
       ? "mapbox://styles/mapbox/satellite-streets-v12"
       : "mapbox://styles/mapbox/dark-v11";
 
-    const map = new mapboxgl.Map({
-      container: mapContainerRef.current,
-      style: styleUrl,
-      center: ANCHOR_CENTER,
-      zoom: 11.2,
-      attributionControl: false,
+    let map: mapboxgl.Map;
+    try {
+      map = new mapboxgl.Map({
+        container: mapContainerRef.current,
+        style: styleUrl,
+        center: ANCHOR_CENTER,
+        zoom: 11.2,
+        attributionControl: false,
+      });
+      mapRef.current = map;
+    } catch (err) {
+      console.warn("[FeederMap] Mapbox GL failed to initialize, switching to fallback:", err);
+      setUseFallback(true);
+      return;
+    }
+
+    // Set a 6s style-load timeout
+    const loadTimeout = setTimeout(() => {
+      if (!styleLoaded) {
+        console.warn("[FeederMap] Mapbox style load timed out, engaging fallback mode.");
+        setUseFallback(true);
+      }
+    }, MAPBOX_LOAD_TIMEOUT_MS);
+
+    map.on("error", (e) => {
+      console.warn("[FeederMap] Mapbox GL error encountered:", e.error);
+      setMapboxError(e.error?.message || "Mapbox error");
+      setUseFallback(true);
     });
 
-    mapRef.current = map;
-
     map.on("load", () => {
+      styleLoaded = true;
+      clearTimeout(loadTimeout);
+
       // Add Line GeoJSON Layer
       const lineFeatures = topology.lines.map((line) => {
         const fromCoord = busCoordinates[line.from_bus] || ANCHOR_CENTER;
@@ -184,7 +211,6 @@ export const FeederMap: React.FC<FeederMapProps> = ({
         };
       });
 
-      // Add source
       if (!map.getSource("feeder-lines")) {
         map.addSource("feeder-lines", {
           type: "geojson",
@@ -194,7 +220,7 @@ export const FeederMap: React.FC<FeederMapProps> = ({
           },
         });
 
-        // Background Line Glow
+        // Line Glow
         map.addLayer({
           id: "feeder-lines-glow",
           type: "line",
@@ -223,17 +249,17 @@ export const FeederMap: React.FC<FeederMapProps> = ({
     });
 
     return () => {
-      // Clean up markers
+      clearTimeout(loadTimeout);
       Object.values(markersRef.current).forEach((m) => m.remove());
       markersRef.current = {};
       map.remove();
       mapRef.current = null;
     };
-  }, [mapboxToken, topology, showSatellite, busCoordinates]);
+  }, [mapboxToken, topology, showSatellite, busCoordinates, isFallbackActive]);
 
   // Update Mapbox Markers when live state changes
   useEffect(() => {
-    if (!mapRef.current || !topology) return;
+    if (isFallbackActive || !mapRef.current || !topology) return;
     const map = mapRef.current;
 
     topology.buses.forEach((bus) => {
@@ -241,13 +267,11 @@ export const FeederMap: React.FC<FeederMapProps> = ({
       if (!coord) return;
 
       const color = getBusColor(bus.bus_index);
-      const verdict = getBusVerdict(bus.bus_index);
       const isSelected = selectedBus === bus.bus_index;
 
       let marker = markersRef.current[bus.bus_index];
 
       if (!marker) {
-        // Create custom HTML element for marker
         const el = document.createElement("div");
         el.className = "scada-bus-marker cursor-pointer transition-all duration-300 transform hover:scale-125";
         el.style.width = "22px";
@@ -275,7 +299,6 @@ export const FeederMap: React.FC<FeederMapProps> = ({
 
         markersRef.current[bus.bus_index] = marker;
       } else {
-        // Update existing element styles
         const el = marker.getElement();
         el.style.backgroundColor = color;
         el.style.boxShadow = isSelected
@@ -285,304 +308,89 @@ export const FeederMap: React.FC<FeederMapProps> = ({
         el.style.transform = isSelected ? "scale(1.3)" : "scale(1)";
       }
     });
-  }, [latestState, topology, selectedBus, busCoordinates]);
+  }, [latestState, topology, selectedBus, busCoordinates, isFallbackActive]);
 
-  // Information details for the currently selected bus
-  const selectedBusInfo = useMemo(() => {
-    if (selectedBus === null || selectedBus === undefined || !topology) return null;
-    const bus = topology.buses.find((b) => b.bus_index === selectedBus);
-    if (!bus) return null;
-
-    const rtuId = busToRtuMap[selectedBus];
-    const verdict = getBusVerdict(selectedBus);
-    const telemetry = latestState?.polled_modbus_telemetry?.[String(rtuId)];
-    const truePhysical = latestState?.true_physical_state?.bus_voltages?.find(
-      (v) => v.bus_index === selectedBus
+  // If fallback is active, render FeederMapFallback
+  if (isFallbackActive) {
+    return (
+      <FeederMapFallback
+        topology={topology}
+        latestState={latestState}
+        selectedBusId={selectedBus}
+        onSelectBus={(bIdx) => {
+          setInternalSelectedBus(bIdx);
+          if (onSelectBus) onSelectBus(bIdx);
+        }}
+        onRetryMapbox={
+          mapboxToken
+            ? () => {
+                setUseFallback(false);
+                setMapboxError(null);
+              }
+            : undefined
+        }
+        isForced={forceFallback}
+      />
     );
-    const estimated = latestState?.state_estimation?.estimated_voltages?.find(
-      (ev) => ev.bus_index === selectedBus
-    );
+  }
 
-    return {
-      bus,
-      rtuId,
-      verdict,
-      telemetry,
-      truePhysical,
-      estimated,
-    };
-  }, [selectedBus, topology, latestState, busToRtuMap]);
+  // Selected Bus info for Mapbox popup
+  const selectedBusInfo = selectedBus !== null && selectedBus !== undefined && topology
+    ? {
+        bus: topology.buses.find((b) => b.bus_index === selectedBus),
+        rtuId: busToRtuMap[selectedBus],
+        verdict: getBusVerdict(selectedBus),
+        telemetry: latestState?.polled_modbus_telemetry?.[String(busToRtuMap[selectedBus])],
+        truePhysical: latestState?.true_physical_state?.bus_voltages?.find((v) => v.bus_index === selectedBus),
+      }
+    : null;
 
   return (
     <div className="relative w-full h-full min-h-[420px] bg-[#090D16] rounded-lg overflow-hidden border border-gray-800 flex flex-col">
-      {/* Top Map Header & Controls */}
+      {/* Top Map Header */}
       <div className="absolute top-3 left-3 right-3 z-10 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
-        {/* Caption Badge */}
         <div className="pointer-events-auto flex items-center space-x-2 bg-[#0F172A]/90 backdrop-blur-md px-3 py-1.5 rounded-md border border-gray-700/80 shadow-lg">
           <Layers className="w-4 h-4 text-cyan-400" />
           <span className="text-xs font-semibold text-gray-200 uppercase tracking-wider">
-            11kV Radial Feeder Topology
+            11kV Radial Feeder Map
           </span>
           <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-900/60 text-blue-300 font-mono border border-blue-700/50">
             {topology?.feeder_name || "GridSentinel"}
           </span>
         </div>
 
-        {/* Map Legend */}
         <div className="pointer-events-auto flex items-center space-x-3 bg-[#0F172A]/90 backdrop-blur-md px-3 py-1.5 rounded-md border border-gray-700/80 text-[11px] shadow-lg">
+          {onToggleForceFallback && (
+            <button
+              onClick={onToggleForceFallback}
+              className="text-gray-400 hover:text-amber-300 pr-2 border-r border-gray-700 text-[10px] font-mono"
+              title="Force Vector Fallback for testing offline resilience"
+            >
+              Test Fallback
+            </button>
+          )}
           <div className="flex items-center space-x-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#10B981] shadow-[0_0_6px_#10B981]" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#10B981]" />
             <span className="text-gray-300">Normal</span>
           </div>
           <div className="flex items-center space-x-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#F59E0B] shadow-[0_0_6px_#F59E0B]" />
-            <span className="text-gray-300">Natural Fault</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]" />
+            <span className="text-gray-300">Fault</span>
           </div>
           <div className="flex items-center space-x-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#EF4444] shadow-[0_0_6px_#EF4444] animate-pulse" />
-            <span className="text-gray-300 font-medium">Cyber Intrusion</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-[#EF4444] animate-pulse" />
+            <span className="text-gray-300 font-medium">Cyber</span>
           </div>
         </div>
       </div>
 
-      {/* Main Map Canvas or Vector SCADA Schematic */}
-      <div className="relative flex-1 w-full h-full">
-        {mapboxToken ? (
-          <div ref={mapContainerRef} className="w-full h-full" />
-        ) : (
-          /* High-Fidelity Vector SCADA Schematic Canvas (fallback if token is not yet configured) */
-          <div className="w-full h-full flex flex-col items-center justify-center p-4 relative bg-[#0a0f1d] overflow-hidden select-none">
-            {/* Grid Lines Pattern */}
-            <div
-              className="absolute inset-0 opacity-15 pointer-events-none"
-              style={{
-                backgroundImage:
-                  "linear-gradient(to right, #1e293b 1px, transparent 1px), linear-gradient(to bottom, #1e293b 1px, transparent 1px)",
-                backgroundSize: "32px 32px",
-              }}
-            />
+      {/* Mapbox container */}
+      <div ref={mapContainerRef} className="w-full h-full flex-1" />
 
-            {/* Notice for Mapbox Token */}
-            <div className="absolute top-12 left-4 right-4 z-10 flex items-center justify-between bg-amber-950/70 border border-amber-800/80 px-3 py-1.5 rounded text-[11px] text-amber-200 backdrop-blur-sm shadow-md">
-              <div className="flex items-center space-x-2">
-                <Info className="w-4 h-4 text-amber-400 shrink-0" />
-                <span>
-                  Mapbox token not supplied in <code className="font-mono bg-amber-900/60 px-1 py-0.5 rounded text-amber-100">.env.local</code>.
-                  Displaying live interactive vector SCADA schematic.
-                </span>
-              </div>
-            </div>
-
-            {/* SVG Schematic Canvas */}
-            <svg
-              className="w-full h-full max-h-[560px] max-w-[800px]"
-              viewBox="-240 -200 480 380"
-            >
-              <defs>
-                <filter id="glow-normal" x="-20%" y="-20%" width="140%" height="140%">
-                  <feGaussianBlur stdDeviation="3" result="blur" />
-                  <feMerge>
-                    <feMergeNode in="blur" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-                <filter id="glow-cyber" x="-30%" y="-30%" width="160%" height="160%">
-                  <feGaussianBlur stdDeviation="5" result="blur" />
-                  <feMerge>
-                    <feMergeNode in="blur" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-                <linearGradient id="line-normal" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#38BDF8" stopOpacity="0.8" />
-                  <stop offset="100%" stopColor="#0284C7" stopOpacity="0.8" />
-                </linearGradient>
-              </defs>
-
-              {/* Draw Lines */}
-              {topology?.lines.map((line) => {
-                const fromBus = topology.buses.find((b) => b.bus_index === line.from_bus);
-                const toBus = topology.buses.find((b) => b.bus_index === line.to_bus);
-                if (!fromBus || !toBus) return null;
-
-                const x1 = fromBus.x * 60;
-                const y1 = -fromBus.y * 45 - 60;
-                const x2 = toBus.x * 60;
-                const y2 = -toBus.y * 45 - 60;
-
-                const isTripped =
-                  latestState?.active_scenarios?.tripped_lines?.includes(line.line_index);
-                const toVerdict = getBusVerdict(line.to_bus);
-                const hasAnomaly =
-                  toVerdict?.verdict === "Cyber Intrusion" ||
-                  toVerdict?.verdict === "Natural Fault" ||
-                  isTripped;
-
-                return (
-                  <g key={line.line_index} className="transition-all duration-300">
-                    {/* Outer Glow */}
-                    <line
-                      x1={x1}
-                      y1={y1}
-                      x2={x2}
-                      y2={y2}
-                      stroke={
-                        isTripped
-                          ? "#DC2626"
-                          : hasAnomaly
-                          ? getVerdictColor(toVerdict?.verdict || "Normal")
-                          : "#38BDF8"
-                      }
-                      strokeWidth={hasAnomaly || isTripped ? 8 : 4}
-                      strokeOpacity={hasAnomaly || isTripped ? 0.4 : 0.2}
-                      strokeLinecap="round"
-                    />
-                    {/* Core Line */}
-                    <line
-                      x1={x1}
-                      y1={y1}
-                      x2={x2}
-                      y2={y2}
-                      stroke={
-                        isTripped
-                          ? "#EF4444"
-                          : hasAnomaly
-                          ? getVerdictColor(toVerdict?.verdict || "Normal")
-                          : "#38BDF8"
-                      }
-                      strokeWidth={hasAnomaly || isTripped ? 3 : 2}
-                      strokeDasharray={isTripped || hasAnomaly ? "6,4" : undefined}
-                      className={hasAnomaly || isTripped ? "animate-pulse" : ""}
-                    />
-                    {/* Line Label */}
-                    <text
-                      x={(x1 + x2) / 2 + 10}
-                      y={(y1 + y2) / 2 - 6}
-                      fill="#64748B"
-                      fontSize="9"
-                      fontFamily="monospace"
-                    >
-                      {line.name} ({line.length_km}km)
-                    </text>
-                  </g>
-                );
-              })}
-
-              {/* Draw Buses */}
-              {topology?.buses.map((bus) => {
-                const cx = bus.x * 60;
-                const cy = -bus.y * 45 - 60;
-                const color = getBusColor(bus.bus_index);
-                const verdict = getBusVerdict(bus.bus_index);
-                const isSelected = selectedBus === bus.bus_index;
-                const rtuId = busToRtuMap[bus.bus_index];
-
-                return (
-                  <g
-                    key={bus.bus_index}
-                    onClick={() => {
-                      setInternalSelectedBus(bus.bus_index);
-                      if (onSelectBus) onSelectBus(bus.bus_index);
-                    }}
-                    className="cursor-pointer group"
-                  >
-                    {/* Pulsing ring for anomalies */}
-                    {verdict && verdict.verdict !== "Normal" && (
-                      <circle
-                        cx={cx}
-                        cy={cy}
-                        r={24}
-                        fill="none"
-                        stroke={color}
-                        strokeWidth={2}
-                        opacity={0.6}
-                        className="animate-ping"
-                      />
-                    )}
-
-                    {/* Outer selection ring */}
-                    {isSelected && (
-                      <circle
-                        cx={cx}
-                        cy={cy}
-                        r={20}
-                        fill="none"
-                        stroke="#FFFFFF"
-                        strokeWidth={2}
-                        strokeDasharray="4,2"
-                      />
-                    )}
-
-                    {/* Bus Circle Marker */}
-                    <circle
-                      cx={cx}
-                      cy={cy}
-                      r={bus.bus_index === 0 ? 15 : 13}
-                      fill={color}
-                      stroke="#FFFFFF"
-                      strokeWidth={isSelected ? 3 : 2}
-                      filter={
-                        verdict?.verdict === "Cyber Intrusion"
-                          ? "url(#glow-cyber)"
-                          : "url(#glow-normal)"
-                      }
-                      className="transition-transform duration-200 group-hover:scale-110"
-                    />
-
-                    {/* Bus Index / Symbol */}
-                    <text
-                      cx={cx}
-                      cy={cy}
-                      x={cx}
-                      y={cy + 4}
-                      textAnchor="middle"
-                      fill="#FFFFFF"
-                      fontSize={bus.bus_index === 0 ? "10" : "11"}
-                      fontWeight="bold"
-                      fontFamily="monospace"
-                      pointerEvents="none"
-                    >
-                      {bus.bus_index === 0 ? "HV" : `B${bus.bus_index}`}
-                    </text>
-
-                    {/* Bus Name Label */}
-                    <text
-                      x={cx}
-                      y={cy + 25}
-                      textAnchor="middle"
-                      fill={isSelected ? "#FFFFFF" : "#CBD5E1"}
-                      fontSize="10"
-                      fontWeight={isSelected ? "bold" : "normal"}
-                      fontFamily="sans-serif"
-                    >
-                      {bus.name}
-                    </text>
-
-                    {/* Subtitle / RTU tag */}
-                    {rtuId && (
-                      <text
-                        x={cx}
-                        y={cy + 37}
-                        textAnchor="middle"
-                        fill={color}
-                        fontSize="9"
-                        fontFamily="monospace"
-                      >
-                        [RTU-{rtuId}]
-                      </text>
-                    )}
-                  </g>
-                );
-              })}
-            </svg>
-          </div>
-        )}
-      </div>
-
-      {/* Selected Bus Floating SCADA Card / Popup */}
-      {selectedBusInfo && (
+      {/* Floating detail card if bus selected */}
+      {selectedBusInfo && selectedBusInfo.bus && (
         <div className="absolute bottom-10 right-3 z-20 w-80 bg-[#0F172A]/95 backdrop-blur-md rounded-lg border border-gray-700 shadow-2xl p-3.5 text-xs select-none">
-          <div className="flex items-center justify-between border-b border-gray-700 pb-2 mb-2.5">
+          <div className="flex items-center justify-between border-b border-gray-700 pb-2 mb-2">
             <div className="flex items-center space-x-2">
               <div
                 className="w-3 h-3 rounded-full"
@@ -603,97 +411,32 @@ export const FeederMap: React.FC<FeederMapProps> = ({
             </button>
           </div>
 
-          <div className="space-y-2 font-mono">
-            {/* Bus Specs */}
-            <div className="grid grid-cols-2 gap-2 text-[11px] bg-slate-900/80 p-2 rounded border border-gray-800">
-              <div>
-                <span className="text-gray-500 block">NOMINAL KV</span>
-                <span className="text-gray-200 font-semibold">{selectedBusInfo.bus.vn_kv} kV</span>
-              </div>
-              <div>
-                <span className="text-gray-500 block">ASSET MAPPING</span>
-                <span className="text-cyan-400 font-semibold">
-                  {selectedBusInfo.rtuId ? `RTU-${selectedBusInfo.rtuId}` : "Substation Tx"}
+          <div className="space-y-1.5 font-mono text-[11px]">
+            <div className="flex justify-between text-gray-400">
+              <span>Nominal Voltage:</span>
+              <span className="text-gray-200">{selectedBusInfo.bus.vn_kv} kV</span>
+            </div>
+            {selectedBusInfo.telemetry && (
+              <div className="flex justify-between text-gray-400">
+                <span>Reported Voltage:</span>
+                <span className="text-yellow-300 font-bold">
+                  {selectedBusInfo.telemetry.voltage_pu.toFixed(4)} pu
                 </span>
               </div>
-            </div>
-
-            {/* Telemetry Snapshot */}
-            {selectedBusInfo.telemetry && (
-              <div className="bg-slate-900/80 p-2 rounded border border-gray-800 space-y-1 text-[11px]">
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Reported Voltage:</span>
-                  <span className="text-yellow-300 font-bold">
-                    {selectedBusInfo.telemetry.voltage_pu.toFixed(4)} pu (
-                    {(selectedBusInfo.telemetry.voltage_pu * selectedBusInfo.bus.vn_kv).toFixed(2)} kV)
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Active Power (P):</span>
-                  <span className="text-emerald-400 font-semibold">
-                    {selectedBusInfo.telemetry.p_mw.toFixed(3)} MW
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Reactive Power (Q):</span>
-                  <span className="text-blue-400 font-semibold">
-                    {selectedBusInfo.telemetry.q_mvar.toFixed(3)} MVAR
-                  </span>
-                </div>
-              </div>
             )}
-
-            {/* True vs Estimated Physics */}
-            {selectedBusInfo.truePhysical && (
-              <div className="bg-slate-900/80 p-2 rounded border border-gray-800 space-y-1 text-[11px]">
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Physics True V:</span>
-                  <span className="text-gray-200 font-semibold">
-                    {selectedBusInfo.truePhysical.vm_pu !== null
-                      ? `${selectedBusInfo.truePhysical.vm_pu.toFixed(4)} pu`
-                      : "N/A"}
-                  </span>
-                </div>
-                {selectedBusInfo.estimated && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">WLS Estimated V:</span>
-                    <span className="text-indigo-300 font-semibold">
-                      {selectedBusInfo.estimated.vm_pu_est !== null
-                        ? `${selectedBusInfo.estimated.vm_pu_est.toFixed(4)} pu`
-                        : "N/A"}
-                    </span>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* ML Classification Verdict */}
-            {selectedBusInfo.verdict ? (
+            {selectedBusInfo.verdict && (
               <div
-                className="p-2 rounded border text-[11px]"
+                className="p-1.5 rounded border mt-2"
                 style={{
                   backgroundColor: `${getVerdictColor(selectedBusInfo.verdict.verdict)}15`,
                   borderColor: `${getVerdictColor(selectedBusInfo.verdict.verdict)}66`,
                 }}
               >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-gray-400">ML Fusion Verdict:</span>
-                  <span
-                    className="font-bold uppercase tracking-wider"
-                    style={{ color: getVerdictColor(selectedBusInfo.verdict.verdict) }}
-                  >
-                    {selectedBusInfo.verdict.verdict}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between text-[10px] text-gray-400">
-                  <span>Subtype: {selectedBusInfo.verdict.subtype || "none"}</span>
-                  <span className="font-semibold text-gray-300">
-                    Confidence: {(selectedBusInfo.verdict.confidence * 100).toFixed(1)}%
-                  </span>
+                <div className="flex justify-between font-bold" style={{ color: getVerdictColor(selectedBusInfo.verdict.verdict) }}>
+                  <span>{selectedBusInfo.verdict.verdict}</span>
+                  <span>{(selectedBusInfo.verdict.confidence * 100).toFixed(0)}% Conf</span>
                 </div>
               </div>
-            ) : (
-              <div className="text-gray-500 text-center py-1">No active RTU ML classifier verdict</div>
             )}
           </div>
         </div>
@@ -702,11 +445,9 @@ export const FeederMap: React.FC<FeederMapProps> = ({
       {/* Illustrative Layout Caption */}
       <div className="w-full bg-[#0d121f] px-3 py-1.5 border-t border-gray-800 text-[10px] text-gray-400 flex items-center justify-between">
         <span>
-          Illustrative SCADA Feeder Topology (Anchor: 11kV Radial Distribution Substation). Layout coordinates mapped to GIS canvas for operational situational awareness.
+          Illustrative SCADA Feeder Topology (Anchor: 11kV Radial Distribution Substation).
         </span>
-        <span className="font-mono text-gray-500 hidden sm:inline">
-          Pandapower v3.x Engine
-        </span>
+        <span className="font-mono text-gray-500">Mapbox GL v3.x</span>
       </div>
     </div>
   );

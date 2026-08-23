@@ -1,0 +1,501 @@
+{
+  "version": "1.0",
+  "createdAt": "2026-08-24T00:00:00.000Z",
+  "totalDurationMs": 30000,
+  "eventCount": 7,
+  "events": [
+    {
+      "deltaMs": 0,
+      "timestamp": "2026-08-24T00:00:00.000Z",
+      "payload": {
+        "tick": 101,
+        "sim_time": "08:15:00",
+        "diurnal_multiplier": 1.02,
+        "power_flow_converged": true,
+        "true_physical_state": {
+          "bus_voltages": [
+            { "bus_index": 0, "name": "HV-Grid-33kV", "vm_pu": 1.0, "va_degree": 0.0 },
+            { "bus_index": 1, "name": "Substation-11kV", "vm_pu": 0.998, "va_degree": -0.4 },
+            { "bus_index": 2, "name": "Bus-1-FeederA", "vm_pu": 0.985, "va_degree": -1.2 },
+            { "bus_index": 3, "name": "Bus-2-FeederB", "vm_pu": 0.987, "va_degree": -1.1 },
+            { "bus_index": 4, "name": "Bus-3-FeederC", "vm_pu": 0.989, "va_degree": -0.9 },
+            { "bus_index": 5, "name": "Bus-4-FeederA2", "vm_pu": 0.978, "va_degree": -1.8 },
+            { "bus_index": 6, "name": "Bus-5-FeederB2", "vm_pu": 0.981, "va_degree": -1.5 }
+          ],
+          "line_loadings": [
+            { "line_index": 0, "name": "L0-Sub-A", "loading_percent": 34.2, "i_ka": 0.034 },
+            { "line_index": 1, "name": "L1-Sub-B", "loading_percent": 28.5, "i_ka": 0.028 },
+            { "line_index": 2, "name": "L2-Sub-C", "loading_percent": 18.2, "i_ka": 0.018 },
+            { "line_index": 3, "name": "L3-A-A2", "loading_percent": 22.1, "i_ka": 0.022 },
+            { "line_index": 4, "name": "L4-B-B2", "loading_percent": 17.8, "i_ka": 0.017 }
+          ],
+          "total_load_mw": 1.18,
+          "total_loss_mw": 0.024
+        },
+        "polled_modbus_telemetry": {
+          "1": { "voltage_pu": 0.998, "p_mw": 1.18, "q_mvar": 0.73, "status": 1 },
+          "2": { "voltage_pu": 0.985, "p_mw": 0.28, "q_mvar": 0.175, "status": 1 },
+          "3": { "voltage_pu": 0.987, "p_mw": 0.32, "q_mvar": 0.20, "status": 1 },
+          "4": { "voltage_pu": 0.989, "p_mw": 0.18, "q_mvar": 0.11, "status": 1 },
+          "5": { "voltage_pu": 0.978, "p_mw": 0.22, "q_mvar": 0.138, "status": 1 }
+        },
+        "state_estimation": {
+          "success": true,
+          "estimated_voltages": [
+            { "bus_index": 1, "name": "Substation-11kV", "vm_pu_est": 0.998, "va_degree_est": -0.4 },
+            { "bus_index": 2, "name": "Bus-1-FeederA", "vm_pu_est": 0.985, "va_degree_est": -1.2 },
+            { "bus_index": 3, "name": "Bus-2-FeederB", "vm_pu_est": 0.987, "va_degree_est": -1.1 },
+            { "bus_index": 4, "name": "Bus-3-FeederC", "vm_pu_est": 0.989, "va_degree_est": -0.9 },
+            { "bus_index": 5, "name": "Bus-4-FeederA2", "vm_pu_est": 0.978, "va_degree_est": -1.8 }
+          ],
+          "chi2_test_passed": true,
+          "chi2_statistic": 1.42,
+          "chi2_threshold": 14.07,
+          "bad_data_detected": false,
+          "flagged_measurements": []
+        },
+        "active_scenarios": {
+          "summary": "NORMAL_OPERATION",
+          "silent_overrides": {},
+          "replay_attacks": [],
+          "tripped_lines": [],
+          "short_circuit_active": false
+        },
+        "recent_traffic_log": [],
+        "ml_verdicts": {
+          "1": { "rtu_id": 1, "verdict": "Normal", "subtype": "normal", "confidence": 0.98, "probabilities": { "Normal": 0.98, "Natural Fault": 0.01, "Cyber Intrusion": 0.01 }, "model_status": "loaded" },
+          "2": { "rtu_id": 2, "verdict": "Normal", "subtype": "normal", "confidence": 0.97, "probabilities": { "Normal": 0.97, "Natural Fault": 0.02, "Cyber Intrusion": 0.01 }, "model_status": "loaded" },
+          "3": { "rtu_id": 3, "verdict": "Normal", "subtype": "normal", "confidence": 0.99, "probabilities": { "Normal": 0.99, "Natural Fault": 0.01, "Cyber Intrusion": 0.00 }, "model_status": "loaded" },
+          "4": { "rtu_id": 4, "verdict": "Normal", "subtype": "normal", "confidence": 0.96, "probabilities": { "Normal": 0.96, "Natural Fault": 0.02, "Cyber Intrusion": 0.02 }, "model_status": "loaded" },
+          "5": { "rtu_id": 5, "verdict": "Normal", "subtype": "normal", "confidence": 0.98, "probabilities": { "Normal": 0.98, "Natural Fault": 0.01, "Cyber Intrusion": 0.01 }, "model_status": "loaded" }
+        }
+      }
+    },
+    {
+      "deltaMs": 4000,
+      "timestamp": "2026-08-24T00:00:04.000Z",
+      "payload": {
+        "tick": 105,
+        "sim_time": "08:16:00",
+        "diurnal_multiplier": 1.02,
+        "power_flow_converged": true,
+        "true_physical_state": {
+          "bus_voltages": [
+            { "bus_index": 0, "name": "HV-Grid-33kV", "vm_pu": 1.0, "va_degree": 0.0 },
+            { "bus_index": 1, "name": "Substation-11kV", "vm_pu": 0.999, "va_degree": -0.3 },
+            { "bus_index": 2, "name": "Bus-1-FeederA", "vm_pu": 0.0, "va_degree": 0.0 },
+            { "bus_index": 3, "name": "Bus-2-FeederB", "vm_pu": 0.987, "va_degree": -1.1 },
+            { "bus_index": 4, "name": "Bus-3-FeederC", "vm_pu": 0.989, "va_degree": -0.9 },
+            { "bus_index": 5, "name": "Bus-4-FeederA2", "vm_pu": 0.0, "va_degree": 0.0 },
+            { "bus_index": 6, "name": "Bus-5-FeederB2", "vm_pu": 0.981, "va_degree": -1.5 }
+          ],
+          "line_loadings": [
+            { "line_index": 0, "name": "L0-Sub-A", "loading_percent": 0.0, "i_ka": 0.0 },
+            { "line_index": 1, "name": "L1-Sub-B", "loading_percent": 28.5, "i_ka": 0.028 },
+            { "line_index": 2, "name": "L2-Sub-C", "loading_percent": 18.2, "i_ka": 0.018 },
+            { "line_index": 3, "name": "L3-A-A2", "loading_percent": 0.0, "i_ka": 0.0 },
+            { "line_index": 4, "name": "L4-B-B2", "loading_percent": 17.8, "i_ka": 0.017 }
+          ],
+          "total_load_mw": 0.68,
+          "total_loss_mw": 0.012
+        },
+        "polled_modbus_telemetry": {
+          "1": { "voltage_pu": 0.999, "p_mw": 0.68, "q_mvar": 0.42, "status": 1 },
+          "2": { "voltage_pu": 0.0, "p_mw": 0.0, "q_mvar": 0.0, "status": 3 },
+          "3": { "voltage_pu": 0.987, "p_mw": 0.32, "q_mvar": 0.20, "status": 1 },
+          "4": { "voltage_pu": 0.989, "p_mw": 0.18, "q_mvar": 0.11, "status": 1 },
+          "5": { "voltage_pu": 0.0, "p_mw": 0.0, "q_mvar": 0.0, "status": 3 }
+        },
+        "state_estimation": {
+          "success": true,
+          "estimated_voltages": [
+            { "bus_index": 1, "name": "Substation-11kV", "vm_pu_est": 0.999, "va_degree_est": -0.3 },
+            { "bus_index": 2, "name": "Bus-1-FeederA", "vm_pu_est": 0.0, "va_degree_est": 0.0 },
+            { "bus_index": 3, "name": "Bus-2-FeederB", "vm_pu_est": 0.987, "va_degree_est": -1.1 },
+            { "bus_index": 4, "name": "Bus-3-FeederC", "vm_pu_est": 0.989, "va_degree_est": -0.9 },
+            { "bus_index": 5, "name": "Bus-4-FeederA2", "vm_pu_est": 0.0, "va_degree_est": 0.0 }
+          ],
+          "chi2_test_passed": true,
+          "chi2_statistic": 2.15,
+          "chi2_threshold": 14.07,
+          "bad_data_detected": false,
+          "flagged_measurements": []
+        },
+        "active_scenarios": {
+          "summary": "FAULT: Line Trip on Line 0 (L0-Sub-A)",
+          "silent_overrides": {},
+          "replay_attacks": [],
+          "tripped_lines": [0],
+          "short_circuit_active": false
+        },
+        "recent_traffic_log": [],
+        "ml_verdicts": {
+          "1": { "rtu_id": 1, "verdict": "Normal", "subtype": "normal", "confidence": 0.98, "probabilities": { "Normal": 0.98, "Natural Fault": 0.01, "Cyber Intrusion": 0.01 }, "model_status": "loaded" },
+          "2": { "rtu_id": 2, "verdict": "Natural Fault", "subtype": "line_trip", "confidence": 0.94, "probabilities": { "Normal": 0.02, "Natural Fault": 0.94, "Cyber Intrusion": 0.04 }, "model_status": "loaded" },
+          "3": { "rtu_id": 3, "verdict": "Normal", "subtype": "normal", "confidence": 0.99, "probabilities": { "Normal": 0.99, "Natural Fault": 0.01, "Cyber Intrusion": 0.00 }, "model_status": "loaded" },
+          "4": { "rtu_id": 4, "verdict": "Normal", "subtype": "normal", "confidence": 0.97, "probabilities": { "Normal": 0.97, "Natural Fault": 0.02, "Cyber Intrusion": 0.01 }, "model_status": "loaded" },
+          "5": { "rtu_id": 5, "verdict": "Natural Fault", "subtype": "line_trip", "confidence": 0.91, "probabilities": { "Normal": 0.04, "Natural Fault": 0.91, "Cyber Intrusion": 0.05 }, "model_status": "loaded" }
+        }
+      }
+    },
+    {
+      "deltaMs": 9000,
+      "timestamp": "2026-08-24T00:00:09.000Z",
+      "payload": {
+        "tick": 110,
+        "sim_time": "08:17:00",
+        "diurnal_multiplier": 1.02,
+        "power_flow_converged": true,
+        "true_physical_state": {
+          "bus_voltages": [
+            { "bus_index": 0, "name": "HV-Grid-33kV", "vm_pu": 1.0, "va_degree": 0.0 },
+            { "bus_index": 1, "name": "Substation-11kV", "vm_pu": 0.998, "va_degree": -0.4 },
+            { "bus_index": 2, "name": "Bus-1-FeederA", "vm_pu": 0.985, "va_degree": -1.2 },
+            { "bus_index": 3, "name": "Bus-2-FeederB", "vm_pu": 0.987, "va_degree": -1.1 },
+            { "bus_index": 4, "name": "Bus-3-FeederC", "vm_pu": 0.989, "va_degree": -0.9 },
+            { "bus_index": 5, "name": "Bus-4-FeederA2", "vm_pu": 0.978, "va_degree": -1.8 },
+            { "bus_index": 6, "name": "Bus-5-FeederB2", "vm_pu": 0.981, "va_degree": -1.5 }
+          ],
+          "line_loadings": [
+            { "line_index": 0, "name": "L0-Sub-A", "loading_percent": 34.2, "i_ka": 0.034 },
+            { "line_index": 1, "name": "L1-Sub-B", "loading_percent": 28.5, "i_ka": 0.028 },
+            { "line_index": 2, "name": "L2-Sub-C", "loading_percent": 18.2, "i_ka": 0.018 },
+            { "line_index": 3, "name": "L3-A-A2", "loading_percent": 22.1, "i_ka": 0.022 },
+            { "line_index": 4, "name": "L4-B-B2", "loading_percent": 17.8, "i_ka": 0.017 }
+          ],
+          "total_load_mw": 1.18,
+          "total_loss_mw": 0.024
+        },
+        "polled_modbus_telemetry": {
+          "1": { "voltage_pu": 0.998, "p_mw": 1.18, "q_mvar": 0.73, "status": 1 },
+          "2": { "voltage_pu": 0.985, "p_mw": 0.28, "q_mvar": 0.175, "status": 1 },
+          "3": { "voltage_pu": 0.987, "p_mw": 0.32, "q_mvar": 0.20, "status": 1 },
+          "4": { "voltage_pu": 0.989, "p_mw": 0.18, "q_mvar": 0.11, "status": 1 },
+          "5": { "voltage_pu": 0.978, "p_mw": 0.22, "q_mvar": 0.138, "status": 1 }
+        },
+        "state_estimation": {
+          "success": true,
+          "estimated_voltages": [
+            { "bus_index": 1, "name": "Substation-11kV", "vm_pu_est": 0.998, "va_degree_est": -0.4 },
+            { "bus_index": 2, "name": "Bus-1-FeederA", "vm_pu_est": 0.985, "va_degree_est": -1.2 },
+            { "bus_index": 3, "name": "Bus-2-FeederB", "vm_pu_est": 0.987, "va_degree_est": -1.1 },
+            { "bus_index": 4, "name": "Bus-3-FeederC", "vm_pu_est": 0.989, "va_degree_est": -0.9 },
+            { "bus_index": 5, "name": "Bus-4-FeederA2", "vm_pu_est": 0.978, "va_degree_est": -1.8 }
+          ],
+          "chi2_test_passed": true,
+          "chi2_statistic": 1.40,
+          "chi2_threshold": 14.07,
+          "bad_data_detected": false,
+          "flagged_measurements": []
+        },
+        "active_scenarios": {
+          "summary": "NORMAL_OPERATION",
+          "silent_overrides": {},
+          "replay_attacks": [],
+          "tripped_lines": [],
+          "short_circuit_active": false
+        },
+        "recent_traffic_log": [],
+        "ml_verdicts": {
+          "1": { "rtu_id": 1, "verdict": "Normal", "subtype": "normal", "confidence": 0.98, "probabilities": { "Normal": 0.98, "Natural Fault": 0.01, "Cyber Intrusion": 0.01 }, "model_status": "loaded" },
+          "2": { "rtu_id": 2, "verdict": "Normal", "subtype": "normal", "confidence": 0.97, "probabilities": { "Normal": 0.97, "Natural Fault": 0.02, "Cyber Intrusion": 0.01 }, "model_status": "loaded" },
+          "3": { "rtu_id": 3, "verdict": "Normal", "subtype": "normal", "confidence": 0.99, "probabilities": { "Normal": 0.99, "Natural Fault": 0.01, "Cyber Intrusion": 0.00 }, "model_status": "loaded" },
+          "4": { "rtu_id": 4, "verdict": "Normal", "subtype": "normal", "confidence": 0.96, "probabilities": { "Normal": 0.96, "Natural Fault": 0.02, "Cyber Intrusion": 0.02 }, "model_status": "loaded" },
+          "5": { "rtu_id": 5, "verdict": "Normal", "subtype": "normal", "confidence": 0.98, "probabilities": { "Normal": 0.98, "Natural Fault": 0.01, "Cyber Intrusion": 0.01 }, "model_status": "loaded" }
+        }
+      }
+    },
+    {
+      "deltaMs": 14000,
+      "timestamp": "2026-08-24T00:00:14.000Z",
+      "payload": {
+        "tick": 115,
+        "sim_time": "08:18:00",
+        "diurnal_multiplier": 1.02,
+        "power_flow_converged": true,
+        "true_physical_state": {
+          "bus_voltages": [
+            { "bus_index": 0, "name": "HV-Grid-33kV", "vm_pu": 1.0, "va_degree": 0.0 },
+            { "bus_index": 1, "name": "Substation-11kV", "vm_pu": 0.998, "va_degree": -0.4 },
+            { "bus_index": 2, "name": "Bus-1-FeederA", "vm_pu": 0.985, "va_degree": -1.2 },
+            { "bus_index": 3, "name": "Bus-2-FeederB", "vm_pu": 0.987, "va_degree": -1.1 },
+            { "bus_index": 4, "name": "Bus-3-FeederC", "vm_pu": 0.989, "va_degree": -0.9 },
+            { "bus_index": 5, "name": "Bus-4-FeederA2", "vm_pu": 0.978, "va_degree": -1.8 },
+            { "bus_index": 6, "name": "Bus-5-FeederB2", "vm_pu": 0.981, "va_degree": -1.5 }
+          ],
+          "line_loadings": [
+            { "line_index": 0, "name": "L0-Sub-A", "loading_percent": 34.2, "i_ka": 0.034 },
+            { "line_index": 1, "name": "L1-Sub-B", "loading_percent": 28.5, "i_ka": 0.028 },
+            { "line_index": 2, "name": "L2-Sub-C", "loading_percent": 18.2, "i_ka": 0.018 },
+            { "line_index": 3, "name": "L3-A-A2", "loading_percent": 22.1, "i_ka": 0.022 },
+            { "line_index": 4, "name": "L4-B-B2", "loading_percent": 17.8, "i_ka": 0.017 }
+          ],
+          "total_load_mw": 1.18,
+          "total_loss_mw": 0.024
+        },
+        "polled_modbus_telemetry": {
+          "1": { "voltage_pu": 0.998, "p_mw": 1.18, "q_mvar": 0.73, "status": 1 },
+          "2": { "voltage_pu": 1.150, "p_mw": 0.28, "q_mvar": 0.175, "status": 1 },
+          "3": { "voltage_pu": 0.987, "p_mw": 0.32, "q_mvar": 0.20, "status": 1 },
+          "4": { "voltage_pu": 0.989, "p_mw": 0.18, "q_mvar": 0.11, "status": 1 },
+          "5": { "voltage_pu": 0.978, "p_mw": 0.22, "q_mvar": 0.138, "status": 1 }
+        },
+        "state_estimation": {
+          "success": true,
+          "estimated_voltages": [
+            { "bus_index": 1, "name": "Substation-11kV", "vm_pu_est": 0.998, "va_degree_est": -0.4 },
+            { "bus_index": 2, "name": "Bus-1-FeederA", "vm_pu_est": 1.012, "va_degree_est": -1.0 },
+            { "bus_index": 3, "name": "Bus-2-FeederB", "vm_pu_est": 0.987, "va_degree_est": -1.1 },
+            { "bus_index": 4, "name": "Bus-3-FeederC", "vm_pu_est": 0.989, "va_degree_est": -0.9 },
+            { "bus_index": 5, "name": "Bus-4-FeederA2", "vm_pu_est": 0.978, "va_degree_est": -1.8 }
+          ],
+          "chi2_test_passed": false,
+          "chi2_statistic": 48.62,
+          "chi2_threshold": 14.07,
+          "bad_data_detected": true,
+          "flagged_measurements": [
+            {
+              "measurement_index": 1,
+              "name": "v_bus2",
+              "meas_type": "v",
+              "element_type": "bus",
+              "element": 2,
+              "value": 1.150,
+              "std_dev": 0.005,
+              "normalised_residual": 8.42
+            }
+          ]
+        },
+        "active_scenarios": {
+          "summary": "ATTACK: Silent Data Injection on RTU-2 ({'voltage_pu': 1.15}) for 20 ticks",
+          "silent_overrides": { "2": { "voltage_pu": 1.15 } },
+          "replay_attacks": [],
+          "tripped_lines": [],
+          "short_circuit_active": false
+        },
+        "recent_traffic_log": [],
+        "ml_verdicts": {
+          "1": { "rtu_id": 1, "verdict": "Normal", "subtype": "normal", "confidence": 0.98, "probabilities": { "Normal": 0.98, "Natural Fault": 0.01, "Cyber Intrusion": 0.01 }, "model_status": "loaded" },
+          "2": { "rtu_id": 2, "verdict": "Cyber Intrusion", "subtype": "data_injection", "confidence": 0.96, "probabilities": { "Normal": 0.01, "Natural Fault": 0.03, "Cyber Intrusion": 0.96 }, "model_status": "loaded" },
+          "3": { "rtu_id": 3, "verdict": "Normal", "subtype": "normal", "confidence": 0.99, "probabilities": { "Normal": 0.99, "Natural Fault": 0.01, "Cyber Intrusion": 0.00 }, "model_status": "loaded" },
+          "4": { "rtu_id": 4, "verdict": "Normal", "subtype": "normal", "confidence": 0.97, "probabilities": { "Normal": 0.97, "Natural Fault": 0.02, "Cyber Intrusion": 0.01 }, "model_status": "loaded" },
+          "5": { "rtu_id": 5, "verdict": "Normal", "subtype": "normal", "confidence": 0.98, "probabilities": { "Normal": 0.98, "Natural Fault": 0.01, "Cyber Intrusion": 0.01 }, "model_status": "loaded" }
+        }
+      }
+    },
+    {
+      "deltaMs": 19000,
+      "timestamp": "2026-08-24T00:00:19.000Z",
+      "payload": {
+        "tick": 120,
+        "sim_time": "08:19:00",
+        "diurnal_multiplier": 1.02,
+        "power_flow_converged": true,
+        "true_physical_state": {
+          "bus_voltages": [
+            { "bus_index": 0, "name": "HV-Grid-33kV", "vm_pu": 1.0, "va_degree": 0.0 },
+            { "bus_index": 1, "name": "Substation-11kV", "vm_pu": 0.998, "va_degree": -0.4 },
+            { "bus_index": 2, "name": "Bus-1-FeederA", "vm_pu": 0.985, "va_degree": -1.2 },
+            { "bus_index": 3, "name": "Bus-2-FeederB", "vm_pu": 0.987, "va_degree": -1.1 },
+            { "bus_index": 4, "name": "Bus-3-FeederC", "vm_pu": 0.989, "va_degree": -0.9 },
+            { "bus_index": 5, "name": "Bus-4-FeederA2", "vm_pu": 0.978, "va_degree": -1.8 },
+            { "bus_index": 6, "name": "Bus-5-FeederB2", "vm_pu": 0.981, "va_degree": -1.5 }
+          ],
+          "line_loadings": [
+            { "line_index": 0, "name": "L0-Sub-A", "loading_percent": 34.2, "i_ka": 0.034 },
+            { "line_index": 1, "name": "L1-Sub-B", "loading_percent": 28.5, "i_ka": 0.028 },
+            { "line_index": 2, "name": "L2-Sub-C", "loading_percent": 18.2, "i_ka": 0.018 },
+            { "line_index": 3, "name": "L3-A-A2", "loading_percent": 22.1, "i_ka": 0.022 },
+            { "line_index": 4, "name": "L4-B-B2", "loading_percent": 17.8, "i_ka": 0.017 }
+          ],
+          "total_load_mw": 1.18,
+          "total_loss_mw": 0.024
+        },
+        "polled_modbus_telemetry": {
+          "1": { "voltage_pu": 0.998, "p_mw": 1.18, "q_mvar": 0.73, "status": 1 },
+          "2": { "voltage_pu": 0.985, "p_mw": 0.28, "q_mvar": 0.175, "status": 1 },
+          "3": { "voltage_pu": 0.987, "p_mw": 0.32, "q_mvar": 0.20, "status": 1 },
+          "4": { "voltage_pu": 0.989, "p_mw": 5.00, "q_mvar": 0.11, "status": 1 },
+          "5": { "voltage_pu": 0.978, "p_mw": 0.22, "q_mvar": 0.138, "status": 1 }
+        },
+        "state_estimation": {
+          "success": true,
+          "estimated_voltages": [
+            { "bus_index": 1, "name": "Substation-11kV", "vm_pu_est": 0.998, "va_degree_est": -0.4 },
+            { "bus_index": 2, "name": "Bus-1-FeederA", "vm_pu_est": 0.985, "va_degree_est": -1.2 },
+            { "bus_index": 3, "name": "Bus-2-FeederB", "vm_pu_est": 0.987, "va_degree_est": -1.1 },
+            { "bus_index": 4, "name": "Bus-3-FeederC", "vm_pu_est": 0.989, "va_degree_est": -0.9 },
+            { "bus_index": 5, "name": "Bus-4-FeederA2", "vm_pu_est": 0.978, "va_degree_est": -1.8 }
+          ],
+          "chi2_test_passed": true,
+          "chi2_statistic": 1.42,
+          "chi2_threshold": 14.07,
+          "bad_data_detected": false,
+          "flagged_measurements": []
+        },
+        "active_scenarios": {
+          "summary": "ATTACK: Unauthorized Modbus Command Write on RTU-4 Reg 1=5000",
+          "silent_overrides": {},
+          "replay_attacks": [],
+          "tripped_lines": [],
+          "short_circuit_active": false
+        },
+        "recent_traffic_log": [
+          {
+            "event_id": 401,
+            "timestamp": "2026-08-24T00:00:19.000Z",
+            "source": "ATTACKER_COMMAND_INJECTION",
+            "target_rtu": "RTU-4-FeederC (Port 5024)",
+            "function_code": 6,
+            "function_name": "WRITE_SINGLE_REGISTER",
+            "response_time_ms": 14.2,
+            "is_unexpected_write": true,
+            "success": true,
+            "details": "UNAUTHORIZED WRITE: Register 1 = 5000 (Hex: 0x1388)"
+          }
+        ],
+        "ml_verdicts": {
+          "1": { "rtu_id": 1, "verdict": "Normal", "subtype": "normal", "confidence": 0.98, "probabilities": { "Normal": 0.98, "Natural Fault": 0.01, "Cyber Intrusion": 0.01 }, "model_status": "loaded" },
+          "2": { "rtu_id": 2, "verdict": "Normal", "subtype": "normal", "confidence": 0.97, "probabilities": { "Normal": 0.97, "Natural Fault": 0.02, "Cyber Intrusion": 0.01 }, "model_status": "loaded" },
+          "3": { "rtu_id": 3, "verdict": "Normal", "subtype": "normal", "confidence": 0.99, "probabilities": { "Normal": 0.99, "Natural Fault": 0.01, "Cyber Intrusion": 0.00 }, "model_status": "loaded" },
+          "4": { "rtu_id": 4, "verdict": "Cyber Intrusion", "subtype": "command_injection", "confidence": 0.95, "probabilities": { "Normal": 0.01, "Natural Fault": 0.04, "Cyber Intrusion": 0.95 }, "model_status": "loaded" },
+          "5": { "rtu_id": 5, "verdict": "Normal", "subtype": "normal", "confidence": 0.98, "probabilities": { "Normal": 0.98, "Natural Fault": 0.01, "Cyber Intrusion": 0.01 }, "model_status": "loaded" }
+        }
+      }
+    },
+    {
+      "deltaMs": 24000,
+      "timestamp": "2026-08-24T00:00:24.000Z",
+      "payload": {
+        "tick": 125,
+        "sim_time": "08:20:00",
+        "diurnal_multiplier": 1.02,
+        "power_flow_converged": true,
+        "true_physical_state": {
+          "bus_voltages": [
+            { "bus_index": 0, "name": "HV-Grid-33kV", "vm_pu": 1.0, "va_degree": 0.0 },
+            { "bus_index": 1, "name": "Substation-11kV", "vm_pu": 0.998, "va_degree": -0.4 },
+            { "bus_index": 2, "name": "Bus-1-FeederA", "vm_pu": 0.985, "va_degree": -1.2 },
+            { "bus_index": 3, "name": "Bus-2-FeederB", "vm_pu": 0.987, "va_degree": -1.1 },
+            { "bus_index": 4, "name": "Bus-3-FeederC", "vm_pu": 0.989, "va_degree": -0.9 },
+            { "bus_index": 5, "name": "Bus-4-FeederA2", "vm_pu": 0.978, "va_degree": -1.8 },
+            { "bus_index": 6, "name": "Bus-5-FeederB2", "vm_pu": 0.981, "va_degree": -1.5 }
+          ],
+          "line_loadings": [
+            { "line_index": 0, "name": "L0-Sub-A", "loading_percent": 34.2, "i_ka": 0.034 },
+            { "line_index": 1, "name": "L1-Sub-B", "loading_percent": 28.5, "i_ka": 0.028 },
+            { "line_index": 2, "name": "L2-Sub-C", "loading_percent": 18.2, "i_ka": 0.018 },
+            { "line_index": 3, "name": "L3-A-A2", "loading_percent": 22.1, "i_ka": 0.022 },
+            { "line_index": 4, "name": "L4-B-B2", "loading_percent": 17.8, "i_ka": 0.017 }
+          ],
+          "total_load_mw": 1.18,
+          "total_loss_mw": 0.024
+        },
+        "polled_modbus_telemetry": {
+          "1": { "voltage_pu": 0.998, "p_mw": 1.18, "q_mvar": 0.73, "status": 1 },
+          "2": { "voltage_pu": 0.985, "p_mw": 0.28, "q_mvar": 0.175, "status": 1 },
+          "3": { "voltage_pu": 0.987, "p_mw": 0.32, "q_mvar": 0.20, "status": 1 },
+          "4": { "voltage_pu": 0.989, "p_mw": 0.18, "q_mvar": 0.11, "status": 1 },
+          "5": { "voltage_pu": 0.978, "p_mw": 0.22, "q_mvar": 0.138, "status": 1 }
+        },
+        "state_estimation": {
+          "success": true,
+          "estimated_voltages": [
+            { "bus_index": 1, "name": "Substation-11kV", "vm_pu_est": 0.998, "va_degree_est": -0.4 },
+            { "bus_index": 2, "name": "Bus-1-FeederA", "vm_pu_est": 0.985, "va_degree_est": -1.2 },
+            { "bus_index": 3, "name": "Bus-2-FeederB", "vm_pu_est": 0.987, "va_degree_est": -1.1 },
+            { "bus_index": 4, "name": "Bus-3-FeederC", "vm_pu_est": 0.989, "va_degree_est": -0.9 },
+            { "bus_index": 5, "name": "Bus-4-FeederA2", "vm_pu_est": 0.978, "va_degree_est": -1.8 }
+          ],
+          "chi2_test_passed": true,
+          "chi2_statistic": 1.40,
+          "chi2_threshold": 14.07,
+          "bad_data_detected": false,
+          "flagged_measurements": []
+        },
+        "active_scenarios": {
+          "summary": "NORMAL_OPERATION",
+          "silent_overrides": {},
+          "replay_attacks": [],
+          "tripped_lines": [],
+          "short_circuit_active": false
+        },
+        "recent_traffic_log": [],
+        "ml_verdicts": {
+          "1": { "rtu_id": 1, "verdict": "Normal", "subtype": "normal", "confidence": 0.98, "probabilities": { "Normal": 0.98, "Natural Fault": 0.01, "Cyber Intrusion": 0.01 }, "model_status": "loaded" },
+          "2": { "rtu_id": 2, "verdict": "Normal", "subtype": "normal", "confidence": 0.97, "probabilities": { "Normal": 0.97, "Natural Fault": 0.02, "Cyber Intrusion": 0.01 }, "model_status": "loaded" },
+          "3": { "rtu_id": 3, "verdict": "Normal", "subtype": "normal", "confidence": 0.99, "probabilities": { "Normal": 0.99, "Natural Fault": 0.01, "Cyber Intrusion": 0.00 }, "model_status": "loaded" },
+          "4": { "rtu_id": 4, "verdict": "Normal", "subtype": "normal", "confidence": 0.96, "probabilities": { "Normal": 0.96, "Natural Fault": 0.02, "Cyber Intrusion": 0.02 }, "model_status": "loaded" },
+          "5": { "rtu_id": 5, "verdict": "Normal", "subtype": "normal", "confidence": 0.98, "probabilities": { "Normal": 0.98, "Natural Fault": 0.01, "Cyber Intrusion": 0.01 }, "model_status": "loaded" }
+        }
+      }
+    },
+    {
+      "deltaMs": 28000,
+      "timestamp": "2026-08-24T00:00:28.000Z",
+      "payload": {
+        "tick": 130,
+        "sim_time": "08:21:00",
+        "diurnal_multiplier": 1.02,
+        "power_flow_converged": true,
+        "true_physical_state": {
+          "bus_voltages": [
+            { "bus_index": 0, "name": "HV-Grid-33kV", "vm_pu": 1.0, "va_degree": 0.0 },
+            { "bus_index": 1, "name": "Substation-11kV", "vm_pu": 0.998, "va_degree": -0.4 },
+            { "bus_index": 2, "name": "Bus-1-FeederA", "vm_pu": 0.985, "va_degree": -1.2 },
+            { "bus_index": 3, "name": "Bus-2-FeederB", "vm_pu": 0.987, "va_degree": -1.1 },
+            { "bus_index": 4, "name": "Bus-3-FeederC", "vm_pu": 0.989, "va_degree": -0.9 },
+            { "bus_index": 5, "name": "Bus-4-FeederA2", "vm_pu": 0.978, "va_degree": -1.8 },
+            { "bus_index": 6, "name": "Bus-5-FeederB2", "vm_pu": 0.981, "va_degree": -1.5 }
+          ],
+          "line_loadings": [
+            { "line_index": 0, "name": "L0-Sub-A", "loading_percent": 34.2, "i_ka": 0.034 },
+            { "line_index": 1, "name": "L1-Sub-B", "loading_percent": 28.5, "i_ka": 0.028 },
+            { "line_index": 2, "name": "L2-Sub-C", "loading_percent": 18.2, "i_ka": 0.018 },
+            { "line_index": 3, "name": "L3-A-A2", "loading_percent": 22.1, "i_ka": 0.022 },
+            { "line_index": 4, "name": "L4-B-B2", "loading_percent": 17.8, "i_ka": 0.017 }
+          ],
+          "total_load_mw": 1.18,
+          "total_loss_mw": 0.024
+        },
+        "polled_modbus_telemetry": {
+          "1": { "voltage_pu": 0.998, "p_mw": 1.18, "q_mvar": 0.73, "status": 1 },
+          "2": { "voltage_pu": 0.985, "p_mw": 0.28, "q_mvar": 0.175, "status": 1 },
+          "3": { "voltage_pu": 0.987, "p_mw": 0.32, "q_mvar": 0.20, "status": 1 },
+          "4": { "voltage_pu": 0.989, "p_mw": 0.18, "q_mvar": 0.11, "status": 1 },
+          "5": { "voltage_pu": 0.978, "p_mw": 0.22, "q_mvar": 0.138, "status": 1 }
+        },
+        "state_estimation": {
+          "success": true,
+          "estimated_voltages": [
+            { "bus_index": 1, "name": "Substation-11kV", "vm_pu_est": 0.998, "va_degree_est": -0.4 },
+            { "bus_index": 2, "name": "Bus-1-FeederA", "vm_pu_est": 0.985, "va_degree_est": -1.2 },
+            { "bus_index": 3, "name": "Bus-2-FeederB", "vm_pu_est": 0.987, "va_degree_est": -1.1 },
+            { "bus_index": 4, "name": "Bus-3-FeederC", "vm_pu_est": 0.989, "va_degree_est": -0.9 },
+            { "bus_index": 5, "name": "Bus-4-FeederA2", "vm_pu_est": 0.978, "va_degree_est": -1.8 }
+          ],
+          "chi2_test_passed": true,
+          "chi2_statistic": 1.40,
+          "chi2_threshold": 14.07,
+          "bad_data_detected": false,
+          "flagged_measurements": []
+        },
+        "active_scenarios": {
+          "summary": "NORMAL_OPERATION",
+          "silent_overrides": {},
+          "replay_attacks": [],
+          "tripped_lines": [],
+          "short_circuit_active": false
+        },
+        "recent_traffic_log": [],
+        "ml_verdicts": {
+          "1": { "rtu_id": 1, "verdict": "Normal", "subtype": "normal", "confidence": 0.98, "probabilities": { "Normal": 0.98, "Natural Fault": 0.01, "Cyber Intrusion": 0.01 }, "model_status": "loaded" },
+          "2": { "rtu_id": 2, "verdict": "Normal", "subtype": "normal", "confidence": 0.97, "probabilities": { "Normal": 0.97, "Natural Fault": 0.02, "Cyber Intrusion": 0.01 }, "model_status": "loaded" },
+          "3": { "rtu_id": 3, "verdict": "Normal", "subtype": "normal", "confidence": 0.99, "probabilities": { "Normal": 0.99, "Natural Fault": 0.01, "Cyber Intrusion": 0.00 }, "model_status": "loaded" },
+          "4": { "rtu_id": 4, "verdict": "Normal", "subtype": "normal", "confidence": 0.96, "probabilities": { "Normal": 0.96, "Natural Fault": 0.02, "Cyber Intrusion": 0.02 }, "model_status": "loaded" },
+          "5": { "rtu_id": 5, "verdict": "Normal", "subtype": "normal", "confidence": 0.98, "probabilities": { "Normal": 0.98, "Natural Fault": 0.01, "Cyber Intrusion": 0.01 }, "model_status": "loaded" }
+        }
+      }
+    }
+  ]
+}
