@@ -1,7 +1,7 @@
 """
 main.py
 -------
-GridSentinel API — Physics Engine & OT SCADA Simulation.
+GridSentinel API — Physics Engine, OT SCADA Simulation & ML Fusion Classifier.
 
 Endpoints
 ---------
@@ -25,6 +25,11 @@ Phase 2 (OT SCADA Simulation & Scenario Engine):
   POST /ot/fault/short-circuit  — Physical short-circuit fault stub
   POST /ot/reset                — Reset all scenarios & clear overrides
   WebSocket /ws/live            — Live real-time telemetry stream
+
+Phase 3 (ML Fusion Classifier):
+  POST /classifier/verdict      — Run ML inference on current or provided snapshot
+  POST /classifier/reload       — Hot-reload the trained model bundle from disk
+  GET  /classifier/status       — Model load status & class labels
 """
 
 from __future__ import annotations
@@ -50,6 +55,8 @@ from app.models.schemas import (
     BadDataResponse,
     BusTopology,
     BusVoltage,
+    ClassifierReloadResponse,
+    ClassifierStatusResponse,
     CommandInjectionRequest,
     EstimatedVoltage,
     FlaggedMeasurement,
@@ -63,6 +70,7 @@ from app.models.schemas import (
     ResetResponse,
     RTUInfo,
     RTUListResponse,
+    RTUVerdict,
     ScenarioActionResponse,
     ShortCircuitRequest,
     SilentDataInjectionRequest,
@@ -70,7 +78,10 @@ from app.models.schemas import (
     TopologyResponse,
     TrafficEvent,
     TrafficLogResponse,
+    VerdictRequest,
+    VerdictResponse,
 )
+from app.ml.classifier_service import classifier_service
 from app.ot.rtu_server import rtu_pool
 from app.ot.scada_master import scada_master
 from app.ot.scenario_injector import scenario_injector
@@ -110,9 +121,10 @@ app = FastAPI(
     description=(
         "Physics-aware cyber-physical anomaly detection for Indian power distribution SCADA. "
         "Phase 1: Feeder physics & WLS state estimation. "
-        "Phase 2: Live Modbus TCP OT layer, background diurnal simulation, and attack/fault scenarios."
+        "Phase 2: Live Modbus TCP OT layer, background diurnal simulation, and attack/fault scenarios. "
+        "Phase 3: ML Fusion Classifier (Random Forest) combining physics residuals and network behaviour."
     ),
-    version="2.0.0",
+    version="3.0.0",
     lifespan=lifespan,
 )
 
@@ -487,7 +499,120 @@ def reset_ot_scenarios():
 
 
 # ===========================================================================
-# WebSocket Live Telemetry Feed
+# Phase 3 — ML Fusion Classifier Endpoints
+# ===========================================================================
+
+import time as _time
+from datetime import datetime, timezone
+
+
+@app.post("/classifier/verdict", response_model=VerdictResponse, tags=["ML Classifier"])
+def get_classifier_verdict(req: Optional[VerdictRequest] = None):
+    """
+    Run the ML Fusion Classifier on the current or provided simulation snapshot.
+
+    - If called with no body (or null fields), the endpoint samples the live
+      traffic logger, the latest simulation tick state, and the live RTU pool.
+    - To evaluate an offline snapshot, POST the relevant dicts in the request body.
+
+    Returns per-RTU verdicts: Normal / Natural Fault / Cyber Intrusion (subtyped).
+    """
+    t0 = _time.perf_counter()
+
+    # ── Resolve traffic events ────────────────────────────────────────────────
+    if req and req.traffic_window is not None:
+        traffic_events = req.traffic_window
+    else:
+        traffic_events = traffic_logger.get_recent_events(limit=200)
+
+    # ── Resolve state estimation result ──────────────────────────────────────
+    if req and req.state_estimation_result is not None:
+        se_result = req.state_estimation_result
+    else:
+        latest = sim_loop.latest_state or {}
+        se_result = latest.get("state_estimation", {})
+
+    # ── Resolve RTU telemetry ─────────────────────────────────────────────────
+    if req and req.polled_telemetry is not None:
+        # Keys come as strings from JSON; normalise to int
+        polled = {int(k): v for k, v in req.polled_telemetry.items()}
+    else:
+        polled = {
+            rtu.rtu_id: rtu.get_current_values()
+            for rtu in rtu_pool.rtus.values()
+        }
+
+    # ── Run inference for all RTUs ────────────────────────────────────────────
+    verdicts = classifier_service.evaluate_all_rtus(
+        traffic_events=traffic_events,
+        state_estimation_result=se_result,
+        polled_telemetry=polled,
+    )
+
+    elapsed_ms = round((_time.perf_counter() - t0) * 1000, 2)
+
+    # ── Aggregate overall status ─────────────────────────────────────────────
+    any_anomaly = any(
+        v.get("verdict") in ("Natural Fault", "Cyber Intrusion")
+        for v in verdicts.values()
+    )
+    overall_status = "ANOMALY_DETECTED" if any_anomaly else "NORMAL"
+
+    rtu_verdict_list = [
+        RTUVerdict(
+            rtu_id=rtu_id,
+            verdict=v["verdict"],
+            subtype=v.get("subtype"),
+            confidence=v["confidence"],
+            probabilities=v["probabilities"],
+            model_status=v.get("model_status", "loaded"),
+        )
+        for rtu_id, v in sorted(verdicts.items())
+    ]
+
+    return VerdictResponse(
+        tick_timestamp=datetime.now(timezone.utc).isoformat(),
+        model_loaded=classifier_service.is_loaded,
+        overall_status=overall_status,
+        rtu_verdicts=rtu_verdict_list,
+        evaluation_latency_ms=elapsed_ms,
+    )
+
+
+@app.post("/classifier/reload", response_model=ClassifierReloadResponse, tags=["ML Classifier"])
+def reload_classifier_model():
+    """
+    Hot-reload the trained model bundle from disk without restarting the server.
+    Use this after running `python -m app.ml.train_classifier ...` to pick up a
+    freshly trained model in the running process.
+    """
+    success = classifier_service.load_model()
+    return ClassifierReloadResponse(
+        success=success,
+        message=(
+            "Model successfully reloaded from disk."
+            if success
+            else f"Model file '{classifier_service.model_path}' not found or failed to load. "
+                 "Server is running in heuristic baseline mode."
+        ),
+        model_path=str(classifier_service.model_path),
+    )
+
+
+@app.get("/classifier/status", response_model=ClassifierStatusResponse, tags=["ML Classifier"])
+def get_classifier_status():
+    """Return model load status, class labels, and number of cached RTU verdicts."""
+    return ClassifierStatusResponse(
+        is_loaded=classifier_service.is_loaded,
+        model_path=str(classifier_service.model_path),
+        classes=classifier_service.classes,
+        subtype_classes=classifier_service.subtype_classes,
+        cached_rtu_count=len(classifier_service.latest_verdicts),
+    )
+
+
+# ===========================================================================
+# WebSocket Live Telemetry Feed (includes Phase 3 ML verdicts)
 # ===========================================================================
 
 @app.websocket("/ws/live")
@@ -495,7 +620,8 @@ async def websocket_live_endpoint(websocket: WebSocket):
     """
     WebSocket endpoint for real-time live telemetry streaming.
     Broadcasts simulation ticks with true state, reported Modbus telemetry,
-    state estimation verdicts, active scenarios, and recent traffic logs.
+    state estimation verdicts, active scenarios, recent traffic logs,
+    AND Phase 3 per-RTU ML fusion verdicts.
     """
     await websocket.accept()
     queue = sim_loop.subscribe_ws()
@@ -503,11 +629,15 @@ async def websocket_live_endpoint(websocket: WebSocket):
     try:
         # Send current latest state immediately upon connection if available
         if sim_loop.latest_state:
-            await websocket.send_text(json.dumps(sim_loop.latest_state))
+            initial = dict(sim_loop.latest_state)
+            initial["ml_verdicts"] = classifier_service.latest_verdicts
+            await websocket.send_text(json.dumps(initial))
 
         while True:
             # Wait for next simulation tick broadcast
             payload = await queue.get()
+            # Attach the most recent cached ML verdicts to every tick
+            payload["ml_verdicts"] = classifier_service.latest_verdicts
             await websocket.send_text(json.dumps(payload))
 
     except (WebSocketDisconnect, asyncio.CancelledError):

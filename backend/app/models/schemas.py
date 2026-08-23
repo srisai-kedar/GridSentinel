@@ -221,3 +221,68 @@ class ScenarioActionResponse(BaseModel):
     status: str
     message: str
     details: Dict[str, Any]
+
+
+# ---------------------------------------------------------------------------
+# Phase 3 ML Fusion Classifier Schemas
+# ---------------------------------------------------------------------------
+
+class VerdictRequest(BaseModel):
+    """
+    Optional request body for POST /classifier/verdict.
+    If omitted, the endpoint samples the latest live simulation state.
+    Callers can also POST a snapshot dict for offline/batch evaluation.
+    """
+    traffic_window: Optional[List[Dict[str, Any]]] = Field(
+        None,
+        description="Traffic events from the Modbus logger (last N events).  "
+                    "If None, the endpoint uses the live traffic_logger buffer.",
+    )
+    state_estimation_result: Optional[Dict[str, Any]] = Field(
+        None,
+        description="State estimation result dict from the last SE run.  "
+                    "If None, the endpoint uses the latest simulation tick.",
+    )
+    polled_telemetry: Optional[Dict[str, Any]] = Field(
+        None,
+        description="RTU telemetry snapshot keyed by RTU id (str).  "
+                    "If None, the endpoint queries the live RTU pool.",
+    )
+
+
+class RTUVerdict(BaseModel):
+    """ML verdict for a single RTU."""
+    rtu_id: int
+    verdict: str = Field(description="Normal | Natural Fault | Cyber Intrusion")
+    subtype: Optional[str] = Field(None, description="normal | physical_fault | data_injection | command_injection | replay")
+    confidence: float = Field(ge=0.0, le=1.0)
+    probabilities: Dict[str, float]
+    model_status: str = Field(description="loaded | heuristic_fallback")
+
+
+class VerdictResponse(BaseModel):
+    """Aggregated per-RTU ML verdicts for one evaluation tick."""
+    tick_timestamp: str
+    model_loaded: bool
+    overall_status: str = Field(
+        description="NORMAL | ANOMALY_DETECTED. ANOMALY if any RTU is flagged as "
+                    "Natural Fault or Cyber Intrusion.",
+    )
+    rtu_verdicts: List[RTUVerdict]
+    evaluation_latency_ms: float
+
+
+class ClassifierReloadResponse(BaseModel):
+    """Result of POST /classifier/reload."""
+    success: bool
+    message: str
+    model_path: str
+
+
+class ClassifierStatusResponse(BaseModel):
+    """Result of GET /classifier/status."""
+    is_loaded: bool
+    model_path: str
+    classes: List[str]
+    subtype_classes: List[str]
+    cached_rtu_count: int
