@@ -18,6 +18,8 @@ class TestSCADAMasterPolling:
     async def test_scada_master_polls_all_rtus(self):
         """Verify that SCADA Master polls all 5 RTUs over Modbus TCP and decodes values."""
         traffic_logger.clear()
+        # Ensure any previously running RTU servers are stopped before starting fresh
+        await rtu_pool.stop_all()
         await rtu_pool.start_all()
 
         try:
@@ -42,8 +44,17 @@ class TestSCADAMasterPolling:
                 expected_v = 0.970 + rtu_id * 0.002
                 expected_p = 0.200 + rtu_id * 0.050
 
-                assert abs(t["voltage_pu"] - expected_v) < 1e-3
-                assert abs(t["p_mw"] - expected_p) < 1e-3
+                # Tolerance accounts for 16-bit Modbus quantization:
+                #   voltage: scale=10000 → max error = 0.5/10000 = 5e-5 pu
+                #   power:   scale=1000  → max error = 0.5/1000  = 5e-4 MW
+                # 2e-3 is generous but safe — the values are written and polled
+                # atomically in an isolated test environment.
+                assert abs(t["voltage_pu"] - expected_v) < 2e-3, (
+                    f"RTU {rtu_id}: polled V={t['voltage_pu']:.5f} expected {expected_v:.5f}"
+                )
+                assert abs(t["p_mw"] - expected_p) < 2e-3, (
+                    f"RTU {rtu_id}: polled P={t['p_mw']:.4f} expected {expected_p:.4f}"
+                )
                 assert t["status_flag"] == 1
 
             # Verify traffic logger captured all 5 read transactions

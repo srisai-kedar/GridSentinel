@@ -269,6 +269,11 @@ class SimulatedRTU:
     ) -> None:
         """
         Push new physical measurements into the RTU holding registers.
+
+        Uses fc=3 (holding register FC) for async_setValues — the correct function
+        code to match the hr= block type in pymodbus 3.x SimCore. Also writes
+        directly to the underlying block as a guaranteed fallback so polled Modbus
+        reads always see the new values immediately.
         """
         registers = encode_telemetry(voltage_pu, p_mw, q_mvar, status)
         self._current_values = {
@@ -277,14 +282,22 @@ class SimulatedRTU:
             "q_mvar": q_mvar,
             "status_flag": status,
         }
-        # In pymodbus 3.x, update server context registers directly
+        # Primary: update via SimCore (pymodbus 3.x server context)
+        # fc=3 matches the 'hr' (holding register) block key used when building the context.
         if self._server and hasattr(self._server, "context") and self._server.context:
-            await self._server.context.async_setValues(1, 16, 0, registers)
-        elif self._context:
             try:
-                await self._context.async_setValues(1, 16, 0, registers)
-            except Exception:
-                pass
+                await self._server.context.async_setValues(1, 3, 0, registers)
+                return
+            except Exception as exc:
+                logger.debug(f"[{self.name}] SimCore async_setValues failed: {exc}, using block fallback")
+
+        # Fallback: write directly into the underlying block's simdata list.
+        # ModbusSequentialDataBlock(0, ...) stores simdata as a list indexed from 0.
+        if self._block is not None and hasattr(self._block, "simdata"):
+            sd = self._block.simdata
+            if isinstance(sd, list) and len(sd) >= 4:
+                for i, v in enumerate(registers):
+                    sd[i] = v
 
     def get_current_values(self) -> Dict[str, Any]:
         """Return the current in-memory engineering values."""
