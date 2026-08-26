@@ -21,6 +21,11 @@ import numpy as np
 # ---------------------------------------------------------------------------
 # FIXED FEATURE SCHEMA (Exact Ordering for Training & Real-Time Inference)
 # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# FIXED FEATURE SCHEMA (Exact Ordering for Training & Real-Time Inference)
+# ---------------------------------------------------------------------------
+FEATURE_SCHEMA_VERSION: str = "2.0.0"
+
 FEATURE_SCHEMA: List[str] = [
     # --- NBD: Network Behavioral Features (Traffic Logger) ---
     "nbd_unexpected_write_count",       # Count of unauthorized write transactions (FC 06/16)
@@ -32,6 +37,7 @@ FEATURE_SCHEMA: List[str] = [
     "nbd_fc16_write_count",             # Function Code 16 (Write Multiple Registers) count
     "nbd_error_count",                  # Failed/timeout Modbus transaction count
     "nbd_traffic_volume",               # Total transaction count for target RTU in window
+    "nbd_modbus_anomaly_rate",          # Rate of unexpected writes, anomalous FCs, and transaction errors
 
     # --- PCD: Physics Consistency Features (State Estimation & Power Flow) ---
     "pcd_max_lnr",                      # Global Largest Normalized Residual (LNR) across all measurements
@@ -47,6 +53,11 @@ FEATURE_SCHEMA: List[str] = [
     "pcd_voltage_dev_nominal",          # Absolute deviation of voltage from nominal (|V - 1.0|)
     "pcd_p_mw_reported",                # Reported active power flow in MW
     "pcd_status_code",                  # RTU hardware/trip status code (1=OK, 2=WARN, 3=TRIP)
+    "pcd_physics_network_disagreement_index", # Normalized Modbus-reported power delta scaled by LNR ratio
+    "pcd_temporal_dv_dt_3tick",         # Rolling 3-tick window rate-of-change dV/dt
+    "pcd_temporal_dp_dt_3tick",         # Rolling 3-tick window rate-of-change dP/dt
+    "pcd_temporal_dq_dt_3tick",         # Rolling 3-tick window rate-of-change dQ/dt
+    "pcd_cross_rtu_voltage_divergence", # Voltage difference between target RTU and electrical neighbors
 ]
 
 # Mapping of RTU IDs to their pandapower element bindings
@@ -57,12 +68,27 @@ FEATURE_SCHEMA: List[str] = [
 # RTU 5 -> Bus 5, Line 3
 RTU_BUS_MAPPING = {1: 1, 2: 2, 3: 3, 4: 4, 5: 5}
 
+# Electrical adjacency mapping for radial feeder
+# Bus 1 (Substation) connects to Bus 2, Bus 3, Bus 4
+# Bus 2 (Feeder A) connects to Bus 1 and Bus 5 (Feeder A2)
+# Bus 3 (Feeder B) connects to Bus 1
+# Bus 4 (Feeder C) connects to Bus 1
+# Bus 5 (Feeder A2) connects to Bus 2
+ELECTRICAL_NEIGHBORS = {
+    1: [2, 3, 4],
+    2: [1, 5],
+    3: [1],
+    4: [1],
+    5: [2],
+}
+
 
 def extract_features(
     traffic_events: List[Dict[str, Any]],
     state_estimation_result: Dict[str, Any],
     target_rtu_id: int,
     polled_telemetry: Optional[Dict[int, Dict[str, Any]]] = None,
+    telemetry_history: Optional[List[Dict[int, Dict[str, Any]]]] = None,
 ) -> Dict[str, float]:
     """
     Extract a fixed-schema feature dictionary combining NBD and PCD metrics for a target RTU.
@@ -77,6 +103,8 @@ def extract_features(
         RTU ID (1 to 5) to compute features for
     polled_telemetry : dict, optional
         Latest telemetry dictionary polled by SCADA Master
+    telemetry_history : list of dict, optional
+        Recent history of polled telemetry snapshots (up to 3 most recent ticks)
 
     Returns
     -------
@@ -131,6 +159,13 @@ def extract_features(
     std_rt = float(np.std(response_times)) if len(response_times) > 1 else 0.0
     distinct_sources = float(len(sources))
 
+    # Candidate Feature: Modbus Anomaly Rate
+    if traffic_volume > 0.0:
+        modbus_anomaly_rate = (unexpected_writes * 2.0 + fc6_count + fc16_count + error_count) / traffic_volume
+    else:
+        modbus_anomaly_rate = 0.0
+    modbus_anomaly_rate = min(10.0, float(modbus_anomaly_rate))
+
     # -----------------------------------------------------------------------
     # 2. PCD: Physics Consistency Features
     # -----------------------------------------------------------------------
@@ -170,15 +205,69 @@ def extract_features(
     # Telemetry values for target RTU
     reported_v = 1.0
     reported_p = 0.0
+    reported_q = 0.0
     status_code = 1.0
 
     if polled_telemetry and target_rtu_id in polled_telemetry:
         t = polled_telemetry[target_rtu_id]
         reported_v = float(t.get("voltage_pu", 1.0))
         reported_p = float(t.get("p_mw", 0.0))
+        reported_q = float(t.get("q_mvar", 0.0))
         status_code = float(t.get("status_flag", 1.0))
 
     v_dev_nominal = abs(reported_v - 1.0)
+
+    # -----------------------------------------------------------------------
+    # 3. Candidate Domain Features
+    # -----------------------------------------------------------------------
+    # a) Cross-RTU Voltage Correlation Anomaly
+    neighbor_ids = ELECTRICAL_NEIGHBORS.get(target_rtu_id, [])
+    neighbor_voltages = []
+    if polled_telemetry:
+        for nid in neighbor_ids:
+            if nid in polled_telemetry:
+                neighbor_voltages.append(float(polled_telemetry[nid].get("voltage_pu", 1.0)))
+
+    if neighbor_voltages:
+        neighbor_v_avg = float(np.mean(neighbor_voltages))
+        cross_rtu_v_divergence = abs(reported_v - neighbor_v_avg)
+    else:
+        cross_rtu_v_divergence = 0.0
+
+    # b) Temporal Telemetry Deltas over 3-tick window (dV/dt, dP/dt, dQ/dt)
+    dv_dt = 0.0
+    dp_dt = 0.0
+    dq_dt = 0.0
+    p_history = [reported_p]
+
+    if telemetry_history and len(telemetry_history) > 1:
+        v_seq = []
+        p_seq = []
+        q_seq = []
+        for hist_snap in telemetry_history:
+            if target_rtu_id in hist_snap:
+                rtu_h = hist_snap[target_rtu_id]
+                v_seq.append(float(rtu_h.get("voltage_pu", reported_v)))
+                p_seq.append(float(rtu_h.get("p_mw", reported_p)))
+                q_seq.append(float(rtu_h.get("q_mvar", reported_q)))
+
+        if len(v_seq) >= 2:
+            dt = float(len(v_seq) - 1)
+            dv_dt = abs(v_seq[-1] - v_seq[0]) / dt
+            dp_dt = abs(p_seq[-1] - p_seq[0]) / dt
+            dq_dt = abs(q_seq[-1] - q_seq[0]) / dt
+            p_history = p_seq
+
+    # c) Physics-Network Disagreement Index
+    # Normalize power delta by std, scaled by LNR relative to chi-square threshold
+    p_delta = abs(p_history[-1] - p_history[0]) if len(p_history) > 1 else abs(reported_p * 0.05)
+    p_std = float(np.std(p_history)) if len(p_history) > 1 else 0.02
+    p_std_safe = max(0.01, p_std)
+    norm_p_delta = p_delta / p_std_safe
+
+    # Scale up when WLS largest normalized residual is high relative to bad-data threshold
+    lnr_multiplier = 1.0 + (max_lnr / 3.0) * max(0.0, chi2_ratio)
+    physics_net_disagreement = float(norm_p_delta * lnr_multiplier)
 
     # -----------------------------------------------------------------------
     # Assemble Feature Vector strictly according to FEATURE_SCHEMA
@@ -193,6 +282,7 @@ def extract_features(
         "nbd_fc16_write_count": fc16_count,
         "nbd_error_count": error_count,
         "nbd_traffic_volume": traffic_volume,
+        "nbd_modbus_anomaly_rate": round(modbus_anomaly_rate, 4),
         "pcd_max_lnr": round(max_lnr, 4),
         "pcd_is_target_rtu_max_lnr": is_target_max_lnr,
         "pcd_chi2_statistic": round(chi2_stat, 4),
@@ -206,10 +296,15 @@ def extract_features(
         "pcd_voltage_dev_nominal": round(v_dev_nominal, 5),
         "pcd_p_mw_reported": round(reported_p, 5),
         "pcd_status_code": status_code,
+        "pcd_physics_network_disagreement_index": round(physics_net_disagreement, 4),
+        "pcd_temporal_dv_dt_3tick": round(dv_dt, 5),
+        "pcd_temporal_dp_dt_3tick": round(dp_dt, 5),
+        "pcd_temporal_dq_dt_3tick": round(dq_dt, 5),
+        "pcd_cross_rtu_voltage_divergence": round(cross_rtu_v_divergence, 5),
     }
 
     # Verify all schema keys are present
-    assert set(features.keys()) == set(FEATURE_SCHEMA), "Extracted features mismatch FEATURE_SCHEMA"
+    assert set(features.keys()) == set(FEATURE_SCHEMA), f"Extracted features mismatch FEATURE_SCHEMA: missing {set(FEATURE_SCHEMA) - set(features.keys())}"
 
     return features
 

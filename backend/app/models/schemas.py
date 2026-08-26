@@ -251,12 +251,26 @@ class VerdictRequest(BaseModel):
 
 
 class RTUVerdict(BaseModel):
-    """ML verdict for a single RTU."""
+    """ML verdict for a single RTU, with 3-line explainable evidence panel."""
     rtu_id: int
     verdict: str = Field(description="Normal | Natural Fault | Cyber Intrusion")
     subtype: Optional[str] = Field(None, description="normal | physical_fault | data_injection | command_injection | replay")
     confidence: float = Field(ge=0.0, le=1.0)
     probabilities: Dict[str, float]
+    decision_threshold: float = Field(0.5, description="Cyber Intrusion decision threshold applied")
+    # Step 7: Explainable evidence panel (3 structured lines)
+    network_evidence: str = Field(
+        "",
+        description="Single-line description of what the Network/Modbus layer observed.",
+    )
+    physics_evidence: str = Field(
+        "",
+        description="Single-line description of what the Physics/power-flow layer observed.",
+    )
+    conclusion: str = Field(
+        "",
+        description="Single-line combined decision rationale and operator guidance.",
+    )
     model_status: str = Field(description="loaded | heuristic_fallback")
 
 
@@ -285,4 +299,5 @@ class ClassifierStatusResponse(BaseModel):
     model_path: str
     classes: List[str]
     subtype_classes: List[str]
+    decision_threshold: float = Field(0.5, description="Current Cyber Intrusion decision threshold")
     cached_rtu_count: int

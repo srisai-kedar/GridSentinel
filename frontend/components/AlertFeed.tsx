@@ -24,6 +24,9 @@ export interface AlertFeedItem {
   confidence: number;
   message: string;
   previousVerdict?: VerdictType;
+  networkEvidence?: string;
+  physicsEvidence?: string;
+  conclusion?: string;
 }
 
 interface AlertFeedProps {
@@ -77,6 +80,9 @@ export const AlertFeed: React.FC<AlertFeedProps> = ({
           confidence,
           message,
           previousVerdict: prev ? prev.verdict : undefined,
+          networkEvidence: vData.network_evidence,
+          physicsEvidence: vData.physics_evidence,
+          conclusion: vData.conclusion,
         };
 
         newAlertItems.push(item);
@@ -237,6 +243,30 @@ export const AlertFeed: React.FC<AlertFeedProps> = ({
                     <p className="text-xs text-[#9CA3AF] leading-relaxed font-sans break-words mb-2">
                       {alert.message}
                     </p>
+
+                    {/* Step 7: Explainable Evidence Panel (Network, Physics, Conclusion) */}
+                    {(alert.networkEvidence || alert.physicsEvidence || alert.conclusion) && (
+                      <div className="mb-2 p-2 rounded-[6px] bg-[#0A0D14] border border-white/[0.05] text-[10px] space-y-1 font-mono">
+                        {alert.networkEvidence && (
+                          <div className="text-[#93C5FD] leading-tight">
+                            <span className="font-semibold text-[#60A5FA]">NET: </span>
+                            {alert.networkEvidence.replace(/^Network:\s*/, "")}
+                          </div>
+                        )}
+                        {alert.physicsEvidence && (
+                          <div className="text-[#FCD34D] leading-tight">
+                            <span className="font-semibold text-[#FBBF24]">PHYS: </span>
+                            {alert.physicsEvidence.replace(/^Physics:\s*/, "")}
+                          </div>
+                        )}
+                        {alert.conclusion && (
+                          <div className="text-[#D1D5DB] leading-tight pt-0.5 border-t border-white/[0.04]">
+                            <span className="font-semibold text-[#A78BFA]">RATIONALE: </span>
+                            {alert.conclusion.replace(/^Conclusion:\s*/, "")}
+                          </div>
+                        )}
+                      </div>
+                    )}
 
                     <div className="flex flex-wrap items-center justify-between text-[10px] text-[#5A6275] gap-1 pt-1.5 border-t border-white/[0.05]">
                       <span

@@ -1,8 +1,16 @@
 {
-  "timestamp": "2026-08-24T20:20:51.230014+00:00",
-  "overall_accuracy": 0.8209,
-  "cyber_intrusion_fpr": 0.0244,
-  "cyber_subtype_accuracy": 0.5795,
+  "timestamp": "2026-08-26T17:54:45.056916+00:00",
+  "model_selected": "XGBoost",
+  "decision_threshold": 0.5799999999999997,
+  "overall_accuracy": 0.9077,
+  "cyber_intrusion_recall": 0.5265,
+  "cyber_intrusion_tp": 139,
+  "cyber_intrusion_total": 264,
+  "cyber_intrusion_fpr": 0.0043,
+  "cyber_f2_score": 0.5749,
+  "cyber_subtype_accuracy": 0.7576,
+  "latency_ms_per_verdict": 2.617,
+  "latency_within_50ms": true,
   "classes": [
     "Cyber Intrusion",
     "Natural Fault",
@@ -10,56 +18,199 @@
   ],
   "confusion_matrix": [
     [
+      139,
+      9,
+      116
+    ],
+    [
+      5,
+      584,
+      116
+    ],
+    [
+      9,
       68,
-      23,
-      173
-    ],
-    [
-      6,
-      489,
-      210
-    ],
-    [
-      73,
-      142,
-      2316
+      2454
     ]
   ],
   "classification_report": {
     "Cyber Intrusion": {
-      "precision": 0.46258503401360546,
-      "recall": 0.25757575757575757,
-      "f1-score": 0.3309002433090024,
+      "precision": 0.9084967320261438,
+      "recall": 0.5265151515151515,
+      "f1-score": 0.6666666666666666,
       "support": 264.0
     },
     "Natural Fault": {
-      "precision": 0.7477064220183486,
-      "recall": 0.6936170212765957,
-      "f1-score": 0.7196467991169978,
+      "precision": 0.8835098335854765,
+      "recall": 0.8283687943262411,
+      "f1-score": 0.8550512445095169,
       "support": 705.0
     },
     "Normal": {
-      "precision": 0.8580955909596146,
-      "recall": 0.9150533386013433,
-      "f1-score": 0.88565965583174,
+      "precision": 0.913626209977662,
+      "recall": 0.9695772421967602,
+      "f1-score": 0.9407705577918344,
       "support": 2531.0
     },
-    "accuracy": 0.8208571428571428,
+    "accuracy": 0.9077142857142857,
     "macro avg": {
-      "precision": 0.6894623489971895,
-      "recall": 0.6220820391512322,
-      "f1-score": 0.64540223275258,
+      "precision": 0.901877591863094,
+      "recall": 0.7748203960127177,
+      "f1-score": 0.8208294896560059,
       "support": 3500.0
     },
     "weighted avg": {
-      "precision": 0.8060272620632319,
-      "recall": 0.8208571428571428,
-      "f1-score": 0.8103752132917696,
+      "precision": 0.9071730021103216,
+      "recall": 0.9077142857142857,
+      "f1-score": 0.9028289740429549,
       "support": 3500.0
     }
   },
   "train_samples_count": 7500,
   "test_samples_count": 3500,
-  "feature_schema_version": "1.0.0",
-  "feature_count": 22
+  "val_samples_count": 3500,
+  "feature_schema_version": "2.0.0",
+  "feature_count": 28,
+  "model_comparison": {
+    "RandomForest": {
+      "fit_time_s": 1.12,
+      "latency_ms": 50.742,
+      "best_threshold": 0.31,
+      "val_cyber_f2": 0.6536,
+      "test_accuracy_default": 0.9049
+    },
+    "LightGBM": {
+      "fit_time_s": 4.64,
+      "latency_ms": 1.93,
+      "best_threshold": 0.56,
+      "val_cyber_f2": 0.6421,
+      "test_accuracy_default": 0.918
+    },
+    "XGBoost": {
+      "fit_time_s": 2.19,
+      "latency_ms": 2.617,
+      "best_threshold": 0.58,
+      "val_cyber_f2": 0.6571,
+      "test_accuracy_default": 0.9006
+    }
+  },
+  "feature_importances": [
+    {
+      "feature": "pcd_is_target_rtu_max_lnr",
+      "importance": 0.30849
+    },
+    {
+      "feature": "pcd_max_lnr",
+      "importance": 0.183763
+    },
+    {
+      "feature": "nbd_unexpected_write_count",
+      "importance": 0.112873
+    },
+    {
+      "feature": "pcd_voltage_dev_nominal",
+      "importance": 0.092212
+    },
+    {
+      "feature": "pcd_cross_rtu_voltage_divergence",
+      "importance": 0.045172
+    },
+    {
+      "feature": "pcd_voltage_pu_reported",
+      "importance": 0.039361
+    },
+    {
+      "feature": "pcd_physics_network_disagreement_index",
+      "importance": 0.036365
+    },
+    {
+      "feature": "pcd_temporal_dv_dt_3tick",
+      "importance": 0.032841
+    },
+    {
+      "feature": "pcd_temporal_dp_dt_3tick",
+      "importance": 0.030451
+    },
+    {
+      "feature": "pcd_temporal_dq_dt_3tick",
+      "importance": 0.027366
+    },
+    {
+      "feature": "pcd_p_mw_reported",
+      "importance": 0.024498
+    },
+    {
+      "feature": "nbd_std_response_time_ms",
+      "importance": 0.01683
+    },
+    {
+      "feature": "nbd_mean_response_time_ms",
+      "importance": 0.016176
+    },
+    {
+      "feature": "pcd_chi2_statistic",
+      "importance": 0.014231
+    },
+    {
+      "feature": "pcd_chi2_ratio",
+      "importance": 0.013675
+    },
+    {
+      "feature": "nbd_fc3_read_count",
+      "importance": 0.00556
+    },
+    {
+      "feature": "pcd_target_rtu_v_residual",
+      "importance": 0.000138
+    },
+    {
+      "feature": "nbd_distinct_sources_count",
+      "importance": 0.0
+    },
+    {
+      "feature": "nbd_fc6_write_count",
+      "importance": 0.0
+    },
+    {
+      "feature": "nbd_fc16_write_count",
+      "importance": 0.0
+    },
+    {
+      "feature": "nbd_error_count",
+      "importance": 0.0
+    },
+    {
+      "feature": "nbd_traffic_volume",
+      "importance": 0.0
+    },
+    {
+      "feature": "nbd_modbus_anomaly_rate",
+      "importance": 0.0
+    },
+    {
+      "feature": "pcd_chi2_failed",
+      "importance": 0.0
+    },
+    {
+      "feature": "pcd_target_rtu_p_residual",
+      "importance": 0.0
+    },
+    {
+      "feature": "pcd_target_rtu_is_flagged",
+      "importance": 0.0
+    },
+    {
+      "feature": "pcd_global_bad_data_flag",
+      "importance": 0.0
+    },
+    {
+      "feature": "pcd_status_code",
+      "importance": 0.0
+    }
+  ],
+  "leakage_smoke_test": {
+    "shuffled_balanced_accuracy": 0.3417,
+    "shuffled_standard_accuracy": 0.6969,
+    "leakage_test_passed": true
+  }
 }

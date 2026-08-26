@@ -140,6 +140,11 @@ export interface RTUVerdict {
   subtype: SubtypeType | null;
   confidence: number;
   probabilities: Record<string, number>;
+  decision_threshold?: number;
+  // Step 7: 3-line explainable evidence panel
+  network_evidence?: string;
+  physics_evidence?: string;
+  conclusion?: string;
   model_status: string;
 }
 

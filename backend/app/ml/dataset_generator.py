@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import collections
 import os
 from pathlib import Path
 import random
@@ -67,6 +68,8 @@ async def generate_dataset(
     current_subtype = "normal"
     scenario_remaining_ticks = 0
     attack_target_rtu = 1
+
+    telemetry_history: collections.deque = collections.deque(maxlen=3)
 
     try:
         for tick_idx in range(1, total_ticks + 1):
@@ -134,6 +137,7 @@ async def generate_dataset(
             recent_traffic = traffic_logger.get_recent_events(limit=30)
             se_res = snap.get("state_estimation", {})
             polled_t = snap.get("polled_modbus_telemetry", {})
+            telemetry_history.append(polled_t)
 
             for rtu_id in range(1, 6):
                 feats = extract_features(
@@ -141,6 +145,7 @@ async def generate_dataset(
                     state_estimation_result=se_res,
                     target_rtu_id=rtu_id,
                     polled_telemetry=polled_t,
+                    telemetry_history=list(telemetry_history),
                 )
 
                 # Determine RTU-specific label

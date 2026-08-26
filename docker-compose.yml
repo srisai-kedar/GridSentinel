@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: gridsentinel-backend
+    ports:
+      - "8000:8000"
+      - "5021:5021"
+      - "5022:5022"
+      - "5023:5023"
+      - "5024:5024"
+      - "5025:5025"
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: gridsentinel-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_WS_URL=ws://localhost:8000/ws/live
+    depends_on:
+      - backend
+    restart: unless-stopped

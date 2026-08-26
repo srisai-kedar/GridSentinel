@@ -565,6 +565,10 @@ def get_classifier_verdict(req: Optional[VerdictRequest] = None):
             subtype=v.get("subtype"),
             confidence=v["confidence"],
             probabilities=v["probabilities"],
+            decision_threshold=v.get("decision_threshold", classifier_service.decision_threshold),
+            network_evidence=v.get("network_evidence", ""),
+            physics_evidence=v.get("physics_evidence", ""),
+            conclusion=v.get("conclusion", ""),
             model_status=v.get("model_status", "loaded"),
         )
         for rtu_id, v in sorted(verdicts.items())
@@ -601,12 +605,13 @@ def reload_classifier_model():
 
 @app.get("/classifier/status", response_model=ClassifierStatusResponse, tags=["ML Classifier"])
 def get_classifier_status():
-    """Return model load status, class labels, and number of cached RTU verdicts."""
+    """Return model load status, class labels, decision threshold, and number of cached RTU verdicts."""
     return ClassifierStatusResponse(
         is_loaded=classifier_service.is_loaded,
         model_path=str(classifier_service.model_path),
         classes=classifier_service.classes,
         subtype_classes=classifier_service.subtype_classes,
+        decision_threshold=classifier_service.decision_threshold,
         cached_rtu_count=len(classifier_service.latest_verdicts),
     )
 
@@ -627,18 +632,27 @@ async def websocket_live_endpoint(websocket: WebSocket):
     queue = sim_loop.subscribe_ws()
 
     try:
+        def _json_default(o):
+            if isinstance(o, (np.integer, np.int64)):
+                return int(o)
+            if isinstance(o, (np.floating, np.float64)):
+                return float(o)
+            if isinstance(o, np.ndarray):
+                return o.tolist()
+            return str(o)
+
         # Send current latest state immediately upon connection if available
         if sim_loop.latest_state:
             initial = dict(sim_loop.latest_state)
             initial["ml_verdicts"] = classifier_service.latest_verdicts
-            await websocket.send_text(json.dumps(initial))
+            await websocket.send_text(json.dumps(initial, default=_json_default))
 
         while True:
             # Wait for next simulation tick broadcast
             payload = await queue.get()
             # Attach the most recent cached ML verdicts to every tick
             payload["ml_verdicts"] = classifier_service.latest_verdicts
-            await websocket.send_text(json.dumps(payload))
+            await websocket.send_text(json.dumps(payload, default=_json_default))
 
     except (WebSocketDisconnect, asyncio.CancelledError):
         pass
