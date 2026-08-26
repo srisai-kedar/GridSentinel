@@ -137,7 +137,7 @@ export default function SCADACommandCenter() {
   };
 
   return (
-    <div className="flex flex-col h-screen w-screen bg-[#0B0F19] text-gray-100 overflow-hidden select-none">
+    <div className="flex flex-col h-screen w-screen bg-[#08090D] text-[#EDEDF0] overflow-hidden select-none">
       {/* Top Status Bar */}
       <StatusBar
         connectionStatus={activeConnectionStatus}
@@ -145,19 +145,19 @@ export default function SCADACommandCenter() {
       />
 
       {/* Mode Control & Persistent Banner */}
-      <div className="w-full bg-[#0F172A] border-b border-gray-800 px-4 py-1.5 flex flex-wrap items-center justify-between gap-2 text-xs">
+      <div className="w-full bg-[#0E1118] border-b border-white/[0.07] px-4 py-1.5 flex flex-wrap items-center justify-between gap-2 text-xs">
         {/* Left: Mode Switcher & Replay Banner */}
         <div className="flex items-center space-x-3">
-          <div className="flex items-center bg-[#070B14] rounded p-0.5 border border-gray-700">
+          <div className="flex items-center bg-[#131722] rounded-[6px] p-0.5 border border-white/[0.06]">
             <button
               onClick={() => {
                 setAppMode("LIVE");
                 replayEngine.pause();
               }}
-              className={`px-3 py-1 rounded font-semibold text-[11px] transition flex items-center space-x-1.5 ${
+              className={`px-3 py-1 rounded-[4px] font-medium text-[11px] transition flex items-center space-x-1.5 ${
                 appMode === "LIVE"
-                  ? "bg-emerald-600 text-white shadow"
-                  : "text-gray-400 hover:text-gray-200"
+                  ? "bg-[#181E2C] text-[#10B981] border border-[#10B981]/30 font-semibold"
+                  : "text-[#5A6275] hover:text-[#9CA3AF]"
               }`}
             >
               <Radio className="w-3.5 h-3.5" />
@@ -170,10 +170,10 @@ export default function SCADACommandCenter() {
                   replayEngine.play();
                 }
               }}
-              className={`px-3 py-1 rounded font-semibold text-[11px] transition flex items-center space-x-1.5 ${
+              className={`px-3 py-1 rounded-[4px] font-medium text-[11px] transition flex items-center space-x-1.5 ${
                 appMode === "REPLAY"
-                  ? "bg-purple-600 text-white shadow"
-                  : "text-gray-400 hover:text-gray-200"
+                  ? "bg-[#181E2C] text-[#A78BFA] border border-[#8B5CF6]/40 font-semibold"
+                  : "text-[#5A6275] hover:text-[#9CA3AF]"
               }`}
             >
               <Film className="w-3.5 h-3.5" />
@@ -185,9 +185,9 @@ export default function SCADACommandCenter() {
           {appMode === "REPLAY" && (
             <div
               data-testid="replay-mode-banner"
-              className="flex items-center space-x-2 px-3 py-1 rounded bg-purple-950/90 border border-purple-600 text-purple-200 font-mono font-bold text-[11px] animate-pulse"
+              className="flex items-center space-x-2 px-3 py-1 rounded-[6px] bg-[#131722] border border-[#8B5CF6]/40 text-[#A78BFA] font-mono font-semibold text-[11px] animate-pulse"
             >
-              <span className="w-2 h-2 rounded-full bg-purple-400"></span>
+              <span className="w-2 h-2 rounded-full bg-[#A78BFA]"></span>
               <span>REPLAY MODE — recorded session, not live</span>
             </div>
           )}
@@ -201,22 +201,22 @@ export default function SCADACommandCenter() {
               {!sessionRecorder.isRecording ? (
                 <button
                   onClick={sessionRecorder.startRecording}
-                  className="flex items-center space-x-1.5 bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-700 px-2.5 py-1 rounded transition text-[11px] font-medium"
+                  className="flex items-center space-x-1.5 bg-[#131722] hover:bg-[#181E2C] text-[#EDEDF0] border border-white/[0.08] hover:border-[#EF4444]/40 px-2.5 py-1 rounded-[6px] transition text-[11px] font-medium"
                   title="Arm session recorder to capture live telemetry"
                 >
-                  <CircleDot className="w-3.5 h-3.5 text-rose-400 animate-pulse" />
+                  <CircleDot className="w-3.5 h-3.5 text-[#EF4444] animate-pulse" />
                   <span>Record Session</span>
                 </button>
               ) : (
-                <div className="flex items-center space-x-2 bg-rose-950/90 border border-rose-600 px-2.5 py-1 rounded text-rose-200 text-[11px] font-mono">
-                  <span className="animate-ping w-2 h-2 rounded-full bg-rose-500"></span>
+                <div className="flex items-center space-x-2 bg-[#131722] border border-[#EF4444]/50 px-2.5 py-1 rounded-[6px] text-[#EDEDF0] text-[11px] font-mono">
+                  <span className="animate-ping w-2 h-2 rounded-full bg-[#EF4444]"></span>
                   <span>Recording ({sessionRecorder.eventCount} msgs)</span>
                   <button
                     onClick={() => {
                       const sess = sessionRecorder.stopRecording();
                       sessionRecorder.downloadRecording(sess);
                     }}
-                    className="ml-1 bg-rose-800 hover:bg-rose-700 text-white px-2 py-0.5 rounded text-[10px] font-semibold"
+                    className="ml-1 bg-[#EF4444] hover:bg-[#DC2626] text-white px-2 py-0.5 rounded-[4px] text-[10px] font-semibold"
                   >
                     Stop & Download
                   </button>
@@ -225,20 +225,20 @@ export default function SCADACommandCenter() {
             </div>
           ) : (
             /* Replay Controls Toolbar */
-            <div className="flex items-center space-x-2 bg-slate-900/90 px-2.5 py-1 rounded border border-gray-700 text-[11px]">
+            <div className="flex items-center space-x-2 bg-[#131722] px-2.5 py-1 rounded-[6px] border border-white/[0.06] text-[11px]">
               {/* Play / Pause */}
               {!replayEngine.isPlaying ? (
                 <button
                   onClick={replayEngine.play}
-                  className="text-purple-300 hover:text-white p-1 rounded"
+                  className="text-[#A78BFA] hover:text-white p-1 rounded"
                   title="Play recorded session"
                 >
-                  <Play className="w-3.5 h-3.5 fill-purple-300" />
+                  <Play className="w-3.5 h-3.5 fill-[#A78BFA]" />
                 </button>
               ) : (
                 <button
                   onClick={replayEngine.pause}
-                  className="text-amber-300 hover:text-white p-1 rounded"
+                  className="text-[#F59E0B] hover:text-white p-1 rounded"
                   title="Pause playback"
                 >
                   <Pause className="w-3.5 h-3.5" />
@@ -247,7 +247,7 @@ export default function SCADACommandCenter() {
 
               <button
                 onClick={replayEngine.stop}
-                className="text-gray-400 hover:text-white p-1 rounded"
+                className="text-[#5A6275] hover:text-[#EDEDF0] p-1 rounded"
                 title="Restart playback"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
@@ -263,24 +263,24 @@ export default function SCADACommandCenter() {
                   onChange={(e) =>
                     replayEngine.seekToPercent(parseFloat(e.target.value))
                   }
-                  className="w-24 md:w-36 h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-500"
+                  className="w-24 md:w-36 h-1.5 bg-[#181E2C] rounded-lg appearance-none cursor-pointer accent-[#8B5CF6]"
                 />
-                <span className="text-purple-300 text-[10px]">
+                <span className="text-[#A78BFA] text-[10px]">
                   {replayEngine.currentIndex + 1}/{replayEngine.totalEvents}
                 </span>
               </div>
 
               {/* Speed Multiplier */}
-              <div className="flex items-center space-x-1 border-l border-gray-700 pl-2">
-                <FastForward className="w-3.5 h-3.5 text-gray-400" />
+              <div className="flex items-center space-x-1 border-l border-white/[0.08] pl-2">
+                <FastForward className="w-3.5 h-3.5 text-[#5A6275]" />
                 {[1, 2, 5].map((spd) => (
                   <button
                     key={spd}
                     onClick={() => replayEngine.setPlaybackSpeed(spd)}
-                    className={`px-1.5 py-0.5 rounded text-[10px] font-mono ${
+                    className={`px-1.5 py-0.5 rounded-[4px] text-[10px] font-mono ${
                       replayEngine.playbackSpeed === spd
-                        ? "bg-purple-600 text-white font-bold"
-                        : "text-gray-400 hover:text-gray-200"
+                        ? "bg-[#8B5CF6] text-white font-bold"
+                        : "text-[#5A6275] hover:text-[#9CA3AF]"
                     }`}
                   >
                     {spd}x
@@ -289,7 +289,7 @@ export default function SCADACommandCenter() {
               </div>
 
               {/* File Upload Input */}
-              <label className="cursor-pointer text-gray-400 hover:text-purple-300 border-l border-gray-700 pl-2">
+              <label className="cursor-pointer text-[#5A6275] hover:text-[#A78BFA] border-l border-white/[0.08] pl-2">
                 <Upload className="w-3.5 h-3.5" />
                 <input
                   type="file"
@@ -304,10 +304,10 @@ export default function SCADACommandCenter() {
           {/* Quick Trigger for Fallback View */}
           <button
             onClick={() => setForceMapFallback(!forceMapFallback)}
-            className={`px-2 py-1 rounded text-[10px] font-mono border transition ${
+            className={`px-2 py-1 rounded-[6px] text-[10px] font-mono border transition ${
               forceMapFallback
-                ? "bg-amber-950 text-amber-300 border-amber-700"
-                : "bg-slate-900 text-gray-400 border-gray-800 hover:text-gray-200"
+                ? "bg-[#131722] text-[#F59E0B] border-[#F59E0B]/40"
+                : "bg-[#131722] text-[#5A6275] border-white/[0.06] hover:text-[#9CA3AF]"
             }`}
             title="Toggle SVG/Vector Fallback map for offline simulation"
           >
@@ -321,7 +321,7 @@ export default function SCADACommandCenter() {
         {/* Left / Center Section: Map & Bottom Drawer (8 cols) */}
         <div className="lg:col-span-8 flex flex-col h-full space-y-3 overflow-hidden">
           {/* Feeder Map Component */}
-          <div className="flex-1 relative overflow-hidden rounded-lg min-h-[360px]">
+          <div className="flex-1 relative overflow-hidden rounded-[10px] border border-white/[0.07] min-h-[360px] bg-[#0E1118]">
             <FeederMap
               latestState={activePayload}
               selectedBusId={selectedBusId}
@@ -332,22 +332,22 @@ export default function SCADACommandCenter() {
           </div>
 
           {/* Bottom Audit Log Drawer / Toggle Bar */}
-          <div className="bg-[#0F172A] border border-gray-800 rounded-lg overflow-hidden flex flex-col transition-all duration-300">
+          <div className="bg-[#0E1118] border border-white/[0.07] rounded-[10px] overflow-hidden flex flex-col transition-all duration-300">
             <div
               onClick={() => setShowBottomDrawer(!showBottomDrawer)}
-              className="p-2.5 bg-[#0B0F19] flex items-center justify-between cursor-pointer hover:bg-[#131B2E] transition text-xs select-none"
+              className="p-2.5 bg-[#0E1118] flex items-center justify-between cursor-pointer hover:bg-[#131722] transition text-xs select-none"
             >
               <div className="flex items-center space-x-2">
-                <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
-                <span className="font-bold text-gray-200 uppercase tracking-wider">
+                <FileSpreadsheet className="w-4 h-4 text-[#10B981]" />
+                <span className="font-bold text-[#EDEDF0] uppercase tracking-wider text-[11px]">
                   CEA-2026 Incident Audit Trail Log
                 </span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-emerald-300 font-mono">
+                <span className="text-[10px] px-1.5 py-0.5 rounded-[4px] bg-[#131722] text-[#10B981] font-mono border border-white/[0.06]">
                   {auditEntries.length} Records
                 </span>
               </div>
 
-              <div className="flex items-center space-x-2 text-gray-400 text-[11px]">
+              <div className="flex items-center space-x-2 text-[#5A6275] text-[11px]">
                 <span>{showBottomDrawer ? "Collapse Panel" : "Expand Table"}</span>
                 {showBottomDrawer ? (
                   <ChevronDown className="w-4 h-4" />
@@ -358,7 +358,7 @@ export default function SCADACommandCenter() {
             </div>
 
             {showBottomDrawer && (
-              <div className="h-64 p-2 overflow-hidden">
+              <div className="h-64 p-2 overflow-hidden border-t border-white/[0.07]">
                 <AuditLog
                   entries={auditEntries}
                   onClearLogs={handleClearAuditLogs}
@@ -371,53 +371,53 @@ export default function SCADACommandCenter() {
         {/* Right Section: Multi-Tab Panel (4 cols) */}
         <div className="lg:col-span-4 flex flex-col h-full space-y-3 overflow-hidden">
           {/* Right Top Tab Switcher */}
-          <div className="flex bg-[#0F172A] p-1 rounded-lg border border-gray-800 text-[11px] select-none">
+          <div className="flex bg-[#131722] p-1 rounded-[8px] border border-white/[0.07] text-[11px] select-none">
             <button
               onClick={() => setActiveTab("FEED")}
-              className={`flex-1 py-1.5 rounded-md font-semibold transition text-center ${
+              className={`flex-1 py-1.5 rounded-[6px] font-medium transition text-center ${
                 activeTab === "FEED"
-                  ? "bg-cyan-950 text-cyan-300 border border-cyan-700/60 shadow"
-                  : "text-gray-400 hover:text-gray-200"
+                  ? "bg-[#181E2C] text-[#EDEDF0] border border-[#8B5CF6]/40 shadow-sm font-semibold"
+                  : "text-[#5A6275] hover:text-[#9CA3AF]"
               }`}
             >
               Alerts
             </button>
             <button
               onClick={() => setActiveTab("DIRECTOR")}
-              className={`flex-1 py-1.5 rounded-md font-semibold transition text-center ${
+              className={`flex-1 py-1.5 rounded-[6px] font-medium transition text-center ${
                 activeTab === "DIRECTOR"
-                  ? "bg-cyan-950 text-cyan-300 border border-cyan-700/60 shadow"
-                  : "text-gray-400 hover:text-gray-200"
+                  ? "bg-[#181E2C] text-[#EDEDF0] border border-[#8B5CF6]/40 shadow-sm font-semibold"
+                  : "text-[#5A6275] hover:text-[#9CA3AF]"
               }`}
             >
               Director
             </button>
             <button
               onClick={() => setActiveTab("CONTROLS")}
-              className={`flex-1 py-1.5 rounded-md font-semibold transition text-center ${
+              className={`flex-1 py-1.5 rounded-[6px] font-medium transition text-center ${
                 activeTab === "CONTROLS"
-                  ? "bg-cyan-950 text-cyan-300 border border-cyan-700/60 shadow"
-                  : "text-gray-400 hover:text-gray-200"
+                  ? "bg-[#181E2C] text-[#EDEDF0] border border-[#8B5CF6]/40 shadow-sm font-semibold"
+                  : "text-[#5A6275] hover:text-[#9CA3AF]"
               }`}
             >
               Controls
             </button>
             <button
               onClick={() => setActiveTab("AUDIT")}
-              className={`flex-1 py-1.5 rounded-md font-semibold transition text-center ${
+              className={`flex-1 py-1.5 rounded-[6px] font-medium transition text-center ${
                 activeTab === "AUDIT"
-                  ? "bg-cyan-950 text-cyan-300 border border-cyan-700/60 shadow"
-                  : "text-gray-400 hover:text-gray-200"
+                  ? "bg-[#181E2C] text-[#EDEDF0] border border-[#8B5CF6]/40 shadow-sm font-semibold"
+                  : "text-[#5A6275] hover:text-[#9CA3AF]"
               }`}
             >
               Audit ({auditEntries.length})
             </button>
             <button
               onClick={() => setActiveTab("COMPLIANCE")}
-              className={`flex-1 py-1.5 rounded-md font-semibold transition text-center ${
+              className={`flex-1 py-1.5 rounded-[6px] font-medium transition text-center ${
                 activeTab === "COMPLIANCE"
-                  ? "bg-cyan-950 text-cyan-300 border border-cyan-700/60 shadow"
-                  : "text-gray-400 hover:text-gray-200"
+                  ? "bg-[#181E2C] text-[#EDEDF0] border border-[#8B5CF6]/40 shadow-sm font-semibold"
+                  : "text-[#5A6275] hover:text-[#9CA3AF]"
               }`}
             >
               CEA-2026

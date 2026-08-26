@@ -346,40 +346,40 @@ export const FeederMap: React.FC<FeederMapProps> = ({
     : null;
 
   return (
-    <div className="relative w-full h-full min-h-[420px] bg-[#090D16] rounded-lg overflow-hidden border border-gray-800 flex flex-col">
+    <div className="relative w-full h-full min-h-[420px] bg-[#08090D] rounded-[10px] overflow-hidden border border-white/[0.07] flex flex-col">
       {/* Top Map Header */}
       <div className="absolute top-3 left-3 right-3 z-10 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
-        <div className="pointer-events-auto flex items-center space-x-2 bg-[#0F172A]/90 backdrop-blur-md px-3 py-1.5 rounded-md border border-gray-700/80 shadow-lg">
-          <Layers className="w-4 h-4 text-cyan-400" />
-          <span className="text-xs font-semibold text-gray-200 uppercase tracking-wider">
+        <div className="pointer-events-auto flex items-center space-x-2 bg-[#0E1118]/90 backdrop-blur-md px-3 py-1.5 rounded-[6px] border border-white/[0.08] shadow-lg">
+          <Layers className="w-3.5 h-3.5 text-[#A78BFA]" />
+          <span className="text-xs font-semibold text-[#EDEDF0] uppercase tracking-wider">
             11kV Radial Feeder Map
           </span>
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-900/60 text-blue-300 font-mono border border-blue-700/50">
+          <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#131722] text-[#9CA3AF] font-mono border border-white/[0.06]">
             {topology?.feeder_name || "GridSentinel"}
           </span>
         </div>
 
-        <div className="pointer-events-auto flex items-center space-x-3 bg-[#0F172A]/90 backdrop-blur-md px-3 py-1.5 rounded-md border border-gray-700/80 text-[11px] shadow-lg">
+        <div className="pointer-events-auto flex items-center space-x-3 bg-[#0E1118]/90 backdrop-blur-md px-3 py-1.5 rounded-[6px] border border-white/[0.08] text-[11px] shadow-lg">
           {onToggleForceFallback && (
             <button
               onClick={onToggleForceFallback}
-              className="text-gray-400 hover:text-amber-300 pr-2 border-r border-gray-700 text-[10px] font-mono"
+              className="text-[#5A6275] hover:text-[#EDEDF0] pr-2 border-r border-white/[0.08] text-[10px] font-mono"
               title="Force Vector Fallback for testing offline resilience"
             >
               Test Fallback
             </button>
           )}
           <div className="flex items-center space-x-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#10B981]" />
-            <span className="text-gray-300">Normal</span>
+            <span className="w-2 h-2 rounded-full bg-[#10B981]" />
+            <span className="text-[#9CA3AF]">Normal</span>
           </div>
           <div className="flex items-center space-x-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]" />
-            <span className="text-gray-300">Fault</span>
+            <span className="w-2 h-2 rounded-full bg-[#F59E0B]" />
+            <span className="text-[#9CA3AF]">Fault</span>
           </div>
           <div className="flex items-center space-x-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#EF4444] animate-pulse" />
-            <span className="text-gray-300 font-medium">Cyber</span>
+            <span className="w-2 h-2 rounded-full bg-[#EF4444]" />
+            <span className="text-[#9CA3AF]">Cyber</span>
           </div>
         </div>
       </div>
@@ -389,14 +389,14 @@ export const FeederMap: React.FC<FeederMapProps> = ({
 
       {/* Floating detail card if bus selected */}
       {selectedBusInfo && selectedBusInfo.bus && (
-        <div className="absolute bottom-10 right-3 z-20 w-80 bg-[#0F172A]/95 backdrop-blur-md rounded-lg border border-gray-700 shadow-2xl p-3.5 text-xs select-none">
-          <div className="flex items-center justify-between border-b border-gray-700 pb-2 mb-2">
+        <div className="absolute bottom-10 right-3 z-20 w-72 bg-[#0E1118]/95 backdrop-blur-md rounded-[10px] border border-white/[0.08] shadow-2xl p-3 text-xs select-none">
+          <div className="flex items-center justify-between border-b border-white/[0.07] pb-2 mb-2">
             <div className="flex items-center space-x-2">
               <div
-                className="w-3 h-3 rounded-full"
+                className="w-2.5 h-2.5 rounded-full"
                 style={{ backgroundColor: getBusColor(selectedBusInfo.bus.bus_index) }}
               />
-              <span className="font-bold text-gray-100 text-sm">
+              <span className="font-bold text-[#EDEDF0] text-xs">
                 {selectedBusInfo.bus.name}
               </span>
             </div>
@@ -405,36 +405,36 @@ export const FeederMap: React.FC<FeederMapProps> = ({
                 setInternalSelectedBus(null);
                 if (onSelectBus) onSelectBus(null);
               }}
-              className="text-gray-400 hover:text-white text-xs px-1.5 py-0.5 rounded bg-gray-800"
+              className="text-[#5A6275] hover:text-[#EDEDF0] text-xs px-1.5 py-0.5 rounded-[4px] bg-[#131722] border border-white/[0.06]"
             >
               ✕
             </button>
           </div>
 
           <div className="space-y-1.5 font-mono text-[11px]">
-            <div className="flex justify-between text-gray-400">
+            <div className="flex justify-between text-[#5A6275]">
               <span>Nominal Voltage:</span>
-              <span className="text-gray-200">{selectedBusInfo.bus.vn_kv} kV</span>
+              <span className="text-[#EDEDF0]">{selectedBusInfo.bus.vn_kv} kV</span>
             </div>
             {selectedBusInfo.telemetry && (
-              <div className="flex justify-between text-gray-400">
+              <div className="flex justify-between text-[#5A6275]">
                 <span>Reported Voltage:</span>
-                <span className="text-yellow-300 font-bold">
+                <span className="text-[#EDEDF0] font-bold">
                   {selectedBusInfo.telemetry.voltage_pu.toFixed(4)} pu
                 </span>
               </div>
             )}
             {selectedBusInfo.verdict && (
               <div
-                className="p-1.5 rounded border mt-2"
+                className="p-1.5 rounded-[6px] border mt-1.5"
                 style={{
-                  backgroundColor: `${getVerdictColor(selectedBusInfo.verdict.verdict)}15`,
-                  borderColor: `${getVerdictColor(selectedBusInfo.verdict.verdict)}66`,
+                  backgroundColor: `${getVerdictColor(selectedBusInfo.verdict.verdict)}12`,
+                  borderColor: `${getVerdictColor(selectedBusInfo.verdict.verdict)}35`,
                 }}
               >
                 <div className="flex justify-between font-bold" style={{ color: getVerdictColor(selectedBusInfo.verdict.verdict) }}>
                   <span>{selectedBusInfo.verdict.verdict}</span>
-                  <span>{(selectedBusInfo.verdict.confidence * 100).toFixed(0)}% Conf</span>
+                  <span>{(selectedBusInfo.verdict.confidence * 100).toFixed(0)}% CONF</span>
                 </div>
               </div>
             )}
@@ -443,11 +443,11 @@ export const FeederMap: React.FC<FeederMapProps> = ({
       )}
 
       {/* Illustrative Layout Caption */}
-      <div className="w-full bg-[#0d121f] px-3 py-1.5 border-t border-gray-800 text-[10px] text-gray-400 flex items-center justify-between">
+      <div className="w-full bg-[#0E1118] px-3 py-1.5 border-t border-white/[0.07] text-[10px] text-[#5A6275] flex items-center justify-between">
         <span>
-          Illustrative SCADA Feeder Topology (Anchor: 11kV Radial Distribution Substation).
+          11kV Radial Distribution Substation Topology (Mapbox GL v3.x)
         </span>
-        <span className="font-mono text-gray-500">Mapbox GL v3.x</span>
+        <span className="font-mono text-[#5A6275]">GIS Map Service</span>
       </div>
     </div>
   );

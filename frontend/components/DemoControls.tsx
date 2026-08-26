@@ -192,12 +192,12 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#111827] rounded-lg border border-gray-800 overflow-hidden text-xs select-none shadow-md">
+    <div className="flex flex-col h-full bg-[#0E1118] rounded-[10px] border border-white/[0.07] overflow-hidden text-xs select-none shadow-sm">
       {/* Header */}
-      <div className="p-3 bg-[#0F172A] border-b border-gray-800 flex items-center justify-between">
+      <div className="p-3 bg-[#0E1118] border-b border-white/[0.07] flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <Terminal className="w-4 h-4 text-cyan-400" />
-          <h2 className="font-bold text-gray-200 uppercase tracking-wider text-xs">
+          <Terminal className="w-3.5 h-3.5 text-[#A78BFA]" />
+          <h2 className="font-bold text-[#EDEDF0] uppercase tracking-wider text-xs">
             Scenario & Attack Injection Engine
           </h2>
         </div>
@@ -207,16 +207,16 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
           <button
             onClick={handleStartSim}
             disabled={isReplayMode || loadingAction !== null}
-            className="flex items-center space-x-1 bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-700 px-2 py-1 rounded transition disabled:opacity-40 disabled:cursor-not-allowed font-medium text-[11px]"
+            className="flex items-center space-x-1 bg-[#131722] hover:bg-[#181E2C] text-[#10B981] border border-[#10B981]/30 px-2.5 py-1 rounded-[4px] transition disabled:opacity-40 disabled:cursor-not-allowed font-medium text-[11px]"
             title={isReplayMode ? "Disabled in Replay Mode" : "Start background simulation loop"}
           >
-            <Play className="w-3 h-3 fill-emerald-300" />
+            <Play className="w-3 h-3 fill-[#10B981]" />
             <span>Start OT</span>
           </button>
           <button
             onClick={handleStopSim}
             disabled={isReplayMode || loadingAction !== null}
-            className="flex items-center space-x-1 bg-slate-800 hover:bg-slate-700 text-gray-300 border border-gray-700 px-2 py-1 rounded transition disabled:opacity-40 disabled:cursor-not-allowed font-medium text-[11px]"
+            className="flex items-center space-x-1 bg-[#131722] hover:bg-[#181E2C] text-[#5A6275] hover:text-[#EDEDF0] border border-white/[0.08] px-2.5 py-1 rounded-[4px] transition disabled:opacity-40 disabled:cursor-not-allowed font-medium text-[11px]"
             title={isReplayMode ? "Disabled in Replay Mode" : "Stop simulation loop"}
           >
             <Pause className="w-3 h-3" />
@@ -227,8 +227,8 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
 
       {/* Replay Mode Notice if active */}
       {isReplayMode && (
-        <div className="p-2.5 bg-amber-950/90 border-b border-amber-800 text-amber-200 flex items-center space-x-2 font-mono text-[11px]">
-          <Lock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+        <div className="p-2.5 bg-[#131722] border-b border-[#F59E0B]/30 text-[#F59E0B] flex items-center space-x-2 font-mono text-[11px]">
+          <Lock className="w-3.5 h-3.5 text-[#F59E0B] shrink-0" />
           <span>Demo triggers are disabled during recorded session replay.</span>
         </div>
       )}
@@ -238,8 +238,8 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
         <div
           className={`px-3 py-1.5 text-[11px] font-mono border-b flex items-center justify-between ${
             actionFeedback.isError
-              ? "bg-rose-950/90 text-rose-200 border-rose-800"
-              : "bg-emerald-950/90 text-emerald-200 border-emerald-800"
+              ? "bg-[#131722] text-[#EF4444] border-[#EF4444]/30"
+              : "bg-[#131722] text-[#10B981] border-[#10B981]/30"
           }`}
         >
           <span>{actionFeedback.message}</span>
@@ -247,14 +247,14 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
       )}
 
       {/* Target Selector Toolbar */}
-      <div className="p-2.5 bg-[#0B0F19] border-b border-gray-800 flex flex-wrap items-center gap-3 text-[11px]">
+      <div className="p-2 bg-[#131722] border-b border-white/[0.07] flex flex-wrap items-center gap-3 text-[11px]">
         <div className="flex items-center space-x-1.5">
-          <span className="text-gray-400 font-mono">Target RTU:</span>
+          <span className="text-[#5A6275] font-mono text-[10px] uppercase">Target RTU:</span>
           <select
             value={selectedRtu}
             onChange={(e) => setSelectedRtu(parseInt(e.target.value, 10))}
             disabled={isReplayMode}
-            className="bg-[#1E293B] text-gray-200 px-2 py-0.5 rounded border border-gray-700 focus:outline-none disabled:opacity-50"
+            className="bg-[#0E1118] text-[#EDEDF0] px-2 py-0.5 rounded-[4px] border border-white/[0.08] focus:outline-none disabled:opacity-50"
           >
             <option value={1}>RTU-1 (Substation-11kV)</option>
             <option value={2}>RTU-2 (Feeder A Industrial)</option>
@@ -265,12 +265,12 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
         </div>
 
         <div className="flex items-center space-x-1.5">
-          <span className="text-gray-400 font-mono">Target Line:</span>
+          <span className="text-[#5A6275] font-mono text-[10px] uppercase">Target Line:</span>
           <select
             value={selectedLine}
             onChange={(e) => setSelectedLine(parseInt(e.target.value, 10))}
             disabled={isReplayMode}
-            className="bg-[#1E293B] text-gray-200 px-2 py-0.5 rounded border border-gray-700 focus:outline-none disabled:opacity-50"
+            className="bg-[#0E1118] text-[#EDEDF0] px-2 py-0.5 rounded-[4px] border border-white/[0.08] focus:outline-none disabled:opacity-50"
           >
             <option value={0}>Line 0 (Substation → Feeder A)</option>
             <option value={1}>Line 1 (Substation → Feeder B)</option>
@@ -287,15 +287,15 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
         <button
           onClick={handleResetNormal}
           disabled={isReplayMode || loadingAction !== null}
-          className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-2.5 px-4 rounded-md shadow-lg shadow-emerald-950/40 transition disabled:opacity-40 disabled:cursor-not-allowed text-xs tracking-wider uppercase border border-emerald-400/40"
+          className="w-full flex items-center justify-center space-x-2 bg-[#131722] hover:bg-[#181E2C] text-[#EDEDF0] hover:text-[#10B981] font-semibold py-2 px-4 rounded-[6px] border border-white/[0.08] hover:border-[#10B981]/40 shadow-sm transition disabled:opacity-40 disabled:cursor-not-allowed text-xs tracking-wider uppercase"
         >
-          <RotateCcw className={`w-4 h-4 ${loadingAction === "reset_all" ? "animate-spin" : ""}`} />
+          <RotateCcw className={`w-3.5 h-3.5 ${loadingAction === "reset_all" ? "animate-spin" : ""}`} />
           <span>Reset Grid to Clean State</span>
         </button>
 
         {/* Section 1: Cyber Attack Scenarios */}
         <div>
-          <div className="flex items-center space-x-1.5 text-rose-400 font-bold uppercase tracking-wider text-[11px] mb-2">
+          <div className="flex items-center space-x-1.5 text-[#EF4444] font-semibold uppercase tracking-wider text-[10px] mb-2">
             <ShieldAlert className="w-3.5 h-3.5" />
             <span>Cyber Attack Scenarios</span>
           </div>
@@ -305,24 +305,24 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
             <button
               onClick={handleSilentDataInjection}
               disabled={isReplayMode || isSilentActive || loadingAction !== null}
-              className={`p-2.5 rounded-md border text-left flex flex-col justify-between transition ${
+              className={`p-2.5 rounded-[6px] border text-left flex flex-col justify-between transition ${
                 isSilentActive
-                  ? "bg-rose-950/60 border-rose-700 text-rose-300 cursor-not-allowed"
-                  : "bg-[#1E293B] hover:bg-[#283548] border-gray-700 text-gray-200 hover:border-rose-500/60 disabled:opacity-40 disabled:cursor-not-allowed"
+                  ? "bg-[#131722] border-[#EF4444]/60 text-[#EF4444] cursor-not-allowed"
+                  : "bg-[#131722] hover:bg-[#181E2C] border-white/[0.06] text-[#EDEDF0] hover:border-[#EF4444]/40 disabled:opacity-40 disabled:cursor-not-allowed"
               }`}
             >
               <div className="flex items-center justify-between mb-1">
                 <span className="font-semibold text-[11px]">Silent Data Injection</span>
                 {isSilentActive && (
-                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-rose-900 text-rose-200 font-mono animate-pulse">
+                  <span className="text-[9px] px-1.5 py-0.5 rounded-[4px] bg-[#EF4444]/20 text-[#EF4444] font-mono animate-pulse">
                     ACTIVE
                   </span>
                 )}
               </div>
-              <p className="text-[10px] text-gray-400 leading-tight">
+              <p className="text-[10px] text-[#5A6275] leading-tight">
                 Overrides telemetry (1.15 pu V) without touching physics or Modbus packets.
               </p>
-              <div className="mt-2 text-[9px] font-mono text-rose-400">
+              <div className="mt-2 text-[9px] font-mono text-[#EF4444]">
                 {loadingAction === "silent_data" ? "Triggering..." : "Target: RTU-" + selectedRtu}
               </div>
             </button>
@@ -331,15 +331,15 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
             <button
               onClick={handleCommandInjection}
               disabled={isReplayMode || loadingAction !== null}
-              className="p-2.5 rounded-md border bg-[#1E293B] hover:bg-[#283548] border-gray-700 text-gray-200 hover:border-rose-500/60 transition text-left flex flex-col justify-between disabled:opacity-40 disabled:cursor-not-allowed"
+              className="p-2.5 rounded-[6px] border bg-[#131722] hover:bg-[#181E2C] border-white/[0.06] text-[#EDEDF0] hover:border-[#EF4444]/40 transition text-left flex flex-col justify-between disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <div className="flex items-center justify-between mb-1">
                 <span className="font-semibold text-[11px]">Command Injection</span>
               </div>
-              <p className="text-[10px] text-gray-400 leading-tight">
+              <p className="text-[10px] text-[#5A6275] leading-tight">
                 Sends unauthorized FC 06 Modbus Write; logged in SCADA traffic as anomaly.
               </p>
-              <div className="mt-2 text-[9px] font-mono text-rose-400">
+              <div className="mt-2 text-[9px] font-mono text-[#EF4444]">
                 {loadingAction === "command_injection" ? "Injecting..." : "Write Reg 1 = 5000"}
               </div>
             </button>
@@ -348,24 +348,24 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
             <button
               onClick={handleReplayAttack}
               disabled={isReplayMode || isReplayActive || loadingAction !== null}
-              className={`p-2.5 rounded-md border text-left flex flex-col justify-between transition ${
+              className={`p-2.5 rounded-[6px] border text-left flex flex-col justify-between transition ${
                 isReplayActive
-                  ? "bg-rose-950/60 border-rose-700 text-rose-300 cursor-not-allowed"
-                  : "bg-[#1E293B] hover:bg-[#283548] border-gray-700 text-gray-200 hover:border-rose-500/60 disabled:opacity-40 disabled:cursor-not-allowed"
+                  ? "bg-[#131722] border-[#EF4444]/60 text-[#EF4444] cursor-not-allowed"
+                  : "bg-[#131722] hover:bg-[#181E2C] border-white/[0.06] text-[#EDEDF0] hover:border-[#EF4444]/40 disabled:opacity-40 disabled:cursor-not-allowed"
               }`}
             >
               <div className="flex items-center justify-between mb-1">
                 <span className="font-semibold text-[11px]">Replay Attack</span>
                 {isReplayActive && (
-                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-rose-900 text-rose-200 font-mono animate-pulse">
+                  <span className="text-[9px] px-1.5 py-0.5 rounded-[4px] bg-[#EF4444]/20 text-[#EF4444] font-mono animate-pulse">
                     ACTIVE
                   </span>
                 )}
               </div>
-              <p className="text-[10px] text-gray-400 leading-tight">
+              <p className="text-[10px] text-[#5A6275] leading-tight">
                 Freezes and loops stale telemetry packets with 0 diurnal load variance.
               </p>
-              <div className="mt-2 text-[9px] font-mono text-rose-400">
+              <div className="mt-2 text-[9px] font-mono text-[#EF4444]">
                 {loadingAction === "replay" ? "Freezing..." : "Duration: 20 ticks"}
               </div>
             </button>
@@ -374,7 +374,7 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
 
         {/* Section 2: Physical Grid Faults */}
         <div>
-          <div className="flex items-center space-x-1.5 text-amber-400 font-bold uppercase tracking-wider text-[11px] mb-2">
+          <div className="flex items-center space-x-1.5 text-[#F59E0B] font-semibold uppercase tracking-wider text-[10px] mb-2">
             <AlertTriangle className="w-3.5 h-3.5" />
             <span>Physical Grid Faults</span>
           </div>
@@ -384,24 +384,24 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
             <button
               onClick={handleLineTrip}
               disabled={isReplayMode || isLineTripActive || loadingAction !== null}
-              className={`p-2.5 rounded-md border text-left flex flex-col justify-between transition ${
+              className={`p-2.5 rounded-[6px] border text-left flex flex-col justify-between transition ${
                 isLineTripActive
-                  ? "bg-amber-950/60 border-amber-700 text-amber-300 cursor-not-allowed"
-                  : "bg-[#1E293B] hover:bg-[#283548] border-gray-700 text-gray-200 hover:border-amber-500/60 disabled:opacity-40 disabled:cursor-not-allowed"
+                  ? "bg-[#131722] border-[#F59E0B]/60 text-[#F59E0B] cursor-not-allowed"
+                  : "bg-[#131722] hover:bg-[#181E2C] border-white/[0.06] text-[#EDEDF0] hover:border-[#F59E0B]/40 disabled:opacity-40 disabled:cursor-not-allowed"
               }`}
             >
               <div className="flex items-center justify-between mb-1">
                 <span className="font-semibold text-[11px]">Physical Line Trip</span>
                 {isLineTripActive && (
-                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-900 text-amber-200 font-mono animate-pulse">
+                  <span className="text-[9px] px-1.5 py-0.5 rounded-[4px] bg-[#F59E0B]/20 text-[#F59E0B] font-mono animate-pulse">
                     TRIPPED
                   </span>
                 )}
               </div>
-              <p className="text-[10px] text-gray-400 leading-tight">
+              <p className="text-[10px] text-[#5A6275] leading-tight">
                 Takes line out of service in pandapower; real physical current drops to zero.
               </p>
-              <div className="mt-2 text-[9px] font-mono text-amber-400">
+              <div className="mt-2 text-[9px] font-mono text-[#F59E0B]">
                 {loadingAction === "line_trip" ? "Tripping..." : "Trip Line " + selectedLine}
               </div>
             </button>
@@ -410,24 +410,24 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
             <button
               onClick={handleShortCircuit}
               disabled={isReplayMode || isShortCircuitActive || loadingAction !== null}
-              className={`p-2.5 rounded-md border text-left flex flex-col justify-between transition ${
+              className={`p-2.5 rounded-[6px] border text-left flex flex-col justify-between transition ${
                 isShortCircuitActive
-                  ? "bg-amber-950/60 border-amber-700 text-amber-300 cursor-not-allowed"
-                  : "bg-[#1E293B] hover:bg-[#283548] border-gray-700 text-gray-200 hover:border-amber-500/60 disabled:opacity-40 disabled:cursor-not-allowed"
+                  ? "bg-[#131722] border-[#F59E0B]/60 text-[#F59E0B] cursor-not-allowed"
+                  : "bg-[#131722] hover:bg-[#181E2C] border-white/[0.06] text-[#EDEDF0] hover:border-[#F59E0B]/40 disabled:opacity-40 disabled:cursor-not-allowed"
               }`}
             >
               <div className="flex items-center justify-between mb-1">
                 <span className="font-semibold text-[11px]">Short-Circuit Surge</span>
                 {isShortCircuitActive && (
-                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-900 text-amber-200 font-mono animate-pulse">
+                  <span className="text-[9px] px-1.5 py-0.5 rounded-[4px] bg-[#F59E0B]/20 text-[#F59E0B] font-mono animate-pulse">
                     FAULT ACTIVE
                   </span>
                 )}
               </div>
-              <p className="text-[10px] text-gray-400 leading-tight">
+              <p className="text-[10px] text-[#5A6275] leading-tight">
                 Applies 6 MW fault load to trigger severe voltage sag across feeder nodes.
               </p>
-              <div className="mt-2 text-[9px] font-mono text-amber-400">
+              <div className="mt-2 text-[9px] font-mono text-[#F59E0B]">
                 {loadingAction === "short_circuit" ? "Applying fault..." : "Duration: 6 ticks"}
               </div>
             </button>
@@ -437,3 +437,4 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
     </div>
   );
 };
+

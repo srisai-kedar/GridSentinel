@@ -125,15 +125,15 @@ export const AuditLog: React.FC<AuditLogProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#0F172A] rounded-lg border border-gray-800 overflow-hidden text-xs select-none">
+    <div className="flex flex-col h-full bg-[#0E1118] rounded-[10px] border border-white/[0.07] overflow-hidden text-xs select-none">
       {/* Header */}
-      <div className="p-3 bg-[#0B0F19] border-b border-gray-800 flex flex-wrap items-center justify-between gap-2">
+      <div className="p-3 bg-[#0E1118] border-b border-white/[0.07] flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center space-x-2">
-          <Shield className="w-4 h-4 text-emerald-400" />
-          <h2 className="font-bold text-gray-200 uppercase tracking-wider text-xs">
-            CEA-2026 Cyber-Physical Incident Audit Trail
+          <Shield className="w-3.5 h-3.5 text-[#10B981]" />
+          <h2 className="font-bold text-[#EDEDF0] uppercase tracking-wider text-xs">
+            CEA-2026 Incident Audit Trail Log
           </h2>
-          <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-300 font-mono border border-emerald-800">
+          <span className="text-[10px] px-2 py-0.5 rounded-[4px] bg-[#131722] text-[#10B981] font-mono border border-white/[0.06]">
             {entries.length} Events Logged
           </span>
         </div>
@@ -142,13 +142,13 @@ export const AuditLog: React.FC<AuditLogProps> = ({
         <div className="flex items-center space-x-2">
           {/* Search bar */}
           <div className="relative">
-            <Search className="w-3.5 h-3.5 text-gray-500 absolute left-2.5 top-1/2 -translate-y-1/2" />
+            <Search className="w-3.5 h-3.5 text-[#5A6275] absolute left-2.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Search audit trail..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="bg-[#1E293B] text-gray-200 placeholder-gray-500 text-[11px] pl-8 pr-2.5 py-1 rounded border border-gray-700 focus:outline-none focus:border-cyan-500 w-40 md:w-52"
+              className="bg-[#131722] text-[#EDEDF0] placeholder-[#5A6275] text-[11px] pl-8 pr-2.5 py-1 rounded-[6px] border border-white/[0.08] focus:outline-none focus:border-[#8B5CF6] w-36 md:w-48 transition"
             />
           </div>
 
@@ -156,7 +156,7 @@ export const AuditLog: React.FC<AuditLogProps> = ({
           <select
             value={selectedFilter}
             onChange={(e) => setSelectedFilter(e.target.value)}
-            className="bg-[#1E293B] text-gray-300 text-[11px] px-2 py-1 rounded border border-gray-700 focus:outline-none"
+            className="bg-[#131722] text-[#9CA3AF] text-[11px] px-2 py-1 rounded-[6px] border border-white/[0.08] focus:outline-none"
           >
             <option value="ALL">All Categories</option>
             <option value="CYBER">Cyber Intrusion</option>
@@ -168,10 +168,10 @@ export const AuditLog: React.FC<AuditLogProps> = ({
           <button
             onClick={exportCsv}
             disabled={entries.length === 0}
-            className="flex items-center space-x-1 bg-blue-900/60 hover:bg-blue-800 text-blue-200 border border-blue-700 px-2.5 py-1 rounded transition disabled:opacity-40 disabled:cursor-not-allowed font-medium text-[11px]"
+            className="flex items-center space-x-1 bg-[#131722] hover:bg-[#181E2C] text-[#EDEDF0] border border-white/[0.08] px-2.5 py-1 rounded-[6px] transition disabled:opacity-40 disabled:cursor-not-allowed font-medium text-[11px]"
             title="Download CSV report"
           >
-            <FileSpreadsheet className="w-3.5 h-3.5" />
+            <FileSpreadsheet className="w-3.5 h-3.5 text-[#10B981]" />
             <span className="hidden sm:inline">Export CSV</span>
           </button>
 
@@ -179,10 +179,10 @@ export const AuditLog: React.FC<AuditLogProps> = ({
           <button
             onClick={exportJson}
             disabled={entries.length === 0}
-            className="flex items-center space-x-1 bg-purple-900/60 hover:bg-purple-800 text-purple-200 border border-purple-700 px-2.5 py-1 rounded transition disabled:opacity-40 disabled:cursor-not-allowed font-medium text-[11px]"
+            className="flex items-center space-x-1 bg-[#131722] hover:bg-[#181E2C] text-[#EDEDF0] border border-white/[0.08] px-2.5 py-1 rounded-[6px] transition disabled:opacity-40 disabled:cursor-not-allowed font-medium text-[11px]"
             title="Download JSON telemetry"
           >
-            <FileText className="w-3.5 h-3.5" />
+            <FileText className="w-3.5 h-3.5 text-[#A78BFA]" />
             <span className="hidden sm:inline">Export JSON</span>
           </button>
 
@@ -191,7 +191,7 @@ export const AuditLog: React.FC<AuditLogProps> = ({
             <button
               onClick={onClearLogs}
               disabled={entries.length === 0}
-              className="text-gray-400 hover:text-red-400 p-1.5 rounded hover:bg-gray-800 transition disabled:opacity-30"
+              className="text-[#5A6275] hover:text-[#EF4444] p-1.5 rounded-[6px] hover:bg-[#181E2C] transition disabled:opacity-30"
               title="Clear session audit log"
             >
               <Trash2 className="w-3.5 h-3.5" />
@@ -203,92 +203,92 @@ export const AuditLog: React.FC<AuditLogProps> = ({
       {/* Table Container */}
       <div className="flex-1 overflow-auto max-h-[500px]">
         {filteredEntries.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-48 text-center p-6 text-gray-500">
-            <Shield className="w-8 h-8 text-gray-600 mb-2 opacity-50" />
-            <p className="text-xs">No audit events matching criteria</p>
-            <p className="text-[10px] text-gray-600 mt-1">
+          <div className="flex flex-col items-center justify-center h-48 text-center p-6 text-[#5A6275]">
+            <Shield className="w-6 h-6 text-[#5A6275] mb-2 opacity-50" />
+            <p className="text-xs text-[#9CA3AF]">No audit events matching criteria</p>
+            <p className="text-[10px] text-[#5A6275] mt-1">
               Events are automatically captured when telemetry verdict state changes occur.
             </p>
           </div>
         ) : (
           <table className="w-full text-left border-collapse font-mono text-[11px]">
-            <thead className="bg-[#0B0F19] text-gray-400 sticky top-0 border-b border-gray-800 z-10">
+            <thead className="bg-[#131722] text-[#5A6275] sticky top-0 border-b border-white/[0.07] z-10 uppercase text-[10px] tracking-wider">
               <tr>
-                <th className="p-2.5 font-semibold text-gray-300">Time (Sim / UTC)</th>
-                <th className="p-2.5 font-semibold text-gray-300">Affected Asset</th>
-                <th className="p-2.5 font-semibold text-gray-300">Classification</th>
-                <th className="p-2.5 font-semibold text-gray-300">Subtype</th>
-                <th className="p-2.5 font-semibold text-gray-300">Conf</th>
-                <th className="p-2.5 font-semibold text-gray-300 min-w-[200px]">Network Signal</th>
-                <th className="p-2.5 font-semibold text-gray-300 min-w-[200px]">Physics Signal</th>
-                <th className="p-2.5 font-semibold text-gray-300 min-w-[220px]">Recommended Action</th>
+                <th className="p-2.5 font-medium text-[#9CA3AF]">Time (Sim / UTC)</th>
+                <th className="p-2.5 font-medium text-[#9CA3AF]">Affected Asset</th>
+                <th className="p-2.5 font-medium text-[#9CA3AF]">Classification</th>
+                <th className="p-2.5 font-medium text-[#9CA3AF]">Subtype</th>
+                <th className="p-2.5 font-medium text-[#9CA3AF]">Conf</th>
+                <th className="p-2.5 font-medium text-[#9CA3AF] min-w-[180px]">Network Signal</th>
+                <th className="p-2.5 font-medium text-[#9CA3AF] min-w-[180px]">Physics Signal</th>
+                <th className="p-2.5 font-medium text-[#9CA3AF] min-w-[200px]">Recommended Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-800/60 bg-[#0F172A]">
+            <tbody className="divide-y divide-white/[0.04] bg-[#0E1118]">
               {filteredEntries.map((entry) => {
                 const color = getVerdictColor(entry.classification);
 
                 return (
                   <tr
                     key={entry.id}
-                    className="hover:bg-[#1E293B]/70 transition-colors duration-150"
+                    className="hover:bg-[#181E2C] transition-colors duration-150"
                   >
                     {/* Time */}
-                    <td className="p-2.5 whitespace-nowrap text-gray-300">
-                      <div className="font-bold text-cyan-400">{entry.simTime}</div>
-                      <div className="text-[9px] text-gray-500">{entry.timestamp.slice(11, 19)} UTC</div>
+                    <td className="p-2.5 whitespace-nowrap text-[#9CA3AF]">
+                      <div className="font-medium text-[#EDEDF0]">{entry.simTime}</div>
+                      <div className="text-[9px] text-[#5A6275]">{entry.timestamp.slice(11, 19)} UTC</div>
                     </td>
 
                     {/* Asset */}
-                    <td className="p-2.5 whitespace-nowrap font-medium text-gray-200">
+                    <td className="p-2.5 whitespace-nowrap font-medium text-[#EDEDF0]">
                       {entry.assetName}
                     </td>
 
                     {/* Classification */}
                     <td className="p-2.5 whitespace-nowrap">
                       <span
-                        className="inline-flex items-center space-x-1 px-2 py-0.5 rounded font-bold uppercase tracking-wider text-[10px]"
+                        className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-[4px] font-medium uppercase tracking-wider text-[10px]"
                         style={{
-                          backgroundColor: `${color}20`,
+                          backgroundColor: `${color}15`,
                           color: color,
-                          border: `1px solid ${color}40`,
+                          border: `1px solid ${color}35`,
                         }}
                       >
                         {entry.classification === "Cyber Intrusion" && (
-                          <ShieldAlert className="w-3 h-3 text-rose-500 mr-1" />
+                          <ShieldAlert className="w-3 h-3 text-[#EF4444] mr-1" />
                         )}
                         {entry.classification === "Natural Fault" && (
-                          <AlertTriangle className="w-3 h-3 text-amber-500 mr-1" />
+                          <AlertTriangle className="w-3 h-3 text-[#F59E0B] mr-1" />
                         )}
                         {entry.classification === "Normal" && (
-                          <CheckCircle2 className="w-3 h-3 text-emerald-400 mr-1" />
+                          <CheckCircle2 className="w-3 h-3 text-[#10B981] mr-1" />
                         )}
                         <span>{entry.classification}</span>
                       </span>
                     </td>
 
                     {/* Subtype */}
-                    <td className="p-2.5 whitespace-nowrap text-gray-400">
+                    <td className="p-2.5 whitespace-nowrap text-[#5A6275]">
                       {entry.subtype || "none"}
                     </td>
 
                     {/* Confidence */}
-                    <td className="p-2.5 whitespace-nowrap font-bold text-gray-300">
+                    <td className="p-2.5 whitespace-nowrap font-bold text-[#EDEDF0]">
                       {(entry.confidence * 100).toFixed(0)}%
                     </td>
 
                     {/* Network Signal */}
-                    <td className="p-2.5 text-gray-300 text-[10px] leading-relaxed font-sans">
+                    <td className="p-2.5 text-[#9CA3AF] text-[10px] leading-relaxed font-sans">
                       {entry.networkSummary}
                     </td>
 
                     {/* Physics Signal */}
-                    <td className="p-2.5 text-gray-300 text-[10px] leading-relaxed font-sans">
+                    <td className="p-2.5 text-[#9CA3AF] text-[10px] leading-relaxed font-sans">
                       {entry.physicsSummary}
                     </td>
 
                     {/* Recommended Action */}
-                    <td className="p-2.5 text-yellow-300 text-[10px] leading-relaxed font-sans">
+                    <td className="p-2.5 text-[#F59E0B] text-[10px] leading-relaxed font-sans">
                       {entry.recommendedAction}
                     </td>
                   </tr>
@@ -301,3 +301,4 @@ export const AuditLog: React.FC<AuditLogProps> = ({
     </div>
   );
 };
+

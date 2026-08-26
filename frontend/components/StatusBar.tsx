@@ -34,7 +34,7 @@ export const StatusBar: React.FC<StatusBarProps> = ({
     label: "ALL SYSTEMS NOMINAL",
     verdict: "Normal",
     color: SCADA_COLORS.NORMAL,
-    icon: <CheckCircle2 className="w-4 h-4 text-emerald-400" />,
+    icon: <CheckCircle2 className="w-3.5 h-3.5 text-[#10B981]" />,
   };
 
   if (!latestState) {
@@ -42,7 +42,7 @@ export const StatusBar: React.FC<StatusBarProps> = ({
       label: "NO TELEMETRY STREAM",
       verdict: "No Data",
       color: SCADA_COLORS.NODATA,
-      icon: <Radio className="w-4 h-4 text-gray-400 animate-pulse" />,
+      icon: <Radio className="w-3.5 h-3.5 text-[#5A6275]" />,
     };
   } else if (latestState.ml_verdicts) {
     const verdicts = Object.values(latestState.ml_verdicts);
@@ -54,14 +54,14 @@ export const StatusBar: React.FC<StatusBarProps> = ({
         label: "CRITICAL: CYBER INTRUSION DETECTED",
         verdict: "Cyber Intrusion",
         color: SCADA_COLORS.CYBER,
-        icon: <ShieldAlert className="w-4 h-4 text-red-500 animate-pulse" />,
+        icon: <ShieldAlert className="w-3.5 h-3.5 text-[#EF4444] animate-pulse" />,
       };
     } else if (hasFault) {
       overallHealth = {
         label: "WARNING: PHYSICAL FAULT DETECTED",
         verdict: "Natural Fault",
         color: SCADA_COLORS.FAULT,
-        icon: <AlertTriangle className="w-4 h-4 text-amber-500 animate-pulse" />,
+        icon: <AlertTriangle className="w-3.5 h-3.5 text-[#F59E0B] animate-pulse" />,
       };
     }
   }
@@ -80,53 +80,53 @@ export const StatusBar: React.FC<StatusBarProps> = ({
     : "SE: Standby";
 
   return (
-    <header className="w-full bg-[#0d121f] border-b border-gray-800 px-4 py-2.5 flex flex-wrap items-center justify-between text-xs select-none shadow-md z-30">
+    <header className="w-full bg-[#0E1118] border-b border-white/[0.07] px-4 py-2 flex flex-wrap items-center justify-between text-xs select-none shadow-sm z-30">
       {/* Brand & Subtitle */}
       <div className="flex items-center space-x-3">
         <div className="flex items-center space-x-2">
-          <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10B981]" />
-          <span className="font-bold tracking-wider text-sm text-gray-100 uppercase">
+          <div className="w-2 h-2 rounded-full bg-[#10B981]" />
+          <span className="font-bold tracking-wider text-sm text-[#EDEDF0] uppercase">
             GridSentinel
           </span>
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-300 font-mono border border-gray-700">
+          <span className="text-[10px] px-1.5 py-0.5 rounded-[4px] bg-[#131722] text-[#9CA3AF] font-mono border border-white/[0.08]">
             SCADA L2/L3
           </span>
         </div>
-        <div className="hidden md:block h-4 w-px bg-gray-700" />
-        <span className="hidden md:inline text-gray-400 text-[11px]">
+        <div className="hidden md:block h-3.5 w-px bg-white/[0.08]" />
+        <span className="hidden md:inline text-[#5A6275] text-[11px] font-sans">
           Physics-Aware Cyber-Physical Anomaly Detection
         </span>
       </div>
 
       {/* Center SCADA Telemetry Badges */}
-      <div className="flex items-center space-x-2 md:space-x-4 my-1 md:my-0">
+      <div className="flex items-center space-x-2 md:space-x-3 my-1 md:my-0">
         {/* Sim Time */}
-        <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded bg-[#131b2e] border border-gray-800">
-          <Clock className="w-3.5 h-3.5 text-cyan-400" />
-          <span className="text-gray-400 font-mono">SIM CLOCK:</span>
-          <span className="text-cyan-300 font-mono font-semibold">{simTime}</span>
-          <span className="text-gray-500 font-mono text-[10px]">({diurnal})</span>
+        <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-[6px] bg-[#131722] border border-white/[0.06]">
+          <Clock className="w-3.5 h-3.5 text-[#9CA3AF]" />
+          <span className="text-[#5A6275] text-[10px] uppercase font-mono tracking-wider">SIM CLOCK</span>
+          <span className="text-[#EDEDF0] font-mono font-medium">{simTime}</span>
+          <span className="text-[#5A6275] font-mono text-[10px]">({diurnal})</span>
         </div>
 
         {/* Total Load */}
-        <div className="hidden lg:flex items-center space-x-1.5 px-2.5 py-1 rounded bg-[#131b2e] border border-gray-800">
-          <Zap className="w-3.5 h-3.5 text-yellow-400" />
-          <span className="text-gray-400">FEEDER LOAD:</span>
-          <span className="text-yellow-300 font-mono font-semibold">{totalLoad}</span>
+        <div className="hidden lg:flex items-center space-x-1.5 px-2.5 py-1 rounded-[6px] bg-[#131722] border border-white/[0.06]">
+          <Zap className="w-3.5 h-3.5 text-[#9CA3AF]" />
+          <span className="text-[#5A6275] text-[10px] uppercase font-mono tracking-wider">FEEDER LOAD</span>
+          <span className="text-[#EDEDF0] font-mono font-medium">{totalLoad}</span>
         </div>
 
         {/* State Estimation Status */}
-        <div className="hidden xl:flex items-center space-x-1.5 px-2.5 py-1 rounded bg-[#131b2e] border border-gray-800">
-          <Activity className="w-3.5 h-3.5 text-indigo-400" />
-          <span className="text-gray-300 font-mono">{seStatus}</span>
+        <div className="hidden xl:flex items-center space-x-1.5 px-2.5 py-1 rounded-[6px] bg-[#131722] border border-white/[0.06]">
+          <Activity className="w-3.5 h-3.5 text-[#9CA3AF]" />
+          <span className="text-[#EDEDF0] font-mono">{seStatus}</span>
         </div>
 
         {/* Overall Health Indicator */}
         <div
-          className="flex items-center space-x-1.5 px-3 py-1 rounded border font-semibold font-mono tracking-wide"
+          className="flex items-center space-x-1.5 px-2.5 py-1 rounded-[6px] border font-medium font-mono text-[11px] tracking-wide"
           style={{
-            borderColor: `${overallHealth.color}66`,
-            backgroundColor: `${overallHealth.color}15`,
+            borderColor: `${overallHealth.color}40`,
+            backgroundColor: `${overallHealth.color}12`,
             color: overallHealth.color,
           }}
         >
@@ -137,27 +137,27 @@ export const StatusBar: React.FC<StatusBarProps> = ({
 
       {/* Right: Connection Status */}
       <div className="flex items-center space-x-3">
-        <div className="flex items-center space-x-2 px-2.5 py-1 rounded bg-[#131b2e] border border-gray-800">
+        <div className="flex items-center space-x-2 px-2.5 py-1 rounded-[6px] bg-[#131722] border border-white/[0.06]">
           {connectionStatus === "connected" && (
             <>
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10B981] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#10B981]"></span>
               </span>
-              <Wifi className="w-3.5 h-3.5 text-emerald-400" />
-              <span className="text-emerald-400 font-mono font-medium">LIVE /ws/live</span>
+              <Wifi className="w-3.5 h-3.5 text-[#10B981]" />
+              <span className="text-[#10B981] font-mono text-[11px] font-medium">LIVE /ws/live</span>
             </>
           )}
           {connectionStatus === "connecting" && (
             <>
-              <Radio className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
-              <span className="text-amber-400 font-mono">RECONNECTING...</span>
+              <Radio className="w-3.5 h-3.5 text-[#F59E0B] animate-pulse" />
+              <span className="text-[#F59E0B] font-mono text-[11px]">RECONNECTING...</span>
             </>
           )}
           {connectionStatus === "disconnected" && (
             <>
-              <WifiOff className="w-3.5 h-3.5 text-rose-500" />
-              <span className="text-rose-400 font-mono">DISCONNECTED</span>
+              <WifiOff className="w-3.5 h-3.5 text-[#EF4444]" />
+              <span className="text-[#EF4444] font-mono text-[11px]">DISCONNECTED</span>
             </>
           )}
         </div>
@@ -165,3 +165,4 @@ export const StatusBar: React.FC<StatusBarProps> = ({
     </header>
   );
 };
+

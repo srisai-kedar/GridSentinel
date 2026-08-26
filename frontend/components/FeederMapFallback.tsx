@@ -38,6 +38,8 @@ export const FeederMapFallback: React.FC<FeederMapFallbackProps> = ({
   onRetryMapbox,
   isForced = false,
 }) => {
+  const isStreaming = latestState !== null;
+
   const busToRtuMap = useMemo<Record<number, number>>(
     () => ({
       1: 1,
@@ -56,7 +58,7 @@ export const FeederMapFallback: React.FC<FeederMapFallbackProps> = ({
   };
 
   const getBusColor = (busIndex: number): string => {
-    if (busIndex === 0) return "#38BDF8"; // 33kV HV Grid Bus (Cyan)
+    if (busIndex === 0) return "#9CA3AF"; // Subdued neutral for 33kV at rest
     const verdict = getBusVerdict(busIndex);
     if (!verdict) return SCADA_COLORS.NODATA;
     return getVerdictColor(verdict.verdict);
@@ -90,28 +92,28 @@ export const FeederMapFallback: React.FC<FeederMapFallbackProps> = ({
   return (
     <div
       data-testid="feeder-map-fallback"
-      className="relative w-full h-full min-h-[420px] bg-[#070B14] rounded-lg overflow-hidden border border-gray-800 flex flex-col select-none"
+      className="relative w-full h-full min-h-[420px] bg-[#08090D] rounded-[10px] overflow-hidden border border-white/[0.07] flex flex-col select-none"
     >
-      {/* Top Banner: Fallback Mode Badge */}
+      {/* Top Banner: Fallback Mode Badge & Legend */}
       <div className="absolute top-3 left-3 right-3 z-10 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
         {/* Caption & Offline Map Badge */}
-        <div className="pointer-events-auto flex items-center space-x-2 bg-[#0F172A]/95 backdrop-blur-md px-3 py-1.5 rounded-md border border-amber-800/80 shadow-lg">
-          <Layers className="w-4 h-4 text-amber-400" />
-          <span className="text-xs font-bold text-amber-200 uppercase tracking-wider">
+        <div className="pointer-events-auto flex items-center space-x-2 bg-[#0E1118]/90 backdrop-blur-md px-3 py-1.5 rounded-[6px] border border-white/[0.08] shadow-lg">
+          <Layers className="w-3.5 h-3.5 text-[#A78BFA]" />
+          <span className="text-xs font-semibold text-[#EDEDF0] uppercase tracking-wider">
             Vector SCADA Schematic
           </span>
-          <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-950 text-amber-300 font-mono border border-amber-700/60 flex items-center space-x-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
-            <span>{isForced ? "FORCED FALLBACK" : "OFFLINE MAP MODE"}</span>
+          <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#131722] text-[#9CA3AF] font-mono border border-white/[0.06] flex items-center space-x-1.5">
+            <span className={`w-1.5 h-1.5 rounded-full ${isStreaming ? "bg-[#10B981]" : "bg-[#5A6275]"}`}></span>
+            <span>OFFLINE MAP MODE</span>
           </span>
         </div>
 
         {/* Action button & Legend */}
-        <div className="pointer-events-auto flex items-center space-x-3 bg-[#0F172A]/95 backdrop-blur-md px-3 py-1.5 rounded-md border border-gray-700/80 text-[11px] shadow-lg">
+        <div className="pointer-events-auto flex items-center space-x-3 bg-[#0E1118]/90 backdrop-blur-md px-3 py-1.5 rounded-[6px] border border-white/[0.08] text-[11px] shadow-lg">
           {onRetryMapbox && (
             <button
               onClick={onRetryMapbox}
-              className="text-cyan-400 hover:text-cyan-200 flex items-center space-x-1 pr-2 border-r border-gray-700 font-medium"
+              className="text-[#9CA3AF] hover:text-[#EDEDF0] flex items-center space-x-1 pr-2 border-r border-white/[0.08] font-medium"
               title="Attempt reconnecting to Mapbox GL tile service"
             >
               <RefreshCw className="w-3 h-3" />
@@ -119,30 +121,30 @@ export const FeederMapFallback: React.FC<FeederMapFallbackProps> = ({
             </button>
           )}
 
-          <div className="flex items-center space-x-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#10B981]" />
-            <span className="text-gray-300">Normal</span>
+          <div className="flex items-center space-x-1.5">
+            <span className="w-2 h-2 rounded-full bg-[#10B981]" />
+            <span className="text-[#9CA3AF]">Normal</span>
           </div>
-          <div className="flex items-center space-x-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]" />
-            <span className="text-gray-300">Fault</span>
+          <div className="flex items-center space-x-1.5">
+            <span className="w-2 h-2 rounded-full bg-[#F59E0B]" />
+            <span className="text-[#9CA3AF]">Fault</span>
           </div>
-          <div className="flex items-center space-x-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#EF4444] animate-pulse" />
-            <span className="text-gray-300">Cyber</span>
+          <div className="flex items-center space-x-1.5">
+            <span className="w-2 h-2 rounded-full bg-[#EF4444]" />
+            <span className="text-[#9CA3AF]">Cyber</span>
           </div>
         </div>
       </div>
 
       {/* SVG Canvas Schematic */}
-      <div className="relative flex-1 w-full h-full flex items-center justify-center p-4 bg-[#080D1A] overflow-hidden">
-        {/* Background Grid Pattern */}
+      <div className="relative flex-1 w-full h-full flex items-center justify-center p-4 bg-[#08090D] overflow-hidden">
+        {/* Background Subtle Grid Pattern */}
         <div
-          className="absolute inset-0 opacity-20 pointer-events-none"
+          className="absolute inset-0 opacity-10 pointer-events-none"
           style={{
             backgroundImage:
-              "linear-gradient(to right, #1e293b 1px, transparent 1px), linear-gradient(to bottom, #1e293b 1px, transparent 1px)",
-            backgroundSize: "32px 32px",
+              "linear-gradient(to right, #1E2433 1px, transparent 1px), linear-gradient(to bottom, #1E2433 1px, transparent 1px)",
+            backgroundSize: "28px 28px",
           }}
         />
 
@@ -151,8 +153,8 @@ export const FeederMapFallback: React.FC<FeederMapFallbackProps> = ({
           viewBox="-240 -200 480 380"
         >
           <defs>
-            <filter id="fallback-glow-normal" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="3" result="blur" />
+            <filter id="fallback-glow-fault" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="4" result="blur" />
               <feMerge>
                 <feMergeNode in="blur" />
                 <feMergeNode in="SourceGraphic" />
@@ -181,14 +183,13 @@ export const FeederMapFallback: React.FC<FeederMapFallbackProps> = ({
             const isTripped =
               latestState?.active_scenarios?.tripped_lines?.includes(line.line_index);
             const toVerdict = getBusVerdict(line.to_bus);
-            const hasAnomaly =
-              toVerdict?.verdict === "Cyber Intrusion" ||
-              toVerdict?.verdict === "Natural Fault" ||
-              isTripped;
+            const isCyber = toVerdict?.verdict === "Cyber Intrusion";
+            const isFault = toVerdict?.verdict === "Natural Fault";
+            const hasAnomaly = isCyber || isFault || isTripped;
 
             return (
               <g key={`fallback-line-${line.line_index}`} data-testid={`fallback-line-${line.line_index}`}>
-                {/* Outer Glow */}
+                {/* Outer Base Line (Hairline quiet track) */}
                 <line
                   x1={x1}
                   y1={y1}
@@ -199,13 +200,14 @@ export const FeederMapFallback: React.FC<FeederMapFallbackProps> = ({
                       ? "#DC2626"
                       : hasAnomaly
                       ? getVerdictColor(toVerdict?.verdict || "Normal")
-                      : "#38BDF8"
+                      : "#1E2433"
                   }
-                  strokeWidth={hasAnomaly || isTripped ? 8 : 4}
-                  strokeOpacity={hasAnomaly || isTripped ? 0.4 : 0.25}
+                  strokeWidth={hasAnomaly || isTripped ? 6 : 2}
+                  strokeOpacity={hasAnomaly || isTripped ? 0.3 : 1}
                   strokeLinecap="round"
                 />
-                {/* Core Line */}
+
+                {/* Telemetry Stream Animated Pulse Line (Active ONLY when streaming) */}
                 <line
                   x1={x1}
                   y1={y1}
@@ -216,18 +218,27 @@ export const FeederMapFallback: React.FC<FeederMapFallbackProps> = ({
                       ? "#EF4444"
                       : hasAnomaly
                       ? getVerdictColor(toVerdict?.verdict || "Normal")
-                      : "#38BDF8"
+                      : isStreaming
+                      ? "#3A4660"
+                      : "#1E2433"
                   }
-                  strokeWidth={hasAnomaly || isTripped ? 3.5 : 2.5}
-                  strokeDasharray={isTripped || hasAnomaly ? "6,4" : undefined}
-                  className={hasAnomaly || isTripped ? "animate-pulse" : ""}
+                  strokeWidth={hasAnomaly || isTripped ? 2.5 : 1.5}
+                  strokeDasharray={isTripped ? "6,4" : isStreaming ? "4,6" : undefined}
+                  className={
+                    isTripped || hasAnomaly
+                      ? "animate-pulse"
+                      : isStreaming
+                      ? "animate-telemetry-flow"
+                      : ""
+                  }
                 />
-                {/* Label */}
+
+                {/* Line Distance Micro-Label */}
                 <text
-                  x={(x1 + x2) / 2 + 8}
+                  x={(x1 + x2) / 2 + 6}
                   y={(y1 + y2) / 2 - 6}
-                  fill="#64748B"
-                  fontSize="9"
+                  fill="#5A6275"
+                  fontSize="8.5"
                   fontFamily="monospace"
                 >
                   {line.name} ({line.length_km}km)
@@ -240,10 +251,17 @@ export const FeederMapFallback: React.FC<FeederMapFallbackProps> = ({
           {topology?.buses.map((bus) => {
             const cx = bus.x * 60;
             const cy = -bus.y * 45 - 60;
-            const color = getBusColor(bus.bus_index);
             const verdict = getBusVerdict(bus.bus_index);
             const isSelected = selectedBusId === bus.bus_index;
             const rtuId = busToRtuMap[bus.bus_index];
+            const isCyber = verdict?.verdict === "Cyber Intrusion";
+            const isFault = verdict?.verdict === "Natural Fault";
+            const hasAnomaly = isCyber || isFault;
+
+            // Rest state colors: quiet near-black fill with crisp hairline border
+            const nodeFill = hasAnomaly ? (isCyber ? "#EF4444" : "#F59E0B") : "#0E1118";
+            const nodeBorder = hasAnomaly ? "#FFFFFF" : isSelected ? "#FFFFFF" : "#2A3245";
+            const nodeTextFill = hasAnomaly ? "#FFFFFF" : "#EDEDF0";
 
             return (
               <g
@@ -252,15 +270,15 @@ export const FeederMapFallback: React.FC<FeederMapFallbackProps> = ({
                 onClick={() => onSelectBus && onSelectBus(bus.bus_index)}
                 className="cursor-pointer group"
               >
-                {/* Ping ring for active anomalies */}
-                {verdict && verdict.verdict !== "Normal" && (
+                {/* Ping ring for active anomalies only */}
+                {hasAnomaly && (
                   <circle
                     cx={cx}
                     cy={cy}
-                    r={24}
+                    r={22}
                     fill="none"
-                    stroke={color}
-                    strokeWidth={2}
+                    stroke={isCyber ? "#EF4444" : "#F59E0B"}
+                    strokeWidth={1.5}
                     opacity={0.6}
                     className="animate-ping"
                   />
@@ -271,11 +289,11 @@ export const FeederMapFallback: React.FC<FeederMapFallbackProps> = ({
                   <circle
                     cx={cx}
                     cy={cy}
-                    r={21}
+                    r={bus.bus_index === 0 ? 18 : 16}
                     fill="none"
                     stroke="#FFFFFF"
-                    strokeWidth={2.5}
-                    strokeDasharray="4,2"
+                    strokeWidth={1.5}
+                    strokeDasharray="3,2"
                   />
                 )}
 
@@ -283,25 +301,27 @@ export const FeederMapFallback: React.FC<FeederMapFallbackProps> = ({
                 <circle
                   cx={cx}
                   cy={cy}
-                  r={bus.bus_index === 0 ? 15 : 13}
-                  fill={color}
-                  stroke="#FFFFFF"
-                  strokeWidth={isSelected ? 3 : 2}
+                  r={bus.bus_index === 0 ? 14 : 12}
+                  fill={nodeFill}
+                  stroke={nodeBorder}
+                  strokeWidth={isSelected || hasAnomaly ? 2 : 1.25}
                   filter={
-                    verdict?.verdict === "Cyber Intrusion"
+                    isCyber
                       ? "url(#fallback-glow-cyber)"
-                      : "url(#fallback-glow-normal)"
+                      : isFault
+                      ? "url(#fallback-glow-fault)"
+                      : undefined
                   }
-                  className="transition-transform duration-200 group-hover:scale-110"
+                  className="transition-all duration-200 group-hover:stroke-[#EDEDF0]"
                 />
 
-                {/* Bus Symbol / Text */}
+                {/* Bus Symbol / Identifier */}
                 <text
                   x={cx}
-                  y={cy + 4}
+                  y={cy + 3.5}
                   textAnchor="middle"
-                  fill="#FFFFFF"
-                  fontSize={bus.bus_index === 0 ? "10" : "11"}
+                  fill={nodeTextFill}
+                  fontSize={bus.bus_index === 0 ? "9" : "10"}
                   fontWeight="bold"
                   fontFamily="monospace"
                   pointerEvents="none"
@@ -312,24 +332,24 @@ export const FeederMapFallback: React.FC<FeederMapFallbackProps> = ({
                 {/* Bus Name */}
                 <text
                   x={cx}
-                  y={cy + 25}
+                  y={cy + 24}
                   textAnchor="middle"
-                  fill={isSelected ? "#FFFFFF" : "#CBD5E1"}
-                  fontSize="10"
+                  fill={isSelected ? "#EDEDF0" : "#9CA3AF"}
+                  fontSize="9.5"
                   fontWeight={isSelected ? "bold" : "normal"}
                   fontFamily="sans-serif"
                 >
                   {bus.name}
                 </text>
 
-                {/* RTU tag */}
+                {/* RTU tag in Monospace */}
                 {rtuId && (
                   <text
                     x={cx}
-                    y={cy + 37}
+                    y={cy + 35}
                     textAnchor="middle"
-                    fill={color}
-                    fontSize="9"
+                    fill={hasAnomaly ? (isCyber ? "#EF4444" : "#F59E0B") : "#5A6275"}
+                    fontSize="8.5"
                     fontFamily="monospace"
                   >
                     [RTU-{rtuId}]
@@ -343,35 +363,35 @@ export const FeederMapFallback: React.FC<FeederMapFallbackProps> = ({
 
       {/* Selected Bus Floating Detail Card */}
       {selectedBusInfo && (
-        <div className="absolute bottom-10 right-3 z-20 w-80 bg-[#0F172A]/95 backdrop-blur-md rounded-lg border border-gray-700 shadow-2xl p-3.5 text-xs select-none">
-          <div className="flex items-center justify-between border-b border-gray-700 pb-2 mb-2.5">
+        <div className="absolute bottom-10 right-3 z-20 w-72 bg-[#0E1118]/95 backdrop-blur-md rounded-[10px] border border-white/[0.08] shadow-2xl p-3 text-xs select-none">
+          <div className="flex items-center justify-between border-b border-white/[0.07] pb-2 mb-2">
             <div className="flex items-center space-x-2">
               <div
-                className="w-3 h-3 rounded-full"
+                className="w-2.5 h-2.5 rounded-full"
                 style={{ backgroundColor: getBusColor(selectedBusInfo.bus.bus_index) }}
               />
-              <span className="font-bold text-gray-100 text-sm">
+              <span className="font-bold text-[#EDEDF0] text-xs">
                 {selectedBusInfo.bus.name}
               </span>
             </div>
             <button
               onClick={() => onSelectBus && onSelectBus(null)}
-              className="text-gray-400 hover:text-white text-xs px-1.5 py-0.5 rounded bg-gray-800"
+              className="text-[#5A6275] hover:text-[#EDEDF0] text-xs px-1.5 py-0.5 rounded-[4px] bg-[#131722] border border-white/[0.06]"
             >
               ✕
             </button>
           </div>
 
-          <div className="space-y-2 font-mono text-[11px]">
+          <div className="space-y-1.5 font-mono text-[11px]">
             {/* Specs */}
-            <div className="grid grid-cols-2 gap-2 bg-slate-900/80 p-2 rounded border border-gray-800">
+            <div className="grid grid-cols-2 gap-1.5 bg-[#131722] p-2 rounded-[6px] border border-white/[0.05]">
               <div>
-                <span className="text-gray-500 block text-[10px]">NOMINAL KV</span>
-                <span className="text-gray-200 font-semibold">{selectedBusInfo.bus.vn_kv} kV</span>
+                <span className="text-[#5A6275] block text-[9px] uppercase tracking-wider">NOMINAL KV</span>
+                <span className="text-[#EDEDF0] font-semibold">{selectedBusInfo.bus.vn_kv} kV</span>
               </div>
               <div>
-                <span className="text-gray-500 block text-[10px]">ASSET MAPPING</span>
-                <span className="text-cyan-400 font-semibold">
+                <span className="text-[#5A6275] block text-[9px] uppercase tracking-wider">ASSET</span>
+                <span className="text-[#A78BFA] font-semibold">
                   {selectedBusInfo.rtuId ? `RTU-${selectedBusInfo.rtuId}` : "Substation Tx"}
                 </span>
               </div>
@@ -379,16 +399,16 @@ export const FeederMapFallback: React.FC<FeederMapFallbackProps> = ({
 
             {/* Telemetry */}
             {selectedBusInfo.telemetry && (
-              <div className="bg-slate-900/80 p-2 rounded border border-gray-800 space-y-1">
+              <div className="bg-[#131722] p-2 rounded-[6px] border border-white/[0.05] space-y-1">
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Reported Voltage:</span>
-                  <span className="text-yellow-300 font-bold">
+                  <span className="text-[#5A6275]">Reported Voltage:</span>
+                  <span className="text-[#EDEDF0] font-bold">
                     {selectedBusInfo.telemetry.voltage_pu.toFixed(4)} pu
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Active Power:</span>
-                  <span className="text-emerald-400 font-semibold">
+                  <span className="text-[#5A6275]">Active Power:</span>
+                  <span className="text-[#10B981] font-semibold">
                     {selectedBusInfo.telemetry.p_mw.toFixed(3)} MW
                   </span>
                 </div>
@@ -398,42 +418,43 @@ export const FeederMapFallback: React.FC<FeederMapFallbackProps> = ({
             {/* Verdict */}
             {selectedBusInfo.verdict ? (
               <div
-                className="p-2 rounded border"
+                className="p-2 rounded-[6px] border"
                 style={{
-                  backgroundColor: `${getVerdictColor(selectedBusInfo.verdict.verdict)}15`,
-                  borderColor: `${getVerdictColor(selectedBusInfo.verdict.verdict)}66`,
+                  backgroundColor: `${getVerdictColor(selectedBusInfo.verdict.verdict)}12`,
+                  borderColor: `${getVerdictColor(selectedBusInfo.verdict.verdict)}35`,
                 }}
               >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-gray-400">Verdict:</span>
+                <div className="flex items-center justify-between mb-0.5">
+                  <span className="text-[#5A6275] text-[10px]">Verdict:</span>
                   <span
-                    className="font-bold uppercase tracking-wider"
+                    className="font-bold uppercase tracking-wider text-[10px]"
                     style={{ color: getVerdictColor(selectedBusInfo.verdict.verdict) }}
                   >
                     {selectedBusInfo.verdict.verdict}
                   </span>
                 </div>
-                <div className="flex items-center justify-between text-[10px] text-gray-400">
+                <div className="flex items-center justify-between text-[10px] text-[#5A6275]">
                   <span>Subtype: {selectedBusInfo.verdict.subtype || "none"}</span>
-                  <span className="font-semibold text-gray-300">
-                    Conf: {(selectedBusInfo.verdict.confidence * 100).toFixed(1)}%
+                  <span className="font-semibold text-[#9CA3AF]">
+                    CONF: {(selectedBusInfo.verdict.confidence * 100).toFixed(0)}%
                   </span>
                 </div>
               </div>
             ) : (
-              <div className="text-gray-500 text-center py-1">No RTU verdict</div>
+              <div className="text-[#5A6275] text-center py-1 text-[10px]">No RTU verdict</div>
             )}
           </div>
         </div>
       )}
 
       {/* Footer Caption */}
-      <div className="w-full bg-[#0B0F19] px-3 py-1.5 border-t border-gray-800 text-[10px] text-gray-400 flex items-center justify-between">
+      <div className="w-full bg-[#0E1118] px-3 py-1.5 border-t border-white/[0.07] text-[10px] text-[#5A6275] flex items-center justify-between">
         <span>
-          Illustrative SCADA Feeder Topology (Anchor: 11kV Radial Distribution Substation). Vector SCADA Engine.
+          11kV Radial Distribution Substation Topology · Vector SCADA Engine
         </span>
-        <span className="font-mono text-gray-500">Autonomous Offline Resilient</span>
+        <span className="font-mono text-[#5A6275]">Autonomous Offline Resilient</span>
       </div>
     </div>
   );
 };
+
