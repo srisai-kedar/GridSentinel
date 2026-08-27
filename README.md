@@ -3,6 +3,7 @@
 GridSentinel is an end-to-end cyber-physical intrusion detection and situational awareness platform for Indian 11kV/33kV power distribution networks.
 
 It fuses:
+
 1. **PCD (Physics-Consistency Detection)**: Newton-Raphson power flow & Weighted Least Squares (WLS) state estimation with largest normalized residual bad-data detection in pandapower.
 2. **NBD (Network Behaviour Detection)**: Modbus TCP deep packet transaction logging, unexpected write detection, and timing anomaly analysis.
 3. **ML Cyber-Physical Fusion Classifier**: Dual-stage Random Forest classifier delivering real-time verdicts (`Normal`, `Natural Fault`, `Cyber Intrusion`) and forensic subtyping (`data_injection`, `command_injection`, `replay`, `line_trip`, `short_circuit`).
