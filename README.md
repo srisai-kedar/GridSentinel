@@ -107,3 +107,20 @@ npm test
 4. Review real-time plain-language triage alerts in the **Alert Feed** and inspect accumulated events in the **CEA-2026 Audit Trail Log**.
 5. Export audit reports in **CSV** or **JSON** formats with single-click download.
 6. Click **"Reset Grid to Clean State"** to restore nominal operation.
+
+---
+
+## Deployment
+
+GridSentinel consists of two primary services:
+- **Frontend**: The Next.js web application located in `/frontend`
+- **Backend**: The FastAPI Python application located in `/backend`
+
+### Environment Configuration
+
+The frontend connects to backend services via environment variables configured at build/runtime:
+- `NEXT_PUBLIC_API_BASE_URL`: Configures the backend REST API base URL.
+- `NEXT_PUBLIC_WS_URL`: Configures the backend live telemetry WebSocket URL. Production environments served over TLS/HTTPS **must use `wss://`**.
+- `NEXT_PUBLIC_MAPBOX_TOKEN`: (Optional) Mapbox public access token for GIS tile layers. If left unset, the application automatically uses the built-in Vector SCADA Schematic.
+
+> **Security Best Practice**: Never commit production credentials, actual secrets, or live API tokens to version control. Only commit `.env.example` template files.
