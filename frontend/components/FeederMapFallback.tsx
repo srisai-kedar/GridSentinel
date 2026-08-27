@@ -187,6 +187,42 @@ export const FeederMapFallback: React.FC<FeederMapFallbackProps> = ({
             const isFault = toVerdict?.verdict === "Natural Fault";
             const hasAnomaly = isCyber || isFault || isTripped;
 
+            // Geometry calculations for collision-free line distance labels
+            const dx = x2 - x1;
+            const dy = y2 - y1;
+            const len = Math.hypot(dx, dy) || 1;
+            const mx = (x1 + x2) / 2;
+            const my = (y1 + y2) / 2;
+
+            let labelX = mx;
+            let labelY = my;
+            let textAnchor: "start" | "middle" | "end" = "middle";
+            let dominantBaseline: "auto" | "central" | "middle" = "auto";
+
+            if (Math.abs(dx) < 1) {
+              // Strictly vertical line (e.g., L1, L3, L4): offset cleanly to the right
+              labelX = mx + 10;
+              labelY = my;
+              textAnchor = "start";
+              dominantBaseline = "central";
+            } else if (Math.abs(dy) < 1) {
+              // Strictly horizontal line: offset above
+              labelX = mx;
+              labelY = my - 10;
+              textAnchor = "middle";
+            } else {
+              // Diagonal line (e.g., L0, L2): offset along perpendicular vector pointing upward
+              let nx = -dy / len;
+              let ny = dx / len;
+              if (ny > 0) {
+                nx = -nx;
+                ny = -ny;
+              }
+              labelX = mx + nx * 12;
+              labelY = my + ny * 12;
+              textAnchor = "middle";
+            }
+
             return (
               <g key={`fallback-line-${line.line_index}`} data-testid={`fallback-line-${line.line_index}`}>
                 {/* Outer Base Line (Hairline quiet track) */}
@@ -233,13 +269,19 @@ export const FeederMapFallback: React.FC<FeederMapFallbackProps> = ({
                   }
                 />
 
-                {/* Line Distance Micro-Label */}
+                {/* Line Distance Micro-Label with crisp halo for high legibility */}
                 <text
-                  x={(x1 + x2) / 2 + 6}
-                  y={(y1 + y2) / 2 - 6}
+                  x={labelX}
+                  y={labelY}
+                  textAnchor={textAnchor}
+                  dominantBaseline={dominantBaseline}
                   fill="#5A6275"
                   fontSize="8.5"
                   fontFamily="monospace"
+                  stroke="#08090D"
+                  strokeWidth="3"
+                  strokeLinejoin="round"
+                  paintOrder="stroke fill"
                 >
                   {line.name} ({line.length_km}km)
                 </text>
@@ -262,6 +304,29 @@ export const FeederMapFallback: React.FC<FeederMapFallbackProps> = ({
             const nodeFill = hasAnomaly ? (isCyber ? "#EF4444" : "#F59E0B") : "#0E1118";
             const nodeBorder = hasAnomaly ? "#FFFFFF" : isSelected ? "#FFFFFF" : "#2A3245";
             const nodeTextFill = hasAnomaly ? "#FFFFFF" : "#EDEDF0";
+
+            // Optimal text layout per bus position to avoid collision with outgoing feeder branches
+            let nameX = cx;
+            let nameY = cy + 22;
+            let rtuX = cx;
+            let rtuY = cy + 33;
+            let textAnchor: "start" | "middle" | "end" = "middle";
+
+            if (bus.bus_index === 1) {
+              // Substation (Bus 1): Place labels ABOVE node so downward branches (L0, L1, L2) stay clear
+              nameX = cx;
+              nameY = cy - 15;
+              rtuX = cx;
+              rtuY = cy - 27;
+              textAnchor = "middle";
+            } else if (bus.bus_index === 3) {
+              // Bus 3: Has top incoming line (L1) and bottom outgoing line (L4) -> Place labels to the LEFT
+              nameX = cx - 18;
+              nameY = cy - 2;
+              rtuX = cx - 18;
+              rtuY = cy + 10;
+              textAnchor = "end";
+            }
 
             return (
               <g
@@ -329,28 +394,37 @@ export const FeederMapFallback: React.FC<FeederMapFallbackProps> = ({
                   {bus.bus_index === 0 ? "HV" : `B${bus.bus_index}`}
                 </text>
 
-                {/* Bus Name */}
+                {/* Bus Name with protective dark halo */}
                 <text
-                  x={cx}
-                  y={cy + 24}
-                  textAnchor="middle"
+                  x={nameX}
+                  y={nameY}
+                  textAnchor={textAnchor}
                   fill={isSelected ? "#EDEDF0" : "#9CA3AF"}
                   fontSize="9.5"
-                  fontWeight={isSelected ? "bold" : "normal"}
+                  fontWeight={isSelected ? "bold" : "500"}
                   fontFamily="sans-serif"
+                  stroke="#08090D"
+                  strokeWidth="3"
+                  strokeLinejoin="round"
+                  paintOrder="stroke fill"
                 >
                   {bus.name}
                 </text>
 
-                {/* RTU tag in Monospace */}
+                {/* RTU tag in Monospace with protective dark halo */}
                 {rtuId && (
                   <text
-                    x={cx}
-                    y={cy + 35}
-                    textAnchor="middle"
+                    x={rtuX}
+                    y={rtuY}
+                    textAnchor={textAnchor}
                     fill={hasAnomaly ? (isCyber ? "#EF4444" : "#F59E0B") : "#5A6275"}
                     fontSize="8.5"
                     fontFamily="monospace"
+                    fontWeight="600"
+                    stroke="#08090D"
+                    strokeWidth="2.5"
+                    strokeLinejoin="round"
+                    paintOrder="stroke fill"
                   >
                     [RTU-{rtuId}]
                   </text>
