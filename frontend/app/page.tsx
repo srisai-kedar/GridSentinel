@@ -1,16 +1,31 @@
 "use client";
 
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  Activity,
+  ChevronDown,
+  ChevronUp,
+  CircleDot,
+  FileSpreadsheet,
+  Film,
+  FastForward,
+  Pause,
+  Play,
+  Radio,
+  RotateCcw,
+  Upload,
+} from "lucide-react";
+import { AlertFeed, AlertFeedItem } from "@/components/AlertFeed";
+import { AuditLog } from "@/components/AuditLog";
+import { ComplianceMap } from "@/components/ComplianceMap";
+import { DemoControls } from "@/components/DemoControls";
+import { DemoDirector } from "@/components/DemoDirector";
+import { EvidencePanel } from "@/components/EvidencePanel";
+import { FeederMap } from "@/components/FeederMap";
+import { StatusBar } from "@/components/StatusBar";
 import { useLiveSocket } from "@/lib/useLiveSocket";
 import { useSessionRecorder } from "@/lib/sessionRecorder";
 import { useReplayEngine } from "@/lib/replayEngine";
-import { StatusBar } from "@/components/StatusBar";
-import { FeederMap } from "@/components/FeederMap";
-import { AlertFeed, AlertFeedItem } from "@/components/AlertFeed";
-import { AuditLog } from "@/components/AuditLog";
-import { DemoControls } from "@/components/DemoControls";
-import { DemoDirector } from "@/components/DemoDirector";
-import { ComplianceMap } from "@/components/ComplianceMap";
 import { AuditLogEntry, LiveSocketPayload } from "@/lib/types";
 import {
   getNetworkEvidenceSummary,
@@ -19,445 +34,256 @@ import {
   getRtuAssetLabel,
 } from "@/lib/alertText";
 import referenceSessionJson from "@/data/reference-session.json";
-import {
-  Activity,
-  Award,
-  BookOpen,
-  ChevronDown,
-  ChevronUp,
-  CircleDot,
-  Download,
-  FastForward,
-  FileSpreadsheet,
-  Film,
-  Layers,
-  MapPin,
-  Maximize2,
-  Pause,
-  Play,
-  Radio,
-  RotateCcw,
-  Scale,
-  Shield,
-  Sliders,
-  Sparkles,
-  Upload,
-  Video,
-} from "lucide-react";
+
+type WorkspaceTab = "FEED" | "AUDIT" | "CONTROLS" | "DIRECTOR" | "COMPLIANCE";
+
+function formatNumber(value: number | undefined | null, digits = 2, suffix = "") {
+  return typeof value === "number" ? `${value.toFixed(digits)}${suffix}` : "—";
+}
 
 export default function SCADACommandCenter() {
   const [appMode, setAppMode] = useState<"LIVE" | "REPLAY">("LIVE");
-  const [forceMapFallback, setForceMapFallback] = useState<boolean>(false);
+  const [forceMapFallback, setForceMapFallback] = useState(false);
   const [selectedBusId, setSelectedBusId] = useState<number | null>(null);
   const [auditEntries, setAuditEntries] = useState<AuditLogEntry[]>([]);
-  const [activeTab, setActiveTab] = useState<
-    "FEED" | "AUDIT" | "CONTROLS" | "DIRECTOR" | "COMPLIANCE"
-  >("FEED");
-  const [showBottomDrawer, setShowBottomDrawer] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState<WorkspaceTab>("FEED");
+  const [showBottomDrawer, setShowBottomDrawer] = useState(false);
 
-  // Live WebSocket source
   const liveSocket = useLiveSocket();
-
-  // Session Recorder
   const sessionRecorder = useSessionRecorder();
-
-  // Replay Engine
   const replayEngine = useReplayEngine(referenceSessionJson as any);
 
-  // Record incoming live messages if recording is armed
   useEffect(() => {
     if (appMode === "LIVE" && liveSocket.latestState && sessionRecorder.isRecording) {
       sessionRecorder.recordPayload(liveSocket.latestState);
     }
   }, [appMode, liveSocket.latestState, sessionRecorder]);
 
-  // Unified telemetry payload consumed by all components
   const activePayload: LiveSocketPayload | null =
     appMode === "LIVE" ? liveSocket.latestState : replayEngine.currentPayload;
-
-  // Unified connection status consumed by StatusBar
   const activeConnectionStatus =
     appMode === "LIVE" ? liveSocket.connectionStatus : "connected";
 
-  // Accumulate audit log entries on verdict state transition
   const handleNewVerdictChange = useCallback((item: AlertFeedItem) => {
-    const assetName = getRtuAssetLabel(item.rtuId);
-    const networkSummary = getNetworkEvidenceSummary(item.verdict, item.subtype);
-    const physicsSummary = getPhysicsEvidenceSummary(item.verdict, item.subtype);
-    const recommendedAction = getRecommendedAction(item.verdict, item.subtype);
-
-    const newAuditEntry: AuditLogEntry = {
-      id: `audit-${Date.now()}-${item.rtuId}-${Math.random().toString(36).substr(2, 4)}`,
-      timestamp: item.wallTimestamp,
-      simTime: item.simTime,
-      rtuId: item.rtuId,
-      assetName,
-      classification: item.verdict,
-      subtype: item.subtype || "normal",
-      confidence: item.confidence,
-      networkSummary,
-      physicsSummary,
-      recommendedAction,
-      formattedAlert: item.message,
-    };
-
-    setAuditEntries((prev) => [newAuditEntry, ...prev]);
+    setAuditEntries((prev) => [
+      {
+        id: `audit-${Date.now()}-${item.rtuId}-${Math.random().toString(36).slice(2, 6)}`,
+        timestamp: item.wallTimestamp,
+        simTime: item.simTime,
+        rtuId: item.rtuId,
+        assetName: getRtuAssetLabel(item.rtuId),
+        classification: item.verdict,
+        subtype: item.subtype || "normal",
+        confidence: item.confidence,
+        networkSummary: getNetworkEvidenceSummary(item.verdict, item.subtype),
+        physicsSummary: getPhysicsEvidenceSummary(item.verdict, item.subtype),
+        recommendedAction: getRecommendedAction(item.verdict, item.subtype),
+        formattedAlert: item.message,
+      },
+      ...prev,
+    ]);
   }, []);
 
-  const handleClearAuditLogs = useCallback(() => {
-    setAuditEntries([]);
-  }, []);
-
-  const handleAlertClick = useCallback((rtuId: number) => {
-    const rtuToBus: Record<number, number> = {
-      1: 1,
-      2: 2,
-      3: 3,
-      4: 4,
-      5: 5,
-    };
-    setSelectedBusId(rtuToBus[rtuId] || rtuId);
-  }, []);
-
-  // File upload for custom session replay
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (ev) => {
-      const text = ev.target?.result as string;
-      if (text) {
-        const success = replayEngine.loadSessionFromJson(text);
-        if (success) {
-          setAppMode("REPLAY");
-        }
-      }
+    reader.onload = (loadEvent) => {
+      const text = loadEvent.target?.result as string;
+      if (text && replayEngine.loadSessionFromJson(text)) setAppMode("REPLAY");
     };
     reader.readAsText(file);
   };
 
-  return (
-    <div className="flex flex-col h-screen w-screen bg-[#08090D] text-[#EDEDF0] overflow-hidden select-none">
-      {/* Top Status Bar */}
-      <StatusBar
-        connectionStatus={activeConnectionStatus}
-        latestState={activePayload}
-      />
+  const counts = useMemo(() => {
+    const verdicts = Object.values(activePayload?.ml_verdicts || {});
+    return {
+      total: verdicts.length,
+      normal: verdicts.filter((v) => v.verdict === "Normal").length,
+      fault: verdicts.filter((v) => v.verdict === "Natural Fault").length,
+      cyber: verdicts.filter((v) => v.verdict === "Cyber Intrusion").length,
+    };
+  }, [activePayload]);
 
-      {/* Mode Control & Persistent Banner */}
-      <div className="w-full bg-[#0E1118] border-b border-white/[0.07] px-4 py-1.5 flex flex-wrap items-center justify-between gap-2 text-xs">
-        {/* Left: Mode Switcher & Replay Banner */}
-        <div className="flex items-center space-x-3">
-          <div className="flex items-center bg-[#131722] rounded-[6px] p-0.5 border border-white/[0.06]">
+  const mapFallbackLabel = forceMapFallback ? "Vector map forced" : "Vector map: auto";
+
+  return (
+    <div className="scada-shell">
+      <StatusBar connectionStatus={activeConnectionStatus} latestState={activePayload} />
+
+      <div className="scada-toolbar">
+        <div className="scada-toolbar-group">
+          <span className="scada-toolbar-label">Operating mode</span>
+          <div className="scada-segmented" role="group" aria-label="Operating mode">
             <button
+              className={appMode === "LIVE" ? "is-active is-live" : ""}
               onClick={() => {
                 setAppMode("LIVE");
                 replayEngine.pause();
               }}
-              className={`px-3 py-1 rounded-[4px] font-medium text-[11px] transition flex items-center space-x-1.5 ${
-                appMode === "LIVE"
-                  ? "bg-[#181E2C] text-[#10B981] border border-[#10B981]/30 font-semibold"
-                  : "text-[#5A6275] hover:text-[#9CA3AF]"
-              }`}
             >
-              <Radio className="w-3.5 h-3.5" />
-              <span>LIVE SCADA</span>
+              <Radio size={13} /> Live SCADA
             </button>
             <button
+              className={appMode === "REPLAY" ? "is-active is-replay" : ""}
               onClick={() => {
                 setAppMode("REPLAY");
-                if (!replayEngine.isPlaying) {
-                  replayEngine.play();
-                }
+                if (!replayEngine.isPlaying) replayEngine.play();
               }}
-              className={`px-3 py-1 rounded-[4px] font-medium text-[11px] transition flex items-center space-x-1.5 ${
-                appMode === "REPLAY"
-                  ? "bg-[#181E2C] text-[#A78BFA] border border-[#8B5CF6]/40 font-semibold"
-                  : "text-[#5A6275] hover:text-[#9CA3AF]"
-              }`}
             >
-              <Film className="w-3.5 h-3.5" />
-              <span>REPLAY MODE</span>
+              <Film size={13} /> Replay
             </button>
           </div>
-
-          {/* UNMISSABLE Persistent Banner in Replay Mode */}
           {appMode === "REPLAY" && (
-            <div
-              data-testid="replay-mode-banner"
-              className="flex items-center space-x-2 px-3 py-1 rounded-[6px] bg-[#131722] border border-[#8B5CF6]/40 text-[#A78BFA] font-mono font-semibold text-[11px] animate-pulse"
-            >
-              <span className="w-2 h-2 rounded-full bg-[#A78BFA]"></span>
-              <span>REPLAY MODE — recorded session, not live</span>
-            </div>
+            <span data-testid="replay-mode-banner" className="scada-mode-note replay-note">
+              Recorded session · not live
+            </span>
           )}
         </div>
 
-        {/* Center / Right: Live Recording / Replay Controls */}
-        <div className="flex items-center space-x-2">
+        <div className="scada-toolbar-group scada-toolbar-right">
           {appMode === "LIVE" ? (
-            /* Live Recording Toolbar */
-            <div className="flex items-center space-x-2">
-              {!sessionRecorder.isRecording ? (
-                <button
-                  onClick={sessionRecorder.startRecording}
-                  className="flex items-center space-x-1.5 bg-[#131722] hover:bg-[#181E2C] text-[#EDEDF0] border border-white/[0.08] hover:border-[#EF4444]/40 px-2.5 py-1 rounded-[6px] transition text-[11px] font-medium"
-                  title="Arm session recorder to capture live telemetry"
-                >
-                  <CircleDot className="w-3.5 h-3.5 text-[#EF4444] animate-pulse" />
-                  <span>Record Session</span>
-                </button>
-              ) : (
-                <div className="flex items-center space-x-2 bg-[#131722] border border-[#EF4444]/50 px-2.5 py-1 rounded-[6px] text-[#EDEDF0] text-[11px] font-mono">
-                  <span className="animate-ping w-2 h-2 rounded-full bg-[#EF4444]"></span>
-                  <span>Recording ({sessionRecorder.eventCount} msgs)</span>
-                  <button
-                    onClick={() => {
-                      const sess = sessionRecorder.stopRecording();
-                      sessionRecorder.downloadRecording(sess);
-                    }}
-                    className="ml-1 bg-[#EF4444] hover:bg-[#DC2626] text-white px-2 py-0.5 rounded-[4px] text-[10px] font-semibold"
-                  >
-                    Stop & Download
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            /* Replay Controls Toolbar */
-            <div className="flex items-center space-x-2 bg-[#131722] px-2.5 py-1 rounded-[6px] border border-white/[0.06] text-[11px]">
-              {/* Play / Pause */}
-              {!replayEngine.isPlaying ? (
-                <button
-                  onClick={replayEngine.play}
-                  className="text-[#A78BFA] hover:text-white p-1 rounded"
-                  title="Play recorded session"
-                >
-                  <Play className="w-3.5 h-3.5 fill-[#A78BFA]" />
-                </button>
-              ) : (
-                <button
-                  onClick={replayEngine.pause}
-                  className="text-[#F59E0B] hover:text-white p-1 rounded"
-                  title="Pause playback"
-                >
-                  <Pause className="w-3.5 h-3.5" />
-                </button>
-              )}
-
-              <button
-                onClick={replayEngine.stop}
-                className="text-[#5A6275] hover:text-[#EDEDF0] p-1 rounded"
-                title="Restart playback"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
+            !sessionRecorder.isRecording ? (
+              <button className="scada-tool-button" onClick={sessionRecorder.startRecording}>
+                <CircleDot size={13} className="text-cyber" /> Arm recorder
               </button>
-
-              {/* Scrubber Slider */}
-              <div className="flex items-center space-x-1.5 font-mono">
-                <input
-                  type="range"
-                  min={0}
-                  max={100}
-                  value={replayEngine.progressPercent}
-                  onChange={(e) =>
-                    replayEngine.seekToPercent(parseFloat(e.target.value))
-                  }
-                  className="w-24 md:w-36 h-1.5 bg-[#181E2C] rounded-lg appearance-none cursor-pointer accent-[#8B5CF6]"
-                />
-                <span className="text-[#A78BFA] text-[10px]">
-                  {replayEngine.currentIndex + 1}/{replayEngine.totalEvents}
-                </span>
+            ) : (
+              <div className="scada-recording-state">
+                <span className="recording-dot" /> Recording · {sessionRecorder.eventCount} frames
+                <button
+                  onClick={() => {
+                    const session = sessionRecorder.stopRecording();
+                    sessionRecorder.downloadRecording(session);
+                  }}
+                >
+                  Stop & download
+                </button>
               </div>
-
-              {/* Speed Multiplier */}
-              <div className="flex items-center space-x-1 border-l border-white/[0.08] pl-2">
-                <FastForward className="w-3.5 h-3.5 text-[#5A6275]" />
-                {[1, 2, 5].map((spd) => (
-                  <button
-                    key={spd}
-                    onClick={() => replayEngine.setPlaybackSpeed(spd)}
-                    className={`px-1.5 py-0.5 rounded-[4px] text-[10px] font-mono ${
-                      replayEngine.playbackSpeed === spd
-                        ? "bg-[#8B5CF6] text-white font-bold"
-                        : "text-[#5A6275] hover:text-[#9CA3AF]"
-                    }`}
-                  >
-                    {spd}x
-                  </button>
-                ))}
-              </div>
-
-              {/* File Upload Input */}
-              <label className="cursor-pointer text-[#5A6275] hover:text-[#A78BFA] border-l border-white/[0.08] pl-2">
-                <Upload className="w-3.5 h-3.5" />
-                <input
-                  type="file"
-                  accept=".json"
-                  onChange={handleFileUpload}
-                  className="hidden"
-                />
+            )
+          ) : (
+            <div className="scada-replay-controls" aria-label="Replay controls">
+              <button onClick={replayEngine.isPlaying ? replayEngine.pause : replayEngine.play} title={replayEngine.isPlaying ? "Pause replay" : "Play replay"}>
+                {replayEngine.isPlaying ? <Pause size={13} /> : <Play size={13} />}
+              </button>
+              <button onClick={replayEngine.stop} title="Restart replay"><RotateCcw size={13} /></button>
+              <input
+                aria-label="Replay position"
+                type="range"
+                min={0}
+                max={100}
+                value={replayEngine.progressPercent}
+                onChange={(event) => replayEngine.seekToPercent(Number(event.target.value))}
+              />
+              <span>{replayEngine.currentIndex + 1}/{replayEngine.totalEvents}</span>
+              <FastForward size={13} />
+              {[1, 2, 5].map((speed) => (
+                <button
+                  key={speed}
+                  className={replayEngine.playbackSpeed === speed ? "speed-active" : ""}
+                  onClick={() => replayEngine.setPlaybackSpeed(speed)}
+                >{speed}×</button>
+              ))}
+              <label className="scada-upload" title="Load a recorded session">
+                <Upload size={13} />
+                <input type="file" accept=".json" onChange={handleFileUpload} />
               </label>
             </div>
           )}
-
-          {/* Quick Trigger for Fallback View */}
           <button
-            onClick={() => setForceMapFallback(!forceMapFallback)}
-            className={`px-2 py-1 rounded-[6px] text-[10px] font-mono border transition ${
-              forceMapFallback
-                ? "bg-[#131722] text-[#F59E0B] border-[#F59E0B]/40"
-                : "bg-[#131722] text-[#5A6275] border-white/[0.06] hover:text-[#9CA3AF]"
-            }`}
-            title="Toggle SVG/Vector Fallback map for offline simulation"
+            className={`scada-tool-button ${forceMapFallback ? "is-warning" : ""}`}
+            onClick={() => setForceMapFallback((current) => !current)}
+            title="Toggle the offline vector map"
           >
-            {forceMapFallback ? "Fallback: Forced ON" : "Fallback: Auto"}
+            {mapFallbackLabel}
           </button>
         </div>
       </div>
 
-      {/* Main Command Center Grid */}
-      <main className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-3 p-3 overflow-hidden">
-        {/* Left / Center Section: Map & Bottom Drawer (8 cols) */}
-        <div className="lg:col-span-8 flex flex-col h-full space-y-3 overflow-hidden">
-          {/* Feeder Map Component */}
-          <div className="flex-1 relative overflow-hidden rounded-[10px] border border-white/[0.07] min-h-[360px] bg-[#0E1118]">
-            <FeederMap
-              latestState={activePayload}
-              selectedBusId={selectedBusId}
-              onSelectBus={(busIdx) => setSelectedBusId(busIdx)}
-              forceFallback={forceMapFallback}
-              onToggleForceFallback={() => setForceMapFallback(!forceMapFallback)}
-            />
-          </div>
-
-          {/* Bottom Audit Log Drawer / Toggle Bar */}
-          <div className="bg-[#0E1118] border border-white/[0.07] rounded-[10px] overflow-hidden flex flex-col transition-all duration-300">
-            <div
-              onClick={() => setShowBottomDrawer(!showBottomDrawer)}
-              className="p-2.5 bg-[#0E1118] flex items-center justify-between cursor-pointer hover:bg-[#131722] transition text-xs select-none"
-            >
-              <div className="flex items-center space-x-2">
-                <FileSpreadsheet className="w-4 h-4 text-[#10B981]" />
-                <span className="font-bold text-[#EDEDF0] uppercase tracking-wider text-[11px]">
-                  CEA-2026 Incident Audit Trail Log
-                </span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded-[4px] bg-[#131722] text-[#10B981] font-mono border border-white/[0.06]">
-                  {auditEntries.length} Records
-                </span>
-              </div>
-
-              <div className="flex items-center space-x-2 text-[#5A6275] text-[11px]">
-                <span>{showBottomDrawer ? "Collapse Panel" : "Expand Table"}</span>
-                {showBottomDrawer ? (
-                  <ChevronDown className="w-4 h-4" />
-                ) : (
-                  <ChevronUp className="w-4 h-4" />
-                )}
-              </div>
+      <main className="scada-main">
+        <section className="scada-workspace">
+          <div className="scada-overview">
+            <div>
+              <span className="scada-kicker">Operations overview</span>
+              <h1>11 kV radial feeder</h1>
+              <p>GridSentinel-Feeder · live topology and physics-aware anomaly triage</p>
             </div>
+            <div className="scada-overview-stats">
+              <div><span>RTUs online</span><strong>{counts.total ? `${counts.total}/5` : "—"}</strong></div>
+              <div><span>Nominal</span><strong className="text-normal">{counts.normal || "—"}</strong></div>
+              <div><span>Faults</span><strong className="text-fault">{counts.fault || "—"}</strong></div>
+              <div><span>Cyber</span><strong className="text-cyber">{counts.cyber || "—"}</strong></div>
+            </div>
+          </div>
 
-            {showBottomDrawer && (
-              <div className="h-64 p-2 overflow-hidden border-t border-white/[0.07]">
-                <AuditLog
-                  entries={auditEntries}
-                  onClearLogs={handleClearAuditLogs}
-                />
+          <div className="scada-metrics" aria-label="Feeder measurements">
+            <div><span>Feeder load</span><strong>{formatNumber(activePayload?.true_physical_state.total_load_mw, 2, " MW")}</strong><small>system total</small></div>
+            <div><span>Losses</span><strong>{formatNumber(activePayload?.true_physical_state.total_loss_mw, 3, " MW")}</strong><small>calculated network loss</small></div>
+            <div><span>Power flow</span><strong className={activePayload?.power_flow_converged ? "text-normal" : "text-fault"}>{activePayload ? (activePayload.power_flow_converged ? "Converged" : "Not converged") : "Standby"}</strong><small>pandapower solution</small></div>
+            <div><span>State estimation</span><strong className={activePayload?.state_estimation.success ? "text-normal" : "text-fault"}>{activePayload ? (activePayload.state_estimation.success ? "WLS converged" : "Standby") : "Standby"}</strong><small>{activePayload?.state_estimation.bad_data_detected ? "bad data flagged" : "χ² residual check"}</small></div>
+          </div>
+
+          <section className="scada-surface scada-topology-panel">
+            <div className="scada-section-header">
+              <div>
+                <span className="scada-kicker">Primary workspace</span>
+                <h2>Feeder topology</h2>
+              </div>
+              <div className="scada-section-meta"><Activity size={13} /> click a bus to inspect telemetry</div>
+            </div>
+            <div className="scada-map-frame">
+              <FeederMap
+                latestState={activePayload}
+                selectedBusId={selectedBusId}
+                onSelectBus={setSelectedBusId}
+                forceFallback={forceMapFallback}
+                onToggleForceFallback={() => setForceMapFallback((current) => !current)}
+              />
+            </div>
+          </section>
+
+          <section className={`scada-surface scada-audit-drawer ${showBottomDrawer ? "is-open" : ""}`}>
+            <button className="scada-drawer-toggle" onClick={() => setShowBottomDrawer((current) => !current)} aria-expanded={showBottomDrawer}>
+              <span><FileSpreadsheet size={14} /><span>Incident audit trail</span><em>{auditEntries.length} events</em></span>
+              <span>{showBottomDrawer ? "Collapse" : "Open log"} {showBottomDrawer ? <ChevronDown size={14} /> : <ChevronUp size={14} />}</span>
+            </button>
+            {showBottomDrawer && <div className="scada-audit-content"><AuditLog entries={auditEntries} onClearLogs={() => setAuditEntries([])} /></div>}
+          </section>
+        </section>
+
+        <aside className="scada-sidebar">
+          <div className="scada-sidebar-tabs" role="tablist" aria-label="Operations panels">
+            {([
+              ["FEED", "Incidents"],
+              ["AUDIT", "Audit"],
+              ["CONTROLS", "Scenario"],
+              ["DIRECTOR", "Demo"],
+              ["COMPLIANCE", "CEA-2026"],
+            ] as [WorkspaceTab, string][]).map(([tab, label]) => (
+              <button key={tab} className={activeTab === tab ? "is-active" : ""} onClick={() => setActiveTab(tab)} role="tab" aria-selected={activeTab === tab}>
+                {label}{tab === "AUDIT" && auditEntries.length > 0 ? ` · ${auditEntries.length}` : ""}
+              </button>
+            ))}
+          </div>
+
+          <div className="scada-sidebar-content">
+            {activeTab === "FEED" && (
+              <div className="scada-feed-stack">
+                <div className="scada-surface scada-alert-summary">
+                  <div><span className="scada-kicker">Current assessment</span><strong>{counts.cyber ? "Cyber intrusion" : counts.fault ? "Natural fault" : activePayload ? "Nominal operation" : "Awaiting telemetry"}</strong></div>
+                  <span className={`state-marker ${counts.cyber ? "cyber" : counts.fault ? "fault" : activePayload ? "normal" : "nodata"}`} />
+                </div>
+                <div className="scada-alert-container">
+                  <AlertFeed latestState={activePayload} onAlertClick={(rtuId) => setSelectedBusId(rtuId)} onNewVerdictChange={handleNewVerdictChange} />
+                </div>
+                <EvidencePanel latestState={activePayload} selectedBusId={selectedBusId} />
               </div>
             )}
-          </div>
-        </div>
-
-        {/* Right Section: Multi-Tab Panel (4 cols) */}
-        <div className="lg:col-span-4 flex flex-col h-full space-y-3 overflow-hidden">
-          {/* Right Top Tab Switcher */}
-          <div className="flex bg-[#131722] p-1 rounded-[8px] border border-white/[0.07] text-[11px] select-none">
-            <button
-              onClick={() => setActiveTab("FEED")}
-              className={`flex-1 py-1.5 rounded-[6px] font-medium transition text-center ${
-                activeTab === "FEED"
-                  ? "bg-[#181E2C] text-[#EDEDF0] border border-[#8B5CF6]/40 shadow-sm font-semibold"
-                  : "text-[#5A6275] hover:text-[#9CA3AF]"
-              }`}
-            >
-              Alerts
-            </button>
-            <button
-              onClick={() => setActiveTab("DIRECTOR")}
-              className={`flex-1 py-1.5 rounded-[6px] font-medium transition text-center ${
-                activeTab === "DIRECTOR"
-                  ? "bg-[#181E2C] text-[#EDEDF0] border border-[#8B5CF6]/40 shadow-sm font-semibold"
-                  : "text-[#5A6275] hover:text-[#9CA3AF]"
-              }`}
-            >
-              Director
-            </button>
-            <button
-              onClick={() => setActiveTab("CONTROLS")}
-              className={`flex-1 py-1.5 rounded-[6px] font-medium transition text-center ${
-                activeTab === "CONTROLS"
-                  ? "bg-[#181E2C] text-[#EDEDF0] border border-[#8B5CF6]/40 shadow-sm font-semibold"
-                  : "text-[#5A6275] hover:text-[#9CA3AF]"
-              }`}
-            >
-              Controls
-            </button>
-            <button
-              onClick={() => setActiveTab("AUDIT")}
-              className={`flex-1 py-1.5 rounded-[6px] font-medium transition text-center ${
-                activeTab === "AUDIT"
-                  ? "bg-[#181E2C] text-[#EDEDF0] border border-[#8B5CF6]/40 shadow-sm font-semibold"
-                  : "text-[#5A6275] hover:text-[#9CA3AF]"
-              }`}
-            >
-              Audit ({auditEntries.length})
-            </button>
-            <button
-              onClick={() => setActiveTab("COMPLIANCE")}
-              className={`flex-1 py-1.5 rounded-[6px] font-medium transition text-center ${
-                activeTab === "COMPLIANCE"
-                  ? "bg-[#181E2C] text-[#EDEDF0] border border-[#8B5CF6]/40 shadow-sm font-semibold"
-                  : "text-[#5A6275] hover:text-[#9CA3AF]"
-              }`}
-            >
-              CEA-2026
-            </button>
-          </div>
-
-          {/* Tab Content Panes */}
-          <div className="flex-1 overflow-hidden">
-            {activeTab === "FEED" && (
-              <AlertFeed
-                latestState={activePayload}
-                onAlertClick={handleAlertClick}
-                onNewVerdictChange={handleNewVerdictChange}
-              />
-            )}
-
-            {activeTab === "DIRECTOR" && (
-              <DemoDirector
-                onNavigateTab={(tab) => setActiveTab(tab as any)}
-                isReplayMode={appMode === "REPLAY"}
-              />
-            )}
-
-            {activeTab === "CONTROLS" && (
-              <DemoControls
-                latestState={activePayload}
-                isReplayMode={appMode === "REPLAY"}
-              />
-            )}
-
-            {activeTab === "AUDIT" && (
-              <AuditLog
-                entries={auditEntries}
-                onClearLogs={handleClearAuditLogs}
-              />
-            )}
-
+            {activeTab === "AUDIT" && <AuditLog entries={auditEntries} onClearLogs={() => setAuditEntries([])} />}
+            {activeTab === "CONTROLS" && <DemoControls latestState={activePayload} isReplayMode={appMode === "REPLAY"} />}
+            {activeTab === "DIRECTOR" && <DemoDirector onNavigateTab={(tab) => setActiveTab(tab as WorkspaceTab)} isReplayMode={appMode === "REPLAY"} />}
             {activeTab === "COMPLIANCE" && <ComplianceMap />}
           </div>
-        </div>
+        </aside>
       </main>
     </div>
   );
