@@ -63,6 +63,8 @@ export default function SCADACommandCenter() {
     appMode === "LIVE" ? liveSocket.latestState : replayEngine.currentPayload;
   const activeConnectionStatus =
     appMode === "LIVE" ? liveSocket.connectionStatus : "connected";
+  const activeStreamStatus =
+    appMode === "LIVE" ? liveSocket.streamStatus : "streaming";
 
   const handleNewVerdictChange = useCallback((item: AlertFeedItem) => {
     setAuditEntries((prev) => [
@@ -109,7 +111,7 @@ export default function SCADACommandCenter() {
 
   return (
     <div className="scada-shell">
-      <StatusBar connectionStatus={activeConnectionStatus} latestState={activePayload} />
+      <StatusBar connectionStatus={activeConnectionStatus} latestState={activePayload} streamStatus={activeStreamStatus} />
 
       <div className="scada-toolbar">
         <div className="scada-toolbar-group">

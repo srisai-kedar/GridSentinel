@@ -41,8 +41,8 @@ Phase 3 adds a trained **Random Forest Fusion Classifier** that fuses both detec
            │                                        │ PCD Signals
            ▼                                        ▼
            ┌────────────────────────────────────────┐
-           │    Feature Engineering (22 features)   │
-           │  NBD (9) + PCD (13) per target RTU     │
+           │    Feature Engineering (28 features)   │
+           │  NBD (10) + PCD (18) per target RTU    │
            └──────────────────┬─────────────────────┘
                               │
                               ▼
@@ -67,9 +67,9 @@ Phase 3 adds a trained **Random Forest Fusion Classifier** that fuses both detec
 
 ---
 
-## 2. Feature Schema (22 Features)
+## 2. Feature Schema (28 Features)
 
-### Network-Behavioral Detection (NBD) — 9 Features
+### Network-Behavioral Detection (NBD) — 10 Features
 | Feature | Description |
 |:---|:---|
 | `nbd_unexpected_write_count` | Unauthorized write transactions (FC06/FC16) in window |
@@ -81,8 +81,9 @@ Phase 3 adds a trained **Random Forest Fusion Classifier** that fuses both detec
 | `nbd_fc16_write_count` | FC16 (Write Multiple Registers) count |
 | `nbd_error_count` | Failed/timeout Modbus transactions |
 | `nbd_traffic_volume` | Total transactions to RTU in window |
+| `nbd_modbus_anomaly_rate` | Unexpected-write, anomalous-function-code, and error rate |
 
-### Physics-Consistency Detection (PCD) — 13 Features
+### Physics-Consistency Detection (PCD) — 18 Features
 | Feature | Description |
 |:---|:---|
 | `pcd_max_lnr` | Global Largest Normalized Residual across all measurements |
@@ -98,6 +99,11 @@ Phase 3 adds a trained **Random Forest Fusion Classifier** that fuses both detec
 | `pcd_voltage_dev_nominal` | Absolute deviation from nominal (\|V - 1.0\|) |
 | `pcd_p_mw_reported` | Reported active power in MW |
 | `pcd_status_code` | RTU hardware status (1=OK, 2=WARN, 3=TRIP) |
+| `pcd_physics_network_disagreement_index` | Normalized reported-power disagreement scaled by residual severity |
+| `pcd_temporal_dv_dt_3tick` | Three-tick voltage rate of change |
+| `pcd_temporal_dp_dt_3tick` | Three-tick active-power rate of change |
+| `pcd_temporal_dq_dt_3tick` | Three-tick reactive-power rate of change |
+| `pcd_cross_rtu_voltage_divergence` | Target voltage divergence from electrical neighbors |
 
 ---
 
@@ -179,6 +185,14 @@ pip install -r requirements.txt
 python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 Interactive Swagger API docs: `http://127.0.0.1:8000/docs`
+
+For production, run the container command without `--reload` and with one
+Uvicorn worker. Configure `CORS_ALLOW_ORIGINS` as a comma-separated list of
+exact frontend origins, for example:
+
+```text
+CORS_ALLOW_ORIGINS=https://grid-sentinel-sepia.vercel.app,http://localhost:3000
+```
 
 ### Running All Automated Tests
 ```powershell

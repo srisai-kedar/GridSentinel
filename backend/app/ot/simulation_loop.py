@@ -31,6 +31,7 @@ from app.core.state_estimation import (
     detect_bad_data,
     run_state_estimation,
 )
+from app.ml.classifier_service import classifier_service
 from app.ot.rtu_server import RTU_CONFIGS, rtu_pool
 from app.ot.scada_master import scada_master
 from app.ot.scenario_injector import scenario_injector
@@ -92,6 +93,10 @@ class SimulationLoop:
 
         self.tick_count: int = 0
         self.latest_state: Dict[str, Any] = {}
+        self.task_status: str = "stopped"
+        self.last_error: Optional[str] = None
+        self.last_error_at: Optional[str] = None
+        self.last_tick_at: Optional[str] = None
 
         # WebSocket broadcast subscribers
         self._ws_subscribers: Set[asyncio.Queue] = set()
@@ -113,6 +118,18 @@ class SimulationLoop:
         if self.is_running:
             return
 
+        # A task can finish unexpectedly between lifecycle calls. Do not leave
+        # a stale task handle behind or create two concurrent simulation loops.
+        if self._task is not None and not self._task.done():
+            self._task.cancel()
+            try:
+                await self._task
+            except asyncio.CancelledError:
+                pass
+            except Exception:
+                logger.exception("Discarding an unexpected previous simulation task failure.")
+        self._task = None
+
         # Initialize network
         if net is None:
             self.net = build_feeder()
@@ -126,39 +143,88 @@ class SimulationLoop:
         # Start all 5 RTU servers
         await rtu_pool.start_all()
 
+        classifier_service.clear_cache()
+        self.last_error = None
+        self.last_error_at = None
+        self.task_status = "running"
         self.is_running = True
+        if self.latest_state:
+            self.latest_state = dict(self.latest_state)
+            self.latest_state.update(
+                {
+                    "simulation_running": True,
+                    "stream_status": "waiting",
+                    "stale": True,
+                    "task_status": "running",
+                    "ml_verdicts": {},
+                    "overall_status": "NORMAL",
+                    "last_error": None,
+                }
+            )
         self._task = asyncio.create_task(self._run_loop())
         logger.info("SimulationLoop started.")
 
     async def stop(self) -> None:
         """Stop the background simulation loop and RTUs."""
-        if not self.is_running:
-            return
-
         self.is_running = False
-        if self._task:
-            self._task.cancel()
+        task = self._task
+        if task:
+            task.cancel()
             try:
-                await self._task
-            except (asyncio.CancelledError, Exception):
+                await task
+            except asyncio.CancelledError:
                 pass
+            except Exception as exc:
+                self._record_error(exc)
+                logger.exception("Simulation task failed while stopping.")
             self._task = None
 
         await rtu_pool.stop_all()
+        scenario_injector.clear_all_scenarios(net=self.net)
+        traffic_logger.clear()
+        classifier_service.clear_cache()
+        self.task_status = "stopped"
+        self.latest_state = self._status_snapshot("stopped", stale=True)
+        self.latest_state["active_scenarios"] = scenario_injector.get_active_scenarios()
+        self.latest_state["recent_traffic_log"] = []
+        self.latest_state["ml_verdicts"] = {}
+        self.latest_state["overall_status"] = "NORMAL"
+        await self._broadcast_ws(self.latest_state)
         logger.info("SimulationLoop stopped.")
 
     async def _run_loop(self) -> None:
         """Main periodic tick execution."""
-        while self.is_running:
-            start_tick = time.perf_counter()
-            try:
-                await self.tick()
-            except Exception as exc:
-                logger.error(f"Error during simulation tick: {exc}", exc_info=True)
+        try:
+            while self.is_running:
+                start_tick = time.perf_counter()
+                try:
+                    await self.tick()
+                except asyncio.CancelledError:
+                    raise
+                except Exception as exc:
+                    self._record_error(exc)
+                    logger.error(f"Error during simulation tick: {exc}", exc_info=True)
+                    self.latest_state = self._status_snapshot("error", stale=True)
+                    await self._broadcast_ws(self.latest_state)
 
-            elapsed = time.perf_counter() - start_tick
-            sleep_time = max(0.05, self.tick_interval - elapsed)
-            await asyncio.sleep(sleep_time)
+                elapsed = time.perf_counter() - start_tick
+                sleep_time = max(0.05, self.tick_interval - elapsed)
+                await asyncio.sleep(sleep_time)
+        except asyncio.CancelledError:
+            raise
+        except Exception as exc:
+            self.is_running = False
+            self.task_status = "error"
+            self._record_error(exc)
+            logger.exception("Simulation loop task terminated unexpectedly.")
+            scenario_injector.clear_all_scenarios(net=self.net)
+            traffic_logger.clear()
+            classifier_service.clear_cache()
+            self.latest_state = self._status_snapshot("error", stale=True)
+            self.latest_state["active_scenarios"] = scenario_injector.get_active_scenarios()
+            self.latest_state["recent_traffic_log"] = []
+            self.latest_state["ml_verdicts"] = {}
+            await self._broadcast_ws(self.latest_state)
 
     async def tick(self) -> Dict[str, Any]:
         """
@@ -264,6 +330,28 @@ class SimulationLoop:
         se_result = run_state_estimation(self.net)
         detection_result = detect_bad_data(self.net)
 
+        # The trained model is deliberately treated as an immutable artifact.
+        # The live tick owns the inference call so every telemetry frame gets a
+        # fresh verdict without requiring a separate manual API request.
+        classifier_verdicts = classifier_service.evaluate_all_rtus(
+            traffic_events=traffic_logger.get_recent_events(limit=200),
+            state_estimation_result={
+                "success": se_result.get("success", False),
+                "estimated_voltages": se_result.get("estimated_voltages", []),
+                "chi2_test_passed": se_result.get("chi2_test_passed", True),
+                "chi2_statistic": se_result.get("chi2_statistic", 0.0),
+                "chi2_threshold": se_result.get("chi2_threshold", 0.0),
+                "bad_data_detected": detection_result.get("bad_data_detected", False),
+                "flagged_measurements": detection_result.get("flagged_measurements", []),
+            },
+            polled_telemetry=polled_telemetry,
+        )
+        overall_status = (
+            "ANOMALY_DETECTED"
+            if any(v.get("verdict") in ("Natural Fault", "Cyber Intrusion") for v in classifier_verdicts.values())
+            else "NORMAL"
+        )
+
         # 8. Assemble full state snapshot (True vs Reported vs Estimated)
         active_scenarios = scenario_injector.get_active_scenarios()
         recent_traffic = traffic_logger.get_recent_events(limit=5)
@@ -291,8 +379,19 @@ class SimulationLoop:
             },
             "active_scenarios": active_scenarios,
             "recent_traffic_log": recent_traffic,
+            "ml_verdicts": classifier_verdicts,
+            "overall_status": overall_status,
+            "simulation_running": True,
+            "stream_status": "streaming",
+            "stale": False,
+            "last_tick_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "last_error": None,
         }
 
+        self.last_error = None
+        self.last_error_at = None
+        self.last_tick_at = snapshot["last_tick_at"]
+        self.task_status = "running"
         self.latest_state = snapshot
 
         # 9. Broadcast to all active WebSocket subscribers
@@ -312,6 +411,55 @@ class SimulationLoop:
     def unsubscribe_ws(self, q: asyncio.Queue) -> None:
         """Unregister a WebSocket client queue."""
         self._ws_subscribers.discard(q)
+
+    def get_ws_snapshot(self) -> Dict[str, Any]:
+        """Return the latest telemetry or an explicit lifecycle status frame."""
+        return dict(self.latest_state) if self.latest_state else self._status_snapshot("stopped", stale=True)
+
+    def mark_reset(self) -> None:
+        """Reflect a scenario reset immediately for existing live consumers."""
+        classifier_service.clear_cache()
+        if self.latest_state:
+            self.latest_state = dict(self.latest_state)
+            self.latest_state["active_scenarios"] = scenario_injector.get_active_scenarios()
+            self.latest_state["recent_traffic_log"] = []
+            self.latest_state["ml_verdicts"] = {}
+            self.latest_state["overall_status"] = "NORMAL"
+            self.latest_state["stream_status"] = "streaming" if self.is_running else "stopped"
+            self.latest_state["simulation_running"] = self.is_running
+            self.latest_state["stale"] = not self.is_running
+        else:
+            self.latest_state = self._status_snapshot("streaming" if self.is_running else "stopped", stale=not self.is_running)
+
+    def _record_error(self, exc: Exception) -> None:
+        self.last_error = f"{type(exc).__name__}: {exc}"
+        self.last_error_at = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    def _status_snapshot(self, stream_status: str, stale: bool) -> Dict[str, Any]:
+        """Build an explicit status envelope, retaining last telemetry if any."""
+        had_telemetry = bool(self.latest_state)
+        snapshot = dict(self.latest_state)
+        snapshot.update(
+            {
+                "simulation_running": self.is_running,
+                "stream_status": stream_status,
+                "stale": stale,
+                "task_status": self.task_status,
+                "last_tick_at": self.last_tick_at,
+                "last_error": self.last_error,
+                "last_error_at": self.last_error_at,
+                "ml_verdicts": snapshot.get("ml_verdicts", {}),
+            }
+        )
+        if not had_telemetry:
+            snapshot.update(
+                {
+                    "tick": self.tick_count,
+                    "sim_time": self.get_sim_time_string(),
+                    "message": "OT simulation is not running" if not self.is_running else "Waiting for first telemetry tick",
+                }
+            )
+        return snapshot
 
     async def _broadcast_ws(self, payload: Dict[str, Any]) -> None:
         """Push snapshot to all subscribed WebSocket queues non-blockingly."""

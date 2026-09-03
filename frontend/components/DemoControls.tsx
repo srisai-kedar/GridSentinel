@@ -279,6 +279,23 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
             <option value={4}>Line 4 (Feeder B → Feeder B2)</option>
           </select>
         </div>
+
+        <div className="flex items-center space-x-1.5">
+          <span className="text-[#5A6275] font-mono text-[10px] uppercase">Target Bus:</span>
+          <select
+            aria-label="Target Bus"
+            value={selectedBus}
+            onChange={(e) => setSelectedBus(parseInt(e.target.value, 10))}
+            disabled={isReplayMode}
+            className="bg-[#0E1118] text-[#EDEDF0] px-2 py-0.5 rounded-[4px] border border-white/[0.08] focus:outline-none disabled:opacity-50"
+          >
+            <option value={1}>Bus 1 (Substation)</option>
+            <option value={2}>Bus 2 (Feeder A)</option>
+            <option value={3}>Bus 3 (Feeder B)</option>
+            <option value={4}>Bus 4 (Feeder C)</option>
+            <option value={5}>Bus 5 (Feeder A2)</option>
+          </select>
+        </div>
       </div>
 
       {/* Action Buttons Grid */}
@@ -437,4 +454,3 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
     </div>
   );
 };
-

@@ -193,6 +193,14 @@ export interface LiveSocketPayload {
   };
   recent_traffic_log: TrafficEvent[];
   ml_verdicts?: Record<string, RTUVerdict>;
+  overall_status?: string;
+  simulation_running?: boolean;
+  stream_status?: "streaming" | "stopped" | "waiting" | "error";
+  stale?: boolean;
+  task_status?: string;
+  last_tick_at?: string | null;
+  last_error?: string | null;
+  last_error_at?: string | null;
 }
 
 export interface AuditLogEntry {
@@ -211,3 +219,5 @@ export interface AuditLogEntry {
 }
 
 export type ConnectionStatus = "connecting" | "connected" | "disconnected";
+
+export type StreamStatus = "connecting" | "waiting" | "streaming" | "stale" | "stopped" | "error";

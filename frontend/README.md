@@ -27,6 +27,7 @@ High-fidelity real-time command-center dashboard for physics-aware cyber-physica
 
 - **Honest Connection Status Bar**:
   - Real-time indicator for `/ws/live` WebSocket link (`connected`, `reconnecting`, `disconnected`).
+  - Separate telemetry state (`waiting`, `streaming`, `stale`, `stopped`, `error`) so a healthy socket cannot be mistaken for live simulation output.
   - Simulated clock, diurnal load multiplier, and overall feeder health badge.
 
 - **Phase 5 — Demo Resilience & Compliance Panel**:
@@ -53,8 +54,8 @@ cp .env.local.example .env.local
 | Variable | Required | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `NEXT_PUBLIC_MAPBOX_TOKEN` | Optional | `""` | Mapbox public access token from [mapbox.com](https://mapbox.com). If empty, the app uses an interactive vector SCADA schematic. |
-| `NEXT_PUBLIC_API_BASE_URL` | Optional | `http://localhost:8000` | GridSentinel FastAPI backend REST URL. |
-| `NEXT_PUBLIC_WS_URL` | Optional | `ws://localhost:8000/ws/live` | GridSentinel live telemetry WebSocket stream URL. |
+| `NEXT_PUBLIC_API_BASE_URL` | Optional | Localhost in development; deployed Render origin in browser production | GridSentinel FastAPI backend REST URL. Set the HTTPS backend origin for deployment. |
+| `NEXT_PUBLIC_WS_URL` | Optional | Localhost in development; deployed `wss://` Render endpoint in browser production | GridSentinel live telemetry WebSocket stream URL. |
 
 ---
 

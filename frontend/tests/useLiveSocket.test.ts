@@ -4,6 +4,7 @@ import { useLiveSocket } from "../lib/useLiveSocket";
 
 // Mock WebSocket implementation
 class MockWebSocket {
+  static OPEN = 1;
   url: string;
   onopen: (() => void) | null = null;
   onclose: (() => void) | null = null;
@@ -52,6 +53,7 @@ describe("useLiveSocket", () => {
     });
 
     expect(result.current.connectionStatus).toBe("connected");
+    expect(result.current.streamStatus).toBe("waiting");
 
     // Deliver a message
     const ws = MockWebSocket.instances[0];
@@ -84,6 +86,8 @@ describe("useLiveSocket", () => {
         short_circuit_active: false,
       },
       recent_traffic_log: [],
+      stream_status: "streaming",
+      simulation_running: true,
     };
 
     act(() => {
@@ -94,6 +98,24 @@ describe("useLiveSocket", () => {
 
     expect(result.current.latestState?.tick).toBe(42);
     expect(result.current.latestState?.sim_time).toBe("09:30:00");
+    expect(result.current.streamStatus).toBe("streaming");
+
+    // A lifecycle-only stop frame must be visible without erasing the last
+    // usable telemetry frame.
+    act(() => {
+      if (ws.onmessage) {
+        ws.onmessage({
+          data: JSON.stringify({
+            simulation_running: false,
+            stream_status: "stopped",
+            stale: true,
+            last_error: null,
+          }),
+        });
+      }
+    });
+    expect(result.current.streamStatus).toBe("stopped");
+    expect(result.current.latestState?.tick).toBe(42);
   });
 
   it("handles disconnect and reconnect backoff correctly", () => {

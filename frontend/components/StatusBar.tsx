@@ -2,15 +2,16 @@
 
 import React from "react";
 import { Activity, CheckCircle2, Clock3, Radio, ShieldAlert, TriangleAlert, Wifi, WifiOff, Zap } from "lucide-react";
-import { ConnectionStatus, LiveSocketPayload, VerdictType } from "@/lib/types";
+import { ConnectionStatus, LiveSocketPayload, StreamStatus, VerdictType } from "@/lib/types";
 import { SCADA_COLORS } from "@/lib/alertText";
 
 interface StatusBarProps {
   connectionStatus: ConnectionStatus;
   latestState: LiveSocketPayload | null;
+  streamStatus?: StreamStatus;
 }
 
-export const StatusBar: React.FC<StatusBarProps> = ({ connectionStatus, latestState }) => {
+export const StatusBar: React.FC<StatusBarProps> = ({ connectionStatus, latestState, streamStatus = "connecting" }) => {
   let verdict: VerdictType = "Normal";
   const verdicts = Object.values(latestState?.ml_verdicts || {});
   if (!latestState) verdict = "No Data";
@@ -25,6 +26,7 @@ export const StatusBar: React.FC<StatusBarProps> = ({ connectionStatus, latestSt
   }[verdict];
 
   const connectionLabel = connectionStatus === "connected" ? "CONNECTED" : connectionStatus === "connecting" ? "RECONNECTING" : "DISCONNECTED";
+  const streamLabel = streamStatus === "streaming" ? "STREAMING" : streamStatus === "waiting" ? "WAITING" : streamStatus === "stopped" ? "SIM STOPPED" : streamStatus === "stale" ? "STALE" : streamStatus === "error" ? "ERROR" : "CONNECTING";
   const simTime = latestState?.sim_time || "--:--:--";
   const load = latestState?.true_physical_state?.total_load_mw;
   const estimation = latestState?.state_estimation;
@@ -41,6 +43,7 @@ export const StatusBar: React.FC<StatusBarProps> = ({ connectionStatus, latestSt
         <div className="scada-readout"><Clock3 size={14} /><span>SIM TIME</span><strong>{simTime}</strong></div>
         <div className="scada-readout"><Zap size={14} /><span>LOAD</span><strong>{typeof load === "number" ? `${load.toFixed(2)} MW` : "—"}</strong></div>
         <div className="scada-readout"><Activity size={14} /><span>ESTIMATION</span><strong className={estimation?.success ? "text-normal" : ""}>{estimation ? (estimation.bad_data_detected ? "BAD DATA" : "WLS OK") : "STANDBY"}</strong></div>
+        <div className="scada-readout"><Radio size={14} /><span>TELEMETRY</span><strong className={streamStatus === "streaming" ? "text-normal" : "text-fault"}>{streamLabel}</strong></div>
         <div className="scada-health" style={{ color: health.color, borderColor: `${health.color}55`, backgroundColor: `${health.color}12` }}>
           {health.icon}<span>{health.label}</span>
         </div>

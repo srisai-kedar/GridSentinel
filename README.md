@@ -62,6 +62,12 @@ The backend starts at `http://localhost:8000`.
 - API Docs: `http://localhost:8000/docs`
 - Live WebSocket: `ws://localhost:8000/ws/live`
 
+The production container runs a single Uvicorn worker without `--reload` or
+multiple workers because the Modbus RTUs, traffic logger, scenario injector,
+classifier cache, and simulation loop are process-local lifecycle state. Set
+`PORT` and `CORS_ALLOW_ORIGINS` in the backend deployment environment; the
+Docker image defaults to port 8000 and allows the local frontend origin.
+
 ---
 
 ### Step 2: Start the Next.js SCADA Command Center Frontend
@@ -122,5 +128,10 @@ The frontend connects to backend services via environment variables configured a
 - `NEXT_PUBLIC_API_BASE_URL`: Configures the backend REST API base URL.
 - `NEXT_PUBLIC_WS_URL`: Configures the backend live telemetry WebSocket URL. Production environments served over TLS/HTTPS **must use `wss://`**.
 - `NEXT_PUBLIC_MAPBOX_TOKEN`: (Optional) Mapbox public access token for GIS tile layers. If left unset, the application automatically uses the built-in Vector SCADA Schematic.
+
+For the deployed frontend, set `NEXT_PUBLIC_API_BASE_URL` to the HTTPS backend
+origin and `NEXT_PUBLIC_WS_URL` to its `wss://.../ws/live` endpoint. The client
+contains the current Render backend as a fallback for non-local browser hosts,
+but deployment variables remain the authoritative configuration.
 
 > **Security Best Practice**: Never commit production credentials, actual secrets, or live API tokens to version control. Only commit `.env.example` template files.

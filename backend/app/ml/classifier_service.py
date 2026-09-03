@@ -53,18 +53,17 @@ def _build_evidence(
     # ── Network layer observations ──────────────────────────────────────────
     unexpected_writes = features.get("nbd_unexpected_write_count", 0.0)
     anomaly_rate = features.get("nbd_modbus_anomaly_rate", 0.0)
-    replay_count = features.get("nbd_replay_window_count", 0.0)
-    write_ratio = features.get("nbd_write_ratio", 0.0)
+    # These legacy keys were removed from FEATURE_SCHEMA v2.0.0. Derive the
+    # write ratio from the live schema instead of silently reading fields that
+    # can never be populated by the current telemetry pipeline.
+    traffic_volume = features.get("nbd_traffic_volume", 0.0)
+    write_count = features.get("nbd_fc6_write_count", 0.0) + features.get("nbd_fc16_write_count", 0.0)
+    write_ratio = write_count / traffic_volume if traffic_volume > 0 else 0.0
 
     if unexpected_writes > 0:
         net_evidence = (
             f"Network: {int(unexpected_writes)} unexpected Modbus write(s) to monitored RTU "
             f"(anomaly rate {anomaly_rate * 100:.1f}%)."
-        )
-    elif replay_count > 0:
-        net_evidence = (
-            f"Network: {int(replay_count)} replayed Modbus frame(s) detected in sliding window "
-            f"(write ratio {write_ratio * 100:.1f}%)."
         )
     elif anomaly_rate > _ANOMALY_RATE_HI:
         net_evidence = (
@@ -212,6 +211,11 @@ class ClassifierService:
             logger.error(f"[ClassifierService] Failed to load model from '{target_path}': {exc}")
             self.is_loaded = False
             return False
+
+    def clear_cache(self) -> None:
+        """Discard verdicts from a prior simulation/session lifecycle."""
+        self.latest_verdicts = {}
+        logger.info("[ClassifierService] Cleared cached RTU verdicts.")
 
     def predict(self, features: Dict[str, float]) -> Dict[str, Any]:
         """
