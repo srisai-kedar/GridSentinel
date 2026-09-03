@@ -15,7 +15,9 @@ import http from "http";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const BACKUP_DIR = path.resolve(__dirname, "../backup-demo");
+const BACKUP_DIR = path.resolve(
+  process.env.DEMO_OUTPUT_DIR || path.resolve(__dirname, "../backup-demo")
+);
 const TARGET_URL = process.env.DEMO_URL || "http://localhost:3000";
 
 async function isServerRunning(url) {
@@ -49,6 +51,11 @@ async function run() {
     process.exit(1);
   }
 
+  const demoDurationMs = Number(process.env.DEMO_DURATION_MS || 150000);
+  if (!Number.isFinite(demoDurationMs) || demoDurationMs <= 0) {
+    throw new Error("DEMO_DURATION_MS must be a positive number");
+  }
+
   console.log(`\n[1/4] Connecting to frontend at ${TARGET_URL}...`);
 
   const browser = await chromium.launch({
@@ -65,47 +72,41 @@ async function run() {
 
   const page = await context.newPage();
 
+  let recordingSucceeded = false;
   try {
     console.log("[2/4] Loading SCADA Command Center...");
-    await page.goto(TARGET_URL, { waitUntil: "networkidle", timeout: 30000 });
+    // DOMContentLoaded keeps the offline fallback usable even when the live
+    // backend/WebSocket is unavailable or repeatedly reconnecting.
+    await page.goto(TARGET_URL, { waitUntil: "domcontentloaded", timeout: 30000 });
     await page.waitForTimeout(2000);
 
     // Switch to REPLAY MODE
     console.log("[3/4] Switching to REPLAY MODE & driving Demo Director...");
-    const replayButton = page.locator("button:has-text('REPLAY MODE')");
-    if (await replayButton.isVisible()) {
-      await replayButton.click();
-      await page.waitForTimeout(1000);
-    }
+    await page.getByRole("button", { name: "Replay" }).click();
+    await page.waitForTimeout(500);
 
     // Switch to Director Tab
-    const directorTab = page.locator("button:has-text('Director')");
-    if (await directorTab.isVisible()) {
-      await directorTab.click();
-      await page.waitForTimeout(1000);
-    }
+    await page.getByRole("tab", { name: "Demo" }).click();
+    await page.waitForTimeout(500);
 
     // Click "Run Full Demo"
-    const runDemoButton = page.locator("button:has-text('Run Full Demo')");
-    if (await runDemoButton.isVisible()) {
-      await runDemoButton.click();
-      await page.waitForTimeout(1000);
-    }
+    await page.getByRole("button", { name: /Run Full Demo/ }).click();
+    await page.waitForTimeout(500);
 
     // Switch to Audience View
-    const audienceViewBtn = page.locator("button:has-text('Audience View')");
-    if (await audienceViewBtn.isVisible()) {
-      await audienceViewBtn.click();
-      await page.waitForTimeout(1000);
-    }
+    await page.getByRole("button", { name: /Audience View/ }).click();
+    await page.waitForTimeout(500);
 
-    // Let the demo sequence record for 12 seconds
-    console.log("Recording video frames...");
-    await page.waitForTimeout(12000);
+    // Let the deterministic replay/demo sequence record for the configured
+    // duration. Use DEMO_DURATION_MS for a short local smoke test.
+    console.log(`Recording video frames for ${demoDurationMs}ms...`);
+    await page.waitForTimeout(demoDurationMs);
 
     console.log("[4/4] Finalizing video recording...");
+    recordingSucceeded = true;
   } catch (err) {
     console.error("Error during recording:", err);
+    process.exitCode = 1;
   } finally {
     // Close page and context to finalize video writing
     await page.close();
@@ -114,14 +115,22 @@ async function run() {
   }
 
   // Rename video file to standard name
-  const videoFiles = fs.readdirSync(BACKUP_DIR).filter((f) => f.endsWith(".webm"));
+  const videoFiles = fs.readdirSync(BACKUP_DIR)
+    .filter((f) => f.endsWith(".webm"))
+    .map((name) => ({ name, mtimeMs: fs.statSync(path.join(BACKUP_DIR, name)).mtimeMs }))
+    .sort((a, b) => b.mtimeMs - a.mtimeMs);
   if (videoFiles.length > 0) {
-    const latestVideo = videoFiles[videoFiles.length - 1];
+    const latestVideo = videoFiles[0].name;
     const targetFile = path.join(BACKUP_DIR, "gridsentinel-backup-demo.webm");
     try {
       const srcPath = path.join(BACKUP_DIR, latestVideo);
       if (srcPath !== targetFile) {
         fs.copyFileSync(srcPath, targetFile);
+      }
+      if (!recordingSucceeded) {
+        console.error(`\n[Error] Recording did not complete successfully; diagnostic video saved at:`);
+        console.error(`  ${targetFile}\n`);
+        return;
       }
       console.log(`\n✔ Backup video generated successfully:`);
       console.log(`  ${targetFile}\n`);
@@ -130,6 +139,7 @@ async function run() {
     }
   } else {
     console.log(`\n✔ Backup video saved in: ${BACKUP_DIR}\n`);
+    if (recordingSucceeded) process.exitCode = 1;
   }
 }
 

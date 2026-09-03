@@ -23,6 +23,34 @@ export interface ReplayState {
   } | null;
 }
 
+function normalizeRecordedSession(input: RecordedSession): RecordedSession {
+  if (!input || input.version !== "1.0" || !Array.isArray(input.events)) {
+    throw new Error("Invalid session format: expected version 1.0 and an events array");
+  }
+
+  let previousDelta = 0;
+  const events = input.events.map((event, index) => {
+    if (!event || !Number.isFinite(event.deltaMs) || event.deltaMs < 0) {
+      throw new Error(`Invalid session event ${index}: deltaMs must be a finite non-negative number`);
+    }
+    if (index > 0 && event.deltaMs < previousDelta) {
+      throw new Error(`Invalid session event ${index}: deltaMs values must be chronological`);
+    }
+    if (!event.payload || typeof event.payload !== "object") {
+      throw new Error(`Invalid session event ${index}: payload is missing`);
+    }
+    previousDelta = event.deltaMs;
+    return event;
+  });
+
+  return {
+    ...input,
+    eventCount: events.length,
+    totalDurationMs: events.length > 0 ? Math.max(input.totalDurationMs || 0, previousDelta) : 0,
+    events,
+  };
+}
+
 export function useReplayEngine(
   initialSession?: RecordedSession | null,
   onPayloadUpdate?: (payload: LiveSocketPayload) => void
@@ -151,13 +179,14 @@ export function useReplayEngine(
 
   const loadSession = useCallback(
     (newSession: RecordedSession) => {
+      const normalizedSession = normalizeRecordedSession(newSession);
       pause();
-      setSession(newSession);
-      sessionRef.current = newSession;
+      setSession(normalizedSession);
+      sessionRef.current = normalizedSession;
       currentIndexRef.current = 0;
       setCurrentIndex(0);
-      if (newSession.events.length > 0) {
-        emitPayloadAtIndex(0, newSession);
+      if (normalizedSession.events.length > 0) {
+        emitPayloadAtIndex(0, normalizedSession);
       }
     },
     [emitPayloadAtIndex, pause]
@@ -167,9 +196,6 @@ export function useReplayEngine(
     (jsonString: string) => {
       try {
         const parsed = JSON.parse(jsonString) as RecordedSession;
-        if (!parsed.events || !Array.isArray(parsed.events)) {
-          throw new Error("Invalid session format: missing events array");
-        }
         loadSession(parsed);
         return true;
       } catch (err) {
@@ -192,6 +218,10 @@ export function useReplayEngine(
   const totalEvents = session?.events.length || 0;
   const progressPercent = totalEvents > 1 ? (currentIndex / (totalEvents - 1)) * 100 : 0;
 
+  const setReplaySpeed = useCallback((speed: number) => {
+    if (Number.isFinite(speed) && speed > 0) setPlaybackSpeed(speed);
+  }, []);
+
   return {
     isLoaded: Boolean(session && session.events.length > 0),
     isPlaying,
@@ -206,7 +236,7 @@ export function useReplayEngine(
     stop,
     seekToIndex,
     seekToPercent,
-    setPlaybackSpeed,
+    setPlaybackSpeed: setReplaySpeed,
     loadSession,
     loadSessionFromJson,
   };

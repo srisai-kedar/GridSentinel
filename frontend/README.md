@@ -90,6 +90,14 @@ With the Next.js dev server running on port 3000:
 npm run record-demo
 ```
 
+The recorder runs the complete deterministic 150-second offline replay by
+default. For a quick local smoke test, use `DEMO_DURATION_MS=5000 npm run
+record-demo` (PowerShell: `$env:DEMO_DURATION_MS=5000; npm run record-demo`).
+Set `DEMO_OUTPUT_DIR` to write a smoke-test video outside the tracked
+`backup-demo` directory. The script explicitly switches to Replay and Demo
+Director modes, so it does not depend on the live backend being available and
+returns a failure exit code if any required demo control cannot be driven.
+
 The Playwright script will:
 1. Open a headless browser at `http://localhost:3000`
 2. Switch to **REPLAY MODE** (no backend connection required)
