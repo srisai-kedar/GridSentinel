@@ -148,4 +148,26 @@ describe("useLiveSocket", () => {
 
     expect(result.current.connectionStatus).toBe("connected");
   });
+
+  it("marks a connected socket stale, then exposes transport errors", () => {
+    const { result } = renderHook(() => useLiveSocket("ws://localhost:8000/ws/live"));
+
+    act(() => {
+      vi.advanceTimersByTime(20);
+    });
+    expect(result.current.streamStatus).toBe("waiting");
+
+    act(() => {
+      vi.advanceTimersByTime(5001);
+    });
+    expect(result.current.streamStatus).toBe("stale");
+    expect(result.current.lastError).toContain("No live telemetry");
+
+    const ws = MockWebSocket.instances[0];
+    act(() => {
+      if (ws.onerror) ws.onerror(new Error("transport"));
+    });
+    expect(result.current.streamStatus).toBe("error");
+    expect(result.current.lastError).toBe("WebSocket transport error");
+  });
 });

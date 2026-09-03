@@ -35,4 +35,14 @@ describe("DemoControls", () => {
       });
     });
   });
+
+  it("renders every operator-facing Phase 3 scenario action", () => {
+    render(<DemoControls latestState={null} />);
+
+    expect(screen.getByRole("button", { name: /Silent Data Injection/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Command Injection/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Replay Attack/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Physical Line Trip/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Short-Circuit Surge/i })).toBeInTheDocument();
+  });
 });
