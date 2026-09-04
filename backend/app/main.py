@@ -38,7 +38,6 @@ import asyncio
 import copy
 from contextlib import asynccontextmanager
 import json
-import os
 from typing import Any, Dict, List, Optional
 
 import numpy as np
@@ -131,17 +130,11 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        origin.strip()
-        for origin in os.getenv(
-            "CORS_ALLOW_ORIGINS",
-            "https://grid-sentinel-sepia.vercel.app,http://localhost:3000",
-        ).split(",")
-        if origin.strip()
-    ],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=["https://grid-sentinel-sepia.vercel.app"],
+    allow_origin_regex=r"^https://grid-sentinel-[a-z0-9]+-srisai-kedars-projects\.vercel\.app$",
+    allow_credentials=False,
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type"],
 )
 
 

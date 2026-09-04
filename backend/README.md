@@ -187,12 +187,10 @@ python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 Interactive Swagger API docs: `http://127.0.0.1:8000/docs`
 
 For production, run the container command without `--reload` and with one
-Uvicorn worker. Configure `CORS_ALLOW_ORIGINS` as a comma-separated list of
-exact frontend origins, for example:
-
-```text
-CORS_ALLOW_ORIGINS=https://grid-sentinel-sepia.vercel.app,http://localhost:3000
-```
+Uvicorn worker. CORS is intentionally defined in `app/main.py`: the exact
+production origin is allowed, and Vercel Preview deployments are matched by
+the project-scoped deployment-hash regex. No wildcard origins or credentials
+are enabled.
 
 ### Running All Automated Tests
 ```powershell
