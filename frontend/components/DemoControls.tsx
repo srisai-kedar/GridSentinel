@@ -192,7 +192,7 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
   };
 
   return (
-    <div className="scada-scenario-panel flex flex-col h-full bg-[#0E1118] rounded-[10px] border border-white/[0.07] overflow-hidden text-xs select-none shadow-sm">
+    <div data-testid="scenario-panel" className="scada-scenario-panel flex flex-col h-full bg-[#0E1118] rounded-[10px] border border-white/[0.07] overflow-hidden text-xs select-none shadow-sm">
       {/* Header */}
       <div className="p-3 bg-[#0E1118] border-b border-white/[0.07] flex items-center justify-between">
         <div className="flex items-center space-x-2">
@@ -299,7 +299,7 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
       </div>
 
       {/* Action Buttons Grid */}
-      <div className="scada-scenario-scroll p-3 space-y-3 flex-1 min-h-0 overflow-y-auto">
+      <div data-testid="scenario-scroll" className="scada-scenario-scroll p-3 space-y-3 flex-1 min-h-0 overflow-y-auto">
         {/* Reset to Normal Button (Prominent) */}
         <button
           onClick={handleResetNormal}
@@ -311,7 +311,7 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
         </button>
 
         {/* Section 1: Cyber Attack Scenarios */}
-        <div>
+        <div data-testid="scenario-cyber-section">
           <div className="flex items-center space-x-1.5 text-[#EF4444] font-semibold uppercase tracking-wider text-[10px] mb-2">
             <ShieldAlert className="w-3.5 h-3.5" />
             <span>Cyber Attack Scenarios</span>

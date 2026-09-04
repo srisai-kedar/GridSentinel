@@ -230,7 +230,7 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .scada-audit-content { height: 250px; border-top: 1px solid var(--border-hairline); }
 
 .scada-sidebar-content > .flex.h-full { min-width: 0; min-height: 0; height: 100%; flex: 1 1 auto; }
-.scada-scenario-panel { min-width: 0; min-height: 0; max-height: 100%; overflow: hidden; isolation: isolate; }
+.scada-scenario-panel { min-width: 0; min-height: 0; height: auto; max-height: 100%; flex: 1 1 0; overflow: hidden; contain: paint; }
 .scada-scenario-scroll { min-width: 0; min-height: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; }
 .scada-sidebar-content .rounded-\[10px\] { border-radius: 3px; box-shadow: none; }
 
