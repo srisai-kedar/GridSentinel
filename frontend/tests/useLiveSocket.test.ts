@@ -4,6 +4,7 @@ import { useLiveSocket } from "../lib/useLiveSocket";
 
 // Mock WebSocket implementation
 class MockWebSocket {
+  static OPEN = 1;
   url: string;
   onopen: (() => void) | null = null;
   onclose: (() => void) | null = null;
@@ -52,9 +53,21 @@ describe("useLiveSocket", () => {
     });
 
     expect(result.current.connectionStatus).toBe("connected");
+    expect(result.current.streamStatus).toBe("waiting");
 
-    // Deliver a message
     const ws = MockWebSocket.instances[0];
+    // Lifecycle/status frames and incomplete telemetry must not become the
+    // active payload consumed by the dashboard.
+    act(() => {
+      if (ws.onmessage) {
+        ws.onmessage({
+          data: JSON.stringify({ true_physical_state: {}, state_estimation: {} }),
+        });
+      }
+    });
+    expect(result.current.latestState).toBeNull();
+
+    // Deliver a complete telemetry message.
     const testPayload = {
       tick: 42,
       sim_time: "09:30:00",
@@ -84,6 +97,8 @@ describe("useLiveSocket", () => {
         short_circuit_active: false,
       },
       recent_traffic_log: [],
+      stream_status: "streaming",
+      simulation_running: true,
     };
 
     act(() => {
@@ -94,6 +109,24 @@ describe("useLiveSocket", () => {
 
     expect(result.current.latestState?.tick).toBe(42);
     expect(result.current.latestState?.sim_time).toBe("09:30:00");
+    expect(result.current.streamStatus).toBe("streaming");
+
+    // A lifecycle-only stop frame must be visible without erasing the last
+    // usable telemetry frame.
+    act(() => {
+      if (ws.onmessage) {
+        ws.onmessage({
+          data: JSON.stringify({
+            simulation_running: false,
+            stream_status: "stopped",
+            stale: true,
+            last_error: null,
+          }),
+        });
+      }
+    });
+    expect(result.current.streamStatus).toBe("stopped");
+    expect(result.current.latestState?.tick).toBe(42);
   });
 
   it("handles disconnect and reconnect backoff correctly", () => {
@@ -125,5 +158,27 @@ describe("useLiveSocket", () => {
     });
 
     expect(result.current.connectionStatus).toBe("connected");
+  });
+
+  it("marks a connected socket stale, then exposes transport errors", () => {
+    const { result } = renderHook(() => useLiveSocket("ws://localhost:8000/ws/live"));
+
+    act(() => {
+      vi.advanceTimersByTime(20);
+    });
+    expect(result.current.streamStatus).toBe("waiting");
+
+    act(() => {
+      vi.advanceTimersByTime(5001);
+    });
+    expect(result.current.streamStatus).toBe("stale");
+    expect(result.current.lastError).toContain("No live telemetry");
+
+    const ws = MockWebSocket.instances[0];
+    act(() => {
+      if (ws.onerror) ws.onerror(new Error("transport"));
+    });
+    expect(result.current.streamStatus).toBe("error");
+    expect(result.current.lastError).toBe("WebSocket transport error");
   });
 });

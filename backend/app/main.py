@@ -130,10 +130,11 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=["https://grid-sentinel-sepia.vercel.app"],
+    allow_origin_regex=r"^https://grid-sentinel-[a-z0-9]+-srisai-kedars-projects\.vercel\.app$",
+    allow_credentials=False,
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type"],
 )
 
 
@@ -491,6 +492,7 @@ def reset_ot_scenarios():
     net = sim_loop.net or app_state.get("net")
     scenario_injector.clear_all_scenarios(net=net)
     traffic_logger.clear()
+    sim_loop.mark_reset()
     return ScenarioActionResponse(
         status="ok",
         message="All cyber attacks and physical faults cleared. Normal operation restored.",
@@ -641,17 +643,15 @@ async def websocket_live_endpoint(websocket: WebSocket):
                 return o.tolist()
             return str(o)
 
-        # Send current latest state immediately upon connection if available
-        if sim_loop.latest_state:
-            initial = dict(sim_loop.latest_state)
-            initial["ml_verdicts"] = classifier_service.latest_verdicts
-            await websocket.send_text(json.dumps(initial, default=_json_default))
+        # Always send either the latest telemetry or an explicit lifecycle
+        # status. This prevents clients from waiting forever when the loop is
+        # stopped or has not produced its first tick yet.
+        initial = sim_loop.get_ws_snapshot()
+        await websocket.send_text(json.dumps(initial, default=_json_default))
 
         while True:
             # Wait for next simulation tick broadcast
             payload = await queue.get()
-            # Attach the most recent cached ML verdicts to every tick
-            payload["ml_verdicts"] = classifier_service.latest_verdicts
             await websocket.send_text(json.dumps(payload, default=_json_default))
 
     except (WebSocketDisconnect, asyncio.CancelledError):

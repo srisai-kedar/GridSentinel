@@ -125,4 +125,20 @@ describe("useReplayEngine", () => {
 
     expect(result.current.playbackSpeed).toBe(2.0);
   });
+
+  it("rejects malformed or non-chronological replay sessions", () => {
+    const { result } = renderHook(() => useReplayEngine(mockSession));
+    const invalidSession = {
+      ...mockSession,
+      events: [mockSession.events[1], mockSession.events[0]],
+    };
+
+    let loaded = true;
+    act(() => {
+      loaded = result.current.loadSessionFromJson(JSON.stringify(invalidSession));
+    });
+
+    expect(loaded).toBe(false);
+    expect(result.current.currentPayload?.tick).toBe(1);
+  });
 });

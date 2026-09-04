@@ -55,7 +55,7 @@ export const ComplianceMap: React.FC = () => {
       </div>
 
       {/* Main Container */}
-      <div className="flex-1 overflow-y-auto p-3.5 space-y-3 print:overflow-visible print:p-0">
+      <div className="flex-1 min-h-0 overflow-y-auto p-3.5 space-y-3 print:overflow-visible print:p-0">
         {/* Statutory Facts Card */}
         <div className="bg-[#131722] p-3 rounded-[8px] border border-white/[0.07] space-y-2 text-[11px] print:bg-gray-50 print:border print:border-gray-400">
           <div className="flex items-center space-x-2 text-[#10B981] font-medium print:text-black">
@@ -141,4 +141,3 @@ export const ComplianceMap: React.FC = () => {
     </div>
   );
 };
-

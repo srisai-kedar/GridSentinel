@@ -8,6 +8,7 @@
     "start": "next start -p 3000",
     "lint": "next lint",
     "test": "vitest run --pool=forks",
+    "test:layout": "playwright test -c playwright.config.mjs tests/scenarioPanel.layout.spec.mjs",
     "test:watch": "vitest --pool=forks",
     "record-demo": "node scripts/record-demo.mjs"
   },

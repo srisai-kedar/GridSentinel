@@ -1,6 +1,23 @@
+import React from "react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
-import { generateCsvData } from "../components/AuditLog";
+import { AuditLog, generateCsvData } from "../components/AuditLog";
 import { AuditLogEntry } from "../lib/types";
+
+const makeAuditEntry = (id: string): AuditLogEntry => ({
+  id,
+  timestamp: "2026-09-04T10:00:00.000Z",
+  simTime: "08:00:00",
+  rtuId: 2,
+  assetName: "RTU-2-FeederA",
+  classification: "Cyber Intrusion",
+  subtype: "data_injection",
+  confidence: 0.95,
+  networkSummary: "Network evidence",
+  physicsSummary: "Physics evidence",
+  recommendedAction: "Inspect RTU",
+  formattedAlert: "Silent data injection detected",
+});
 
 describe("AuditLog CSV Export", () => {
   it("produces correctly formatted CSV data with proper headers and escaping", () => {
@@ -57,5 +74,21 @@ describe("AuditLog CSV Export", () => {
     expect(lines[2]).toContain('"Natural Fault"');
     expect(lines[2]).toContain('"line_trip"');
     expect(lines[2]).toContain('"85.0%"');
+  });
+
+  it("renders every supplied row when the header reports the event count", () => {
+    const entries = Array.from({ length: 7 }, (_, index) => makeAuditEntry(`audit-${index}`));
+
+    render(React.createElement(AuditLog, { entries }));
+
+    expect(screen.getByText("7 Events Logged")).toBeInTheDocument();
+    expect(screen.getAllByRole("row")).toHaveLength(8); // header row + seven event rows
+    expect(screen.getAllByText("RTU-2-FeederA")).toHaveLength(7);
+
+    fireEvent.change(screen.getByPlaceholderText("Search audit trail..."), {
+      target: { value: "does-not-match" },
+    });
+    expect(screen.getByText("0 Events Logged")).toBeInTheDocument();
+    expect(screen.queryAllByRole("row")).toHaveLength(0);
   });
 });

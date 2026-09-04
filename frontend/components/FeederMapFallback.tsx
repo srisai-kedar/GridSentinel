@@ -40,7 +40,7 @@ export const FeederMapFallback: React.FC<FeederMapFallbackProps> = ({
       rtuId,
       verdict: getVerdict(selectedBusId),
       telemetry: latestState?.polled_modbus_telemetry?.[String(rtuId)],
-      estimated: latestState?.state_estimation.estimated_voltages.find((item) => item.bus_index === selectedBusId),
+      estimated: latestState?.state_estimation?.estimated_voltages?.find((item) => item.bus_index === selectedBusId),
     };
   }, [selectedBusId, topology, latestState]);
 
@@ -78,7 +78,7 @@ export const FeederMapFallback: React.FC<FeederMapFallbackProps> = ({
             const start = point(from);
             const end = point(to);
             const verdict = getVerdict(line.to_bus);
-            const tripped = latestState?.active_scenarios.tripped_lines.includes(line.line_index);
+            const tripped = latestState?.active_scenarios?.tripped_lines?.includes(line.line_index);
             const anomaly = tripped || verdict?.verdict === "Natural Fault" || verdict?.verdict === "Cyber Intrusion";
             const color = tripped ? SCADA_COLORS.CYBER : verdict ? getVerdictColor(verdict.verdict) : "#53627A";
             const dx = end.x - start.x;

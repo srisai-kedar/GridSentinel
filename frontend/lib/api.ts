@@ -16,7 +16,9 @@ import {
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL ||
   process.env.NEXT_PUBLIC_API_BASE_URL ||
-  "http://localhost:8000";
+  (typeof window !== "undefined" && window.location.hostname !== "localhost"
+    ? "https://gridsentinel-72tf.onrender.com"
+    : "http://localhost:8000");
 
 async function fetchJson<T>(
   endpoint: string,

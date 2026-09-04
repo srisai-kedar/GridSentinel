@@ -63,6 +63,10 @@ export default function SCADACommandCenter() {
     appMode === "LIVE" ? liveSocket.latestState : replayEngine.currentPayload;
   const activeConnectionStatus =
     appMode === "LIVE" ? liveSocket.connectionStatus : "connected";
+  const activeStreamStatus =
+    appMode === "LIVE" ? liveSocket.streamStatus : "streaming";
+  const physicalState = activePayload?.true_physical_state;
+  const estimationState = activePayload?.state_estimation;
 
   const handleNewVerdictChange = useCallback((item: AlertFeedItem) => {
     setAuditEntries((prev) => [
@@ -109,7 +113,7 @@ export default function SCADACommandCenter() {
 
   return (
     <div className="scada-shell">
-      <StatusBar connectionStatus={activeConnectionStatus} latestState={activePayload} />
+      <StatusBar connectionStatus={activeConnectionStatus} latestState={activePayload} streamStatus={activeStreamStatus} />
 
       <div className="scada-toolbar">
         <div className="scada-toolbar-group">
@@ -216,10 +220,10 @@ export default function SCADACommandCenter() {
           </div>
 
           <div className="scada-metrics" aria-label="Feeder measurements">
-            <div><span>Feeder load</span><strong>{formatNumber(activePayload?.true_physical_state.total_load_mw, 2, " MW")}</strong><small>system total</small></div>
-            <div><span>Losses</span><strong>{formatNumber(activePayload?.true_physical_state.total_loss_mw, 3, " MW")}</strong><small>calculated network loss</small></div>
+            <div><span>Feeder load</span><strong>{formatNumber(physicalState?.total_load_mw, 2, " MW")}</strong><small>system total</small></div>
+            <div><span>Losses</span><strong>{formatNumber(physicalState?.total_loss_mw, 3, " MW")}</strong><small>calculated network loss</small></div>
             <div><span>Power flow</span><strong className={activePayload?.power_flow_converged ? "text-normal" : "text-fault"}>{activePayload ? (activePayload.power_flow_converged ? "Converged" : "Not converged") : "Standby"}</strong><small>pandapower solution</small></div>
-            <div><span>State estimation</span><strong className={activePayload?.state_estimation.success ? "text-normal" : "text-fault"}>{activePayload ? (activePayload.state_estimation.success ? "WLS converged" : "Standby") : "Standby"}</strong><small>{activePayload?.state_estimation.bad_data_detected ? "bad data flagged" : "χ² residual check"}</small></div>
+            <div><span>State estimation</span><strong className={estimationState?.success ? "text-normal" : "text-fault"}>{estimationState ? (estimationState.success ? "WLS converged" : "Standby") : "Standby"}</strong><small>{estimationState?.bad_data_detected ? "bad data flagged" : "χ² residual check"}</small></div>
           </div>
 
           <section className="scada-surface scada-topology-panel">

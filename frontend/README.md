@@ -27,6 +27,7 @@ High-fidelity real-time command-center dashboard for physics-aware cyber-physica
 
 - **Honest Connection Status Bar**:
   - Real-time indicator for `/ws/live` WebSocket link (`connected`, `reconnecting`, `disconnected`).
+  - Separate telemetry state (`waiting`, `streaming`, `stale`, `stopped`, `error`) so a healthy socket cannot be mistaken for live simulation output.
   - Simulated clock, diurnal load multiplier, and overall feeder health badge.
 
 - **Phase 5 — Demo Resilience & Compliance Panel**:
@@ -53,12 +54,22 @@ cp .env.local.example .env.local
 | Variable | Required | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `NEXT_PUBLIC_MAPBOX_TOKEN` | Optional | `""` | Mapbox public access token from [mapbox.com](https://mapbox.com). If empty, the app uses an interactive vector SCADA schematic. |
-| `NEXT_PUBLIC_API_BASE_URL` | Optional | `http://localhost:8000` | GridSentinel FastAPI backend REST URL. |
-| `NEXT_PUBLIC_WS_URL` | Optional | `ws://localhost:8000/ws/live` | GridSentinel live telemetry WebSocket stream URL. |
+| `NEXT_PUBLIC_API_BASE_URL` | Optional | Localhost in development; deployed Render origin in browser production | GridSentinel FastAPI backend REST URL. Set the HTTPS backend origin for deployment. |
+| `NEXT_PUBLIC_WS_URL` | Optional | Localhost in development; deployed `wss://` Render endpoint in browser production | GridSentinel live telemetry WebSocket stream URL. |
 
 ---
 
 ## Getting Started
+
+## Public Demo URL
+
+Use the unprotected production alias for judges:
+
+`https://grid-sentinel-sepia.vercel.app/`
+
+Preview deployment URLs may be protected by Vercel authentication. Do not
+share a hash-based preview URL for the SIH demo; use the production alias
+above after deploying the verified branch.
 
 ### 1. Install Dependencies
 
@@ -88,6 +99,14 @@ With the Next.js dev server running on port 3000:
 ```bash
 npm run record-demo
 ```
+
+The recorder runs the complete deterministic 150-second offline replay by
+default. For a quick local smoke test, use `DEMO_DURATION_MS=5000 npm run
+record-demo` (PowerShell: `$env:DEMO_DURATION_MS=5000; npm run record-demo`).
+Set `DEMO_OUTPUT_DIR` to write a smoke-test video outside the tracked
+`backup-demo` directory. The script explicitly switches to Replay and Demo
+Director modes, so it does not depend on the live backend being available and
+returns a failure exit code if any required demo control cannot be driven.
 
 The Playwright script will:
 1. Open a headless browser at `http://localhost:3000`

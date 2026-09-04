@@ -125,21 +125,21 @@ export const AuditLog: React.FC<AuditLogProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#0E1118] rounded-[10px] border border-white/[0.07] overflow-hidden text-xs select-none">
+    <div data-testid="audit-log" className="flex flex-col h-full bg-[#0E1118] rounded-[10px] border border-white/[0.07] overflow-hidden text-xs select-none">
       {/* Header */}
-      <div className="p-3 bg-[#0E1118] border-b border-white/[0.07] flex flex-wrap items-center justify-between gap-2">
+      <div className="scada-audit-toolbar p-3 bg-[#0E1118] border-b border-white/[0.07] flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center space-x-2">
           <Shield className="w-3.5 h-3.5 text-[#10B981]" />
           <h2 className="font-bold text-[#EDEDF0] uppercase tracking-wider text-xs">
             CEA-2026 Incident Audit Trail Log
           </h2>
           <span className="text-[10px] px-2 py-0.5 rounded-[4px] bg-[#131722] text-[#10B981] font-mono border border-white/[0.06]">
-            {entries.length} Events Logged
+            {filteredEntries.length} Events Logged
           </span>
         </div>
 
         {/* Action Controls: Search, Export, Clear */}
-        <div className="flex items-center space-x-2">
+        <div className="scada-audit-actions flex items-center space-x-2">
           {/* Search bar */}
           <div className="relative">
             <Search className="w-3.5 h-3.5 text-[#5A6275] absolute left-2.5 top-1/2 -translate-y-1/2" />
@@ -201,7 +201,7 @@ export const AuditLog: React.FC<AuditLogProps> = ({
       </div>
 
       {/* Table Container */}
-      <div className="flex-1 overflow-auto max-h-[500px]">
+      <div className="flex-1 min-h-0 overflow-auto max-h-[500px]">
         {filteredEntries.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-48 text-center p-6 text-[#5A6275]">
             <Shield className="w-6 h-6 text-[#5A6275] mb-2 opacity-50" />
@@ -301,4 +301,3 @@ export const AuditLog: React.FC<AuditLogProps> = ({
     </div>
   );
 };
-

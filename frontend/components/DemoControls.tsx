@@ -192,7 +192,7 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#0E1118] rounded-[10px] border border-white/[0.07] overflow-hidden text-xs select-none shadow-sm">
+    <div data-testid="scenario-panel" className="scada-scenario-panel flex flex-col h-full bg-[#0E1118] rounded-[10px] border border-white/[0.07] overflow-hidden text-xs select-none shadow-sm">
       {/* Header */}
       <div className="p-3 bg-[#0E1118] border-b border-white/[0.07] flex items-center justify-between">
         <div className="flex items-center space-x-2">
@@ -247,7 +247,7 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
       )}
 
       {/* Target Selector Toolbar */}
-      <div className="p-2 bg-[#131722] border-b border-white/[0.07] flex flex-wrap items-center gap-3 text-[11px]">
+      <div className="scada-scenario-targets p-2 bg-[#131722] border-b border-white/[0.07] flex flex-wrap items-center gap-3 text-[11px]">
         <div className="flex items-center space-x-1.5">
           <span className="text-[#5A6275] font-mono text-[10px] uppercase">Target RTU:</span>
           <select
@@ -279,10 +279,27 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
             <option value={4}>Line 4 (Feeder B → Feeder B2)</option>
           </select>
         </div>
+
+        <div className="flex items-center space-x-1.5">
+          <span className="text-[#5A6275] font-mono text-[10px] uppercase">Target Bus:</span>
+          <select
+            aria-label="Target Bus"
+            value={selectedBus}
+            onChange={(e) => setSelectedBus(parseInt(e.target.value, 10))}
+            disabled={isReplayMode}
+            className="bg-[#0E1118] text-[#EDEDF0] px-2 py-0.5 rounded-[4px] border border-white/[0.08] focus:outline-none disabled:opacity-50"
+          >
+            <option value={1}>Bus 1 (Substation)</option>
+            <option value={2}>Bus 2 (Feeder A)</option>
+            <option value={3}>Bus 3 (Feeder B)</option>
+            <option value={4}>Bus 4 (Feeder C)</option>
+            <option value={5}>Bus 5 (Feeder A2)</option>
+          </select>
+        </div>
       </div>
 
       {/* Action Buttons Grid */}
-      <div className="p-3 space-y-3 flex-1 overflow-y-auto">
+      <div data-testid="scenario-scroll" className="scada-scenario-scroll p-3 space-y-3 flex-1 min-h-0 overflow-y-auto">
         {/* Reset to Normal Button (Prominent) */}
         <button
           onClick={handleResetNormal}
@@ -294,7 +311,7 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
         </button>
 
         {/* Section 1: Cyber Attack Scenarios */}
-        <div>
+        <div data-testid="scenario-cyber-section">
           <div className="flex items-center space-x-1.5 text-[#EF4444] font-semibold uppercase tracking-wider text-[10px] mb-2">
             <ShieldAlert className="w-3.5 h-3.5" />
             <span>Cyber Attack Scenarios</span>
@@ -437,4 +454,3 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
     </div>
   );
 };
-

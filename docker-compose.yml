@@ -15,6 +15,7 @@ services:
       - "5025:5025"
     environment:
       - PYTHONUNBUFFERED=1
+      - CORS_ALLOW_ORIGINS=http://localhost:3000
     restart: unless-stopped
 
   frontend:
