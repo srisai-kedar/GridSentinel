@@ -61,6 +61,16 @@ cp .env.local.example .env.local
 
 ## Getting Started
 
+## Public Demo URL
+
+Use the unprotected production alias for judges:
+
+`https://grid-sentinel-sepia.vercel.app/`
+
+Preview deployment URLs may be protected by Vercel authentication. Do not
+share a hash-based preview URL for the SIH demo; use the production alias
+above after deploying the verified branch.
+
 ### 1. Install Dependencies
 
 ```bash

@@ -76,7 +76,15 @@ export function useLiveSocket(urlOverride?: string) {
           if (isUnmountedRef.current) return;
           try {
             const data: Partial<LiveSocketPayload> = JSON.parse(event.data);
-            const hasTelemetry = Boolean(data.true_physical_state && data.state_estimation);
+            const hasTelemetry = Boolean(
+              data.true_physical_state &&
+                Array.isArray(data.true_physical_state.bus_voltages) &&
+                Array.isArray(data.true_physical_state.line_loadings) &&
+                typeof data.true_physical_state.total_load_mw === "number" &&
+                typeof data.true_physical_state.total_loss_mw === "number" &&
+                data.state_estimation &&
+                Array.isArray(data.state_estimation.estimated_voltages)
+            );
             if (hasTelemetry) setLatestState(data as LiveSocketPayload);
 
             if (data.stream_status === "stopped" || data.simulation_running === false) {

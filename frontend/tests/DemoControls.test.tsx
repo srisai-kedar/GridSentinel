@@ -1,22 +1,52 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { DemoControls } from "../components/DemoControls";
 
-const { triggerShortCircuit } = vi.hoisted(() => ({ triggerShortCircuit: vi.fn() }));
+const {
+  injectCommandAttack,
+  injectReplayAttack,
+  injectSilentDataAttack,
+  resetOtScenarios,
+  startOtSimulation,
+  stopOtSimulation,
+  triggerLineTrip,
+  triggerShortCircuit,
+} = vi.hoisted(() => ({
+  injectCommandAttack: vi.fn(),
+  injectReplayAttack: vi.fn(),
+  injectSilentDataAttack: vi.fn(),
+  resetOtScenarios: vi.fn(),
+  startOtSimulation: vi.fn(),
+  stopOtSimulation: vi.fn(),
+  triggerLineTrip: vi.fn(),
+  triggerShortCircuit: vi.fn(),
+}));
 
 vi.mock("@/lib/api", () => ({
-  injectCommandAttack: vi.fn(() => Promise.resolve({ message: "ok" })),
-  injectReplayAttack: vi.fn(() => Promise.resolve({ message: "ok" })),
-  injectSilentDataAttack: vi.fn(() => Promise.resolve({ message: "ok" })),
-  resetOtScenarios: vi.fn(() => Promise.resolve({ message: "ok" })),
-  startOtSimulation: vi.fn(() => Promise.resolve({ message: "ok" })),
-  stopOtSimulation: vi.fn(() => Promise.resolve({ message: "ok" })),
-  triggerLineTrip: vi.fn(() => Promise.resolve({ message: "ok" })),
+  injectCommandAttack,
+  injectReplayAttack,
+  injectSilentDataAttack,
+  resetOtScenarios,
+  startOtSimulation,
+  stopOtSimulation,
+  triggerLineTrip,
   triggerShortCircuit,
 }));
 
 describe("DemoControls", () => {
   beforeEach(() => {
+    vi.clearAllMocks();
+    for (const mock of [
+      injectCommandAttack,
+      injectReplayAttack,
+      injectSilentDataAttack,
+      resetOtScenarios,
+      startOtSimulation,
+      stopOtSimulation,
+      triggerLineTrip,
+    ]) {
+      mock.mockResolvedValue({ message: "ok" });
+    }
     triggerShortCircuit.mockResolvedValue({ message: "short circuit triggered" });
   });
 
@@ -44,5 +74,22 @@ describe("DemoControls", () => {
     expect(screen.getByRole("button", { name: /Replay Attack/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Physical Line Trip/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Short-Circuit Surge/i })).toBeInTheDocument();
+  });
+
+  it("wires each visible attack and fault control to its existing endpoint payload", async () => {
+    const cases = [
+      { button: /Silent Data Injection/i, mock: injectSilentDataAttack, payload: { rtu_id: 2, voltage_pu: 1.15, duration_ticks: 20 } },
+      { button: /Command Injection/i, mock: injectCommandAttack, payload: { rtu_id: 2, register_address: 1, value: 5000 } },
+      { button: /Replay Attack/i, mock: injectReplayAttack, payload: { rtu_id: 2, duration_ticks: 20 } },
+      { button: /Physical Line Trip/i, mock: triggerLineTrip, payload: { line_index: 0 } },
+      { button: /Short-Circuit Surge/i, mock: triggerShortCircuit, payload: { bus_index: 2, fault_load_mw: 6, fault_load_mvar: 4, duration_ticks: 6 } },
+    ] as const;
+
+    for (const scenario of cases) {
+      render(<DemoControls latestState={null} />);
+      fireEvent.click(screen.getByRole("button", { name: scenario.button }));
+      await waitFor(() => expect(scenario.mock).toHaveBeenCalledWith(scenario.payload));
+      cleanup();
+    }
   });
 });

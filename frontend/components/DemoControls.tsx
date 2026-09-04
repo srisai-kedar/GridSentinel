@@ -247,7 +247,7 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
       )}
 
       {/* Target Selector Toolbar */}
-      <div className="p-2 bg-[#131722] border-b border-white/[0.07] flex flex-wrap items-center gap-3 text-[11px]">
+      <div className="scada-scenario-targets p-2 bg-[#131722] border-b border-white/[0.07] flex flex-wrap items-center gap-3 text-[11px]">
         <div className="flex items-center space-x-1.5">
           <span className="text-[#5A6275] font-mono text-[10px] uppercase">Target RTU:</span>
           <select

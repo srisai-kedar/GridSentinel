@@ -441,7 +441,7 @@ export const DemoDirector: React.FC<DemoDirectorProps> = ({
       </div>
 
       {/* 6-Beat Step List */}
-      <div className="flex-1 overflow-y-auto p-2 space-y-1.5">
+      <div className="flex-1 min-h-0 overflow-y-auto p-2 space-y-1.5">
         {demoScript.map((step, idx) => {
           const isCurrent = idx === currentStepIdx;
           const isPassed = idx < currentStepIdx;

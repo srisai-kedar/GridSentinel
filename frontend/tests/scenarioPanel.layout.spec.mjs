@@ -6,6 +6,12 @@ async function openScenario(page) {
   await expect(page.getByTestId("scenario-panel")).toBeVisible();
 }
 
+async function openAudit(page) {
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.getByRole("tab", { name: "Audit", exact: true }).click();
+  await expect(page.getByTestId("audit-log")).toBeVisible();
+}
+
 async function assertScenarioContainment(page) {
   const geometry = await page.evaluate(() => {
     const panel = document.querySelector('[data-testid="scenario-panel"]');
@@ -82,4 +88,33 @@ test("Scenario content stays contained at a narrow viewport", async ({ page }) =
   await openScenario(page);
   await assertScenarioContainment(page);
   await expect(page.getByTestId("scenario-panel")).toHaveScreenshot("scenario-panel-narrow.png", { animations: "disabled" });
+});
+
+test("Audit toolbar wraps inside the right panel", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 800 });
+  await openAudit(page);
+
+  const geometry = await page.getByTestId("audit-log").evaluate((audit) => {
+    const panel = audit.getBoundingClientRect();
+    const toolbar = audit.querySelector(".scada-audit-toolbar").getBoundingClientRect();
+    const actions = [...audit.querySelectorAll(".scada-audit-actions > *")].map((item) => {
+      const rect = item.getBoundingClientRect();
+      return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom };
+    });
+    return {
+      panel: { left: panel.left, right: panel.right, bottom: panel.bottom },
+      toolbar: { left: toolbar.left, right: toolbar.right, bottom: toolbar.bottom },
+      actions,
+      actionOverflow: getComputedStyle(audit.querySelector(".scada-audit-actions")).overflowX,
+    };
+  });
+
+  expect(geometry.actionOverflow).toBe("visible");
+  for (const action of geometry.actions) {
+    expect(action.left).toBeGreaterThanOrEqual(geometry.toolbar.left - 1);
+    expect(action.right).toBeLessThanOrEqual(geometry.toolbar.right + 1);
+    expect(action.right).toBeLessThanOrEqual(geometry.panel.right + 1);
+    expect(action.bottom).toBeLessThanOrEqual(geometry.panel.bottom + 1);
+  }
+  await expect(page.getByTestId("audit-log")).toHaveScreenshot("audit-panel-desktop.png", { animations: "disabled" });
 });

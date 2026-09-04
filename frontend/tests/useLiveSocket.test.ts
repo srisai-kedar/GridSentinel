@@ -55,8 +55,19 @@ describe("useLiveSocket", () => {
     expect(result.current.connectionStatus).toBe("connected");
     expect(result.current.streamStatus).toBe("waiting");
 
-    // Deliver a message
     const ws = MockWebSocket.instances[0];
+    // Lifecycle/status frames and incomplete telemetry must not become the
+    // active payload consumed by the dashboard.
+    act(() => {
+      if (ws.onmessage) {
+        ws.onmessage({
+          data: JSON.stringify({ true_physical_state: {}, state_estimation: {} }),
+        });
+      }
+    });
+    expect(result.current.latestState).toBeNull();
+
+    // Deliver a complete telemetry message.
     const testPayload = {
       tick: 42,
       sim_time: "09:30:00",
