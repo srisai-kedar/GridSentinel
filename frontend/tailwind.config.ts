@@ -22,9 +22,9 @@ const config: Config = {
           hairline: "var(--border-hairline)",
         },
         accent: {
-          violet: "var(--accent-violet)",
-          violetLight: "var(--accent-violet-light)",
-          violetDark: "var(--accent-violet-dark)",
+          steel: "var(--accent-steel)",
+          steelLight: "var(--accent-steel-light)",
+          steelDark: "var(--accent-steel-dark)",
         },
         scada: {
           bg: "#08090D",
