@@ -150,16 +150,16 @@ Cyber Intrusion:   444  (5.9%)
 
 | Metric | Value |
 |:---|:---|
-| **Overall Accuracy** | **82.09%** |
-| **Cyber Intrusion FPR** | **2.44%** (79 / 3,236 non-cyber ticks) |
-| Normal F1 | 88.57% |
-| Natural Fault F1 | 71.96% |
-| Cyber Intrusion F1 | 33.09% |
-| Cyber Subtype Accuracy | 57.95% |
+| **Overall Accuracy** | **90.77%** |
+| **Cyber Intrusion FPR** | **0.43%** (14 / 3,236 non-cyber ticks) |
+| Normal F1 | 94.08% |
+| Natural Fault F1 | 85.51% |
+| Cyber Intrusion F1 | 66.67% |
+| Cyber Subtype Accuracy | 75.76% |
 
-> **Note on Cyber Intrusion F1 (33%):** The low recall reflects the severe class imbalance
-> (5.9% Cyber vs. 79% Normal). The FPR of 2.44% is the more operationally meaningful number
-> — it means the system produces a false alarm roughly once every 40 ticks.
+> **Note on Cyber Intrusion F1 (66.67%):** The decision threshold is optimized (0.58) to balance
+> recall and precision under class imbalance (5.9% Cyber vs. 72.3% Normal). The ultra-low FPR of 0.43%
+> is the key operational achievement — false alarms occur on only 14 out of 3,236 non-cyber ticks.
 
 ### Model Artifacts
 | Path | Contents |
