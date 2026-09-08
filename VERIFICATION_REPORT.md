@@ -13,7 +13,7 @@
 | **Step 1** | Inventory Before Testing | **PASS** | Complete codebase inventory matched specifications across all 5 phases; zero missing core modules. |
 | **Step 2** | Backend Runtime Verification | **FAILED-THEN-FIXED** | Fixed Modbus register write propagation in `rtu_server.py` (`fc=3` holding register function code & block fallback) and test isolation/tolerances; 126/126 tests green. |
 | **Step 3** | OT Layer & Scenario Verification | **PASS** | Verified sim clock progression, live WebSocket broadcasting, silent data injection (physics divergence with 0 traffic alerts), command injection (flagged write in traffic log), and physical faults (pandapower line trip & short-circuit sag). |
-| **Step 4** | ML Pipeline Verification | **PASS** | Model artifacts and datasets confirmed real; actual metrics reported: 82.09% overall accuracy, 2.44% cyber FPR, 57.95% subtype accuracy across 3,500 test samples. |
+| **Step 4** | ML Pipeline Verification | **PASS** | Model artifacts and datasets confirmed real; actual metrics reported: 90.77% overall accuracy, 0.43% cyber FPR, 75.76% subtype accuracy across 3,500 test samples. |
 | **Step 5** | End-to-End Classification Verification | **PASS** | Live `/classifier/verdict` correctly flags Natural Fault (95.0% confidence on line trip) and Cyber Intrusion / command_injection (98.0% confidence on unauthorized write). |
 | **Step 6** | Frontend Runtime Verification | **PASS** | Next.js frontend runs cleanly on port 3000; live WebSocket connection reflects true socket state and bus colors update per scenario. |
 | **Step 7** | Mapbox Verification | **PASS** | `NEXT_PUBLIC_MAPBOX_TOKEN` is unset in `.env.local`; application explicitly and cleanly operates in offline SVG vector fallback mode (`FeederMapFallback.tsx`). |
@@ -72,11 +72,11 @@
   - `reports/confusion_matrix.png`: 47.1 KB
   - `reports/metrics.json`: 1,463 bytes
 * **Actual Metrics from `metrics.json`:**
-  - **Overall Accuracy:** `0.8209` (82.09%)
-  - **Cyber Intrusion False Positive Rate:** `0.0244` (2.44%)
-  - **Cyber Subtype Accuracy:** `0.5795` (57.95%)
+  - **Overall Accuracy:** `0.9077` (90.77%)
+  - **Cyber Intrusion False Positive Rate:** `0.0043` (0.43%)
+  - **Cyber Subtype Accuracy:** `0.7576` (75.76%)
   - **Class Distribution:** Normal (2,531 support), Natural Fault (705 support), Cyber Intrusion (264 support)
-  - **Feature Count:** 22 cyber-physical features
+  - **Feature Count:** 28 cyber-physical features
 
 ### Step 5 — End-to-End Classification Verification
 * **Status:** `PASS`

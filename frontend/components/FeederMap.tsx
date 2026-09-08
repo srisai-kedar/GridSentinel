@@ -220,20 +220,6 @@ export const FeederMap: React.FC<FeederMapProps> = ({
           },
         });
 
-        // Line Glow
-        map.addLayer({
-          id: "feeder-lines-glow",
-          type: "line",
-          source: "feeder-lines",
-          layout: { "line-join": "round", "line-cap": "round" },
-          paint: {
-            "line-color": "#38BDF8",
-            "line-width": 8,
-            "line-opacity": 0.25,
-            "line-blur": 3,
-          },
-        });
-
         // Main Line
         map.addLayer({
           id: "feeder-lines-main",
@@ -273,12 +259,11 @@ export const FeederMap: React.FC<FeederMapProps> = ({
 
       if (!marker) {
         const el = document.createElement("div");
-        el.className = "scada-bus-marker cursor-pointer transition-all duration-300 transform hover:scale-125";
+        el.className = "scada-bus-marker cursor-pointer";
         el.style.width = "22px";
         el.style.height = "22px";
         el.style.borderRadius = "50%";
         el.style.border = "2px solid #ffffff";
-        el.style.boxShadow = `0 0 14px ${color}`;
         el.style.backgroundColor = color;
         el.style.display = "flex";
         el.style.alignItems = "center";
@@ -301,11 +286,7 @@ export const FeederMap: React.FC<FeederMapProps> = ({
       } else {
         const el = marker.getElement();
         el.style.backgroundColor = color;
-        el.style.boxShadow = isSelected
-          ? `0 0 20px #ffffff, 0 0 30px ${color}`
-          : `0 0 12px ${color}`;
         el.style.border = isSelected ? "3px solid #ffffff" : "2px solid rgba(255,255,255,0.8)";
-        el.style.transform = isSelected ? "scale(1.3)" : "scale(1)";
       }
     });
   }, [latestState, topology, selectedBus, busCoordinates, isFallbackActive]);
@@ -346,20 +327,20 @@ export const FeederMap: React.FC<FeederMapProps> = ({
     : null;
 
   return (
-    <div className="relative w-full h-full min-h-[420px] bg-[#08090D] rounded-[10px] overflow-hidden border border-white/[0.07] flex flex-col">
+    <div className="scada-map-surface relative w-full h-full min-h-[420px] bg-[#08090D] overflow-hidden border border-white/[0.07] flex flex-col">
       {/* Top Map Header */}
       <div className="absolute top-3 left-3 right-3 z-10 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
-        <div className="pointer-events-auto flex items-center space-x-2 bg-[#0E1118]/90 backdrop-blur-md px-3 py-1.5 rounded-[6px] border border-white/[0.08] shadow-lg">
-          <Layers className="w-3.5 h-3.5 text-[#A78BFA]" />
+        <div className="pointer-events-auto flex items-center space-x-2 bg-[#0E1118] px-3 py-1.5 rounded-[3px] border border-white/[0.08]">
+          <Layers className="w-3.5 h-3.5 text-[#AAB8CE]" />
           <span className="text-xs font-semibold text-[#EDEDF0] uppercase tracking-wider">
             11kV Radial Feeder Map
           </span>
-          <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#131722] text-[#9CA3AF] font-mono border border-white/[0.06]">
+          <span className="scada-map-source text-[10px] px-2 py-0.5 bg-[#131722] text-[#9CA3AF] font-mono border border-white/[0.06]">
             {topology?.feeder_name || "GridSentinel"}
           </span>
         </div>
 
-        <div className="pointer-events-auto flex items-center space-x-3 bg-[#0E1118]/90 backdrop-blur-md px-3 py-1.5 rounded-[6px] border border-white/[0.08] text-[11px] shadow-lg">
+        <div className="pointer-events-auto flex items-center space-x-3 bg-[#0E1118] px-3 py-1.5 rounded-[3px] border border-white/[0.08] text-[11px]">
           {onToggleForceFallback && (
             <button
               onClick={onToggleForceFallback}
@@ -389,7 +370,7 @@ export const FeederMap: React.FC<FeederMapProps> = ({
 
       {/* Floating detail card if bus selected */}
       {selectedBusInfo && selectedBusInfo.bus && (
-        <div className="absolute bottom-10 right-3 z-20 w-72 bg-[#0E1118]/95 backdrop-blur-md rounded-[10px] border border-white/[0.08] shadow-2xl p-3 text-xs select-none">
+        <div className="scada-map-detail absolute bottom-10 right-3 z-20 w-72 bg-[#0E1118] border border-white/[0.08] p-3 text-xs select-none">
           <div className="flex items-center justify-between border-b border-white/[0.07] pb-2 mb-2">
             <div className="flex items-center space-x-2">
               <div
@@ -405,7 +386,7 @@ export const FeederMap: React.FC<FeederMapProps> = ({
                 setInternalSelectedBus(null);
                 if (onSelectBus) onSelectBus(null);
               }}
-              className="text-[#5A6275] hover:text-[#EDEDF0] text-xs px-1.5 py-0.5 rounded-[4px] bg-[#131722] border border-white/[0.06]"
+              className="text-[#5A6275] hover:text-[#EDEDF0] text-xs px-1.5 py-0.5 rounded-[2px] bg-[#131722] border border-white/[0.06]"
             >
               ✕
             </button>
@@ -426,7 +407,7 @@ export const FeederMap: React.FC<FeederMapProps> = ({
             )}
             {selectedBusInfo.verdict && (
               <div
-                className="p-1.5 rounded-[6px] border mt-1.5"
+                className="p-1.5 rounded-[3px] border mt-1.5"
                 style={{
                   backgroundColor: `${getVerdictColor(selectedBusInfo.verdict.verdict)}12`,
                   borderColor: `${getVerdictColor(selectedBusInfo.verdict.verdict)}35`,

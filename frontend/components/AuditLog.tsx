@@ -125,7 +125,7 @@ export const AuditLog: React.FC<AuditLogProps> = ({
   };
 
   return (
-    <div data-testid="audit-log" className="flex flex-col h-full bg-[#0E1118] rounded-[10px] border border-white/[0.07] overflow-hidden text-xs select-none">
+    <div data-testid="audit-log" className="scada-audit-panel flex flex-col h-full overflow-hidden text-xs select-none">
       {/* Header */}
       <div className="scada-audit-toolbar p-3 bg-[#0E1118] border-b border-white/[0.07] flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center space-x-2">
@@ -133,7 +133,7 @@ export const AuditLog: React.FC<AuditLogProps> = ({
           <h2 className="font-bold text-[#EDEDF0] uppercase tracking-wider text-xs">
             CEA-2026 Incident Audit Trail Log
           </h2>
-          <span className="text-[10px] px-2 py-0.5 rounded-[4px] bg-[#131722] text-[#10B981] font-mono border border-white/[0.06]">
+          <span className="text-[10px] px-2 py-0.5 rounded-[2px] bg-[#131722] text-[#10B981] font-mono border border-white/[0.06]">
             {filteredEntries.length} Events Logged
           </span>
         </div>
@@ -148,7 +148,7 @@ export const AuditLog: React.FC<AuditLogProps> = ({
               placeholder="Search audit trail..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="bg-[#131722] text-[#EDEDF0] placeholder-[#5A6275] text-[11px] pl-8 pr-2.5 py-1 rounded-[6px] border border-white/[0.08] focus:outline-none focus:border-[#8B5CF6] w-36 md:w-48 transition"
+              className="bg-[#131722] text-[#EDEDF0] placeholder-[#5A6275] text-[11px] pl-8 pr-2.5 py-1 rounded-[3px] border border-white/[0.08] focus:outline-none focus:border-[#7D8FB0] w-36 md:w-48 transition"
             />
           </div>
 
@@ -156,7 +156,7 @@ export const AuditLog: React.FC<AuditLogProps> = ({
           <select
             value={selectedFilter}
             onChange={(e) => setSelectedFilter(e.target.value)}
-            className="bg-[#131722] text-[#9CA3AF] text-[11px] px-2 py-1 rounded-[6px] border border-white/[0.08] focus:outline-none"
+            className="bg-[#131722] text-[#9CA3AF] text-[11px] px-2 py-1 rounded-[3px] border border-white/[0.08] focus:outline-none"
           >
             <option value="ALL">All Categories</option>
             <option value="CYBER">Cyber Intrusion</option>
@@ -168,7 +168,7 @@ export const AuditLog: React.FC<AuditLogProps> = ({
           <button
             onClick={exportCsv}
             disabled={entries.length === 0}
-            className="flex items-center space-x-1 bg-[#131722] hover:bg-[#181E2C] text-[#EDEDF0] border border-white/[0.08] px-2.5 py-1 rounded-[6px] transition disabled:opacity-40 disabled:cursor-not-allowed font-medium text-[11px]"
+            className="flex items-center space-x-1 bg-[#131722] hover:bg-[#181E2C] text-[#EDEDF0] border border-white/[0.08] px-2.5 py-1 rounded-[3px] transition disabled:opacity-40 disabled:cursor-not-allowed font-medium text-[11px]"
             title="Download CSV report"
           >
             <FileSpreadsheet className="w-3.5 h-3.5 text-[#10B981]" />
@@ -179,10 +179,10 @@ export const AuditLog: React.FC<AuditLogProps> = ({
           <button
             onClick={exportJson}
             disabled={entries.length === 0}
-            className="flex items-center space-x-1 bg-[#131722] hover:bg-[#181E2C] text-[#EDEDF0] border border-white/[0.08] px-2.5 py-1 rounded-[6px] transition disabled:opacity-40 disabled:cursor-not-allowed font-medium text-[11px]"
+            className="flex items-center space-x-1 bg-[#131722] hover:bg-[#181E2C] text-[#EDEDF0] border border-white/[0.08] px-2.5 py-1 rounded-[3px] transition disabled:opacity-40 disabled:cursor-not-allowed font-medium text-[11px]"
             title="Download JSON telemetry"
           >
-            <FileText className="w-3.5 h-3.5 text-[#A78BFA]" />
+            <FileText className="w-3.5 h-3.5 text-[#AAB8CE]" />
             <span className="hidden sm:inline">Export JSON</span>
           </button>
 
@@ -191,7 +191,7 @@ export const AuditLog: React.FC<AuditLogProps> = ({
             <button
               onClick={onClearLogs}
               disabled={entries.length === 0}
-              className="text-[#5A6275] hover:text-[#EF4444] p-1.5 rounded-[6px] hover:bg-[#181E2C] transition disabled:opacity-30"
+              className="text-[#5A6275] hover:text-[#EF4444] p-1.5 rounded-[3px] hover:bg-[#181E2C] transition disabled:opacity-30"
               title="Clear session audit log"
             >
               <Trash2 className="w-3.5 h-3.5" />
@@ -247,7 +247,7 @@ export const AuditLog: React.FC<AuditLogProps> = ({
                     {/* Classification */}
                     <td className="p-2.5 whitespace-nowrap">
                       <span
-                        className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-[4px] font-medium uppercase tracking-wider text-[10px]"
+                        className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-[2px] font-medium uppercase tracking-wider text-[10px]"
                         style={{
                           backgroundColor: `${color}15`,
                           color: color,

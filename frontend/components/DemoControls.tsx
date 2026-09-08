@@ -192,11 +192,11 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
   };
 
   return (
-    <div data-testid="scenario-panel" className="scada-scenario-panel flex flex-col h-full bg-[#0E1118] rounded-[10px] border border-white/[0.07] overflow-hidden text-xs select-none shadow-sm">
+    <div data-testid="scenario-panel" className="scada-scenario-panel flex flex-col h-full overflow-hidden text-xs select-none">
       {/* Header */}
       <div className="p-3 bg-[#0E1118] border-b border-white/[0.07] flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <Terminal className="w-3.5 h-3.5 text-[#A78BFA]" />
+          <Terminal className="w-3.5 h-3.5 text-[#AAB8CE]" />
           <h2 className="font-bold text-[#EDEDF0] uppercase tracking-wider text-xs">
             Scenario & Attack Injection Engine
           </h2>
@@ -207,7 +207,7 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
           <button
             onClick={handleStartSim}
             disabled={isReplayMode || loadingAction !== null}
-            className="flex items-center space-x-1 bg-[#131722] hover:bg-[#181E2C] text-[#10B981] border border-[#10B981]/30 px-2.5 py-1 rounded-[4px] transition disabled:opacity-40 disabled:cursor-not-allowed font-medium text-[11px]"
+            className="flex items-center space-x-1 bg-[#131722] hover:bg-[#181E2C] text-[#10B981] border border-[#10B981]/30 px-2.5 py-1 rounded-[2px] transition disabled:opacity-40 disabled:cursor-not-allowed font-medium text-[11px]"
             title={isReplayMode ? "Disabled in Replay Mode" : "Start background simulation loop"}
           >
             <Play className="w-3 h-3 fill-[#10B981]" />
@@ -216,7 +216,7 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
           <button
             onClick={handleStopSim}
             disabled={isReplayMode || loadingAction !== null}
-            className="flex items-center space-x-1 bg-[#131722] hover:bg-[#181E2C] text-[#5A6275] hover:text-[#EDEDF0] border border-white/[0.08] px-2.5 py-1 rounded-[4px] transition disabled:opacity-40 disabled:cursor-not-allowed font-medium text-[11px]"
+            className="flex items-center space-x-1 bg-[#131722] hover:bg-[#181E2C] text-[#5A6275] hover:text-[#EDEDF0] border border-white/[0.08] px-2.5 py-1 rounded-[2px] transition disabled:opacity-40 disabled:cursor-not-allowed font-medium text-[11px]"
             title={isReplayMode ? "Disabled in Replay Mode" : "Stop simulation loop"}
           >
             <Pause className="w-3 h-3" />
@@ -254,7 +254,7 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
             value={selectedRtu}
             onChange={(e) => setSelectedRtu(parseInt(e.target.value, 10))}
             disabled={isReplayMode}
-            className="bg-[#0E1118] text-[#EDEDF0] px-2 py-0.5 rounded-[4px] border border-white/[0.08] focus:outline-none disabled:opacity-50"
+            className="bg-[#0E1118] text-[#EDEDF0] px-2 py-0.5 rounded-[2px] border border-white/[0.08] focus:outline-none disabled:opacity-50"
           >
             <option value={1}>RTU-1 (Substation-11kV)</option>
             <option value={2}>RTU-2 (Feeder A Industrial)</option>
@@ -270,7 +270,7 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
             value={selectedLine}
             onChange={(e) => setSelectedLine(parseInt(e.target.value, 10))}
             disabled={isReplayMode}
-            className="bg-[#0E1118] text-[#EDEDF0] px-2 py-0.5 rounded-[4px] border border-white/[0.08] focus:outline-none disabled:opacity-50"
+            className="bg-[#0E1118] text-[#EDEDF0] px-2 py-0.5 rounded-[2px] border border-white/[0.08] focus:outline-none disabled:opacity-50"
           >
             <option value={0}>Line 0 (Substation → Feeder A)</option>
             <option value={1}>Line 1 (Substation → Feeder B)</option>
@@ -287,7 +287,7 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
             value={selectedBus}
             onChange={(e) => setSelectedBus(parseInt(e.target.value, 10))}
             disabled={isReplayMode}
-            className="bg-[#0E1118] text-[#EDEDF0] px-2 py-0.5 rounded-[4px] border border-white/[0.08] focus:outline-none disabled:opacity-50"
+            className="bg-[#0E1118] text-[#EDEDF0] px-2 py-0.5 rounded-[2px] border border-white/[0.08] focus:outline-none disabled:opacity-50"
           >
             <option value={1}>Bus 1 (Substation)</option>
             <option value={2}>Bus 2 (Feeder A)</option>
@@ -304,7 +304,7 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
         <button
           onClick={handleResetNormal}
           disabled={isReplayMode || loadingAction !== null}
-          className="w-full flex items-center justify-center space-x-2 bg-[#131722] hover:bg-[#181E2C] text-[#EDEDF0] hover:text-[#10B981] font-semibold py-2 px-4 rounded-[6px] border border-white/[0.08] hover:border-[#10B981]/40 shadow-sm transition disabled:opacity-40 disabled:cursor-not-allowed text-xs tracking-wider uppercase"
+          className="w-full flex items-center justify-center space-x-2 bg-[#131722] hover:bg-[#181E2C] text-[#EDEDF0] hover:text-[#10B981] font-semibold py-2 px-4 rounded-[3px] border border-white/[0.08] hover:border-[#10B981]/40 transition disabled:opacity-40 disabled:cursor-not-allowed text-xs tracking-wider uppercase"
         >
           <RotateCcw className={`w-3.5 h-3.5 ${loadingAction === "reset_all" ? "animate-spin" : ""}`} />
           <span>Reset Grid to Clean State</span>
@@ -322,7 +322,7 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
             <button
               onClick={handleSilentDataInjection}
               disabled={isReplayMode || isSilentActive || loadingAction !== null}
-              className={`p-2.5 rounded-[6px] border text-left flex flex-col justify-between transition ${
+              className={`p-2.5 rounded-[3px] border text-left flex flex-col justify-between transition ${
                 isSilentActive
                   ? "bg-[#131722] border-[#EF4444]/60 text-[#EF4444] cursor-not-allowed"
                   : "bg-[#131722] hover:bg-[#181E2C] border-white/[0.06] text-[#EDEDF0] hover:border-[#EF4444]/40 disabled:opacity-40 disabled:cursor-not-allowed"
@@ -331,7 +331,7 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
               <div className="flex items-center justify-between mb-1">
                 <span className="font-semibold text-[11px]">Silent Data Injection</span>
                 {isSilentActive && (
-                  <span className="text-[9px] px-1.5 py-0.5 rounded-[4px] bg-[#EF4444]/20 text-[#EF4444] font-mono animate-pulse">
+                  <span className="text-[9px] px-1.5 py-0.5 rounded-[2px] bg-[#EF4444]/20 text-[#EF4444] font-mono">
                     ACTIVE
                   </span>
                 )}
@@ -348,7 +348,7 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
             <button
               onClick={handleCommandInjection}
               disabled={isReplayMode || loadingAction !== null}
-              className="p-2.5 rounded-[6px] border bg-[#131722] hover:bg-[#181E2C] border-white/[0.06] text-[#EDEDF0] hover:border-[#EF4444]/40 transition text-left flex flex-col justify-between disabled:opacity-40 disabled:cursor-not-allowed"
+              className="p-2.5 rounded-[3px] border bg-[#131722] hover:bg-[#181E2C] border-white/[0.06] text-[#EDEDF0] hover:border-[#EF4444]/40 transition text-left flex flex-col justify-between disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <div className="flex items-center justify-between mb-1">
                 <span className="font-semibold text-[11px]">Command Injection</span>
@@ -365,7 +365,7 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
             <button
               onClick={handleReplayAttack}
               disabled={isReplayMode || isReplayActive || loadingAction !== null}
-              className={`p-2.5 rounded-[6px] border text-left flex flex-col justify-between transition ${
+              className={`p-2.5 rounded-[3px] border text-left flex flex-col justify-between transition ${
                 isReplayActive
                   ? "bg-[#131722] border-[#EF4444]/60 text-[#EF4444] cursor-not-allowed"
                   : "bg-[#131722] hover:bg-[#181E2C] border-white/[0.06] text-[#EDEDF0] hover:border-[#EF4444]/40 disabled:opacity-40 disabled:cursor-not-allowed"
@@ -374,7 +374,7 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
               <div className="flex items-center justify-between mb-1">
                 <span className="font-semibold text-[11px]">Replay Attack</span>
                 {isReplayActive && (
-                  <span className="text-[9px] px-1.5 py-0.5 rounded-[4px] bg-[#EF4444]/20 text-[#EF4444] font-mono animate-pulse">
+                  <span className="text-[9px] px-1.5 py-0.5 rounded-[2px] bg-[#EF4444]/20 text-[#EF4444] font-mono">
                     ACTIVE
                   </span>
                 )}
@@ -401,7 +401,7 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
             <button
               onClick={handleLineTrip}
               disabled={isReplayMode || isLineTripActive || loadingAction !== null}
-              className={`p-2.5 rounded-[6px] border text-left flex flex-col justify-between transition ${
+              className={`p-2.5 rounded-[3px] border text-left flex flex-col justify-between transition ${
                 isLineTripActive
                   ? "bg-[#131722] border-[#F59E0B]/60 text-[#F59E0B] cursor-not-allowed"
                   : "bg-[#131722] hover:bg-[#181E2C] border-white/[0.06] text-[#EDEDF0] hover:border-[#F59E0B]/40 disabled:opacity-40 disabled:cursor-not-allowed"
@@ -410,7 +410,7 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
               <div className="flex items-center justify-between mb-1">
                 <span className="font-semibold text-[11px]">Physical Line Trip</span>
                 {isLineTripActive && (
-                  <span className="text-[9px] px-1.5 py-0.5 rounded-[4px] bg-[#F59E0B]/20 text-[#F59E0B] font-mono animate-pulse">
+                  <span className="text-[9px] px-1.5 py-0.5 rounded-[2px] bg-[#F59E0B]/20 text-[#F59E0B] font-mono">
                     TRIPPED
                   </span>
                 )}
@@ -427,7 +427,7 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
             <button
               onClick={handleShortCircuit}
               disabled={isReplayMode || isShortCircuitActive || loadingAction !== null}
-              className={`p-2.5 rounded-[6px] border text-left flex flex-col justify-between transition ${
+              className={`p-2.5 rounded-[3px] border text-left flex flex-col justify-between transition ${
                 isShortCircuitActive
                   ? "bg-[#131722] border-[#F59E0B]/60 text-[#F59E0B] cursor-not-allowed"
                   : "bg-[#131722] hover:bg-[#181E2C] border-white/[0.06] text-[#EDEDF0] hover:border-[#F59E0B]/40 disabled:opacity-40 disabled:cursor-not-allowed"
@@ -436,7 +436,7 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
               <div className="flex items-center justify-between mb-1">
                 <span className="font-semibold text-[11px]">Short-Circuit Surge</span>
                 {isShortCircuitActive && (
-                  <span className="text-[9px] px-1.5 py-0.5 rounded-[4px] bg-[#F59E0B]/20 text-[#F59E0B] font-mono animate-pulse">
+                  <span className="text-[9px] px-1.5 py-0.5 rounded-[2px] bg-[#F59E0B]/20 text-[#F59E0B] font-mono">
                     FAULT ACTIVE
                   </span>
                 )}
