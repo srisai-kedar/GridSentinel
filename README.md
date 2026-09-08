@@ -6,7 +6,7 @@ It fuses:
 
 1. **PCD (Physics-Consistency Detection)**: Newton-Raphson power flow & Weighted Least Squares (WLS) state estimation with largest normalized residual bad-data detection in pandapower.
 2. **NBD (Network Behaviour Detection)**: Modbus TCP deep packet transaction logging, unexpected write detection, and timing anomaly analysis.
-3. **ML Cyber-Physical Fusion Classifier**: Dual-stage Random Forest classifier delivering real-time verdicts (`Normal`, `Natural Fault`, `Cyber Intrusion`) and forensic subtyping (`data_injection`, `command_injection`, `replay`, `line_trip`, `short_circuit`).
+3. **ML Cyber-Physical Fusion Classifier**: Dual-stage XGBoost classifier delivering real-time verdicts (`Normal`, `Natural Fault`, `Cyber Intrusion`) and forensic subtyping (`data_injection`, `command_injection`, `replay`, `line_trip`, `short_circuit`).
 4. **Real-Time SCADA Command Center**: Next.js 14+ (App Router), TypeScript, Tailwind CSS, and Mapbox GL dashboard streaming live telemetry over `/ws/live`.
 
 ---
