@@ -5,6 +5,7 @@
  */
 
 import {
+  AuditLogEntry,
   OTStatusResponse,
   ResetResponse,
   ScenarioActionResponse,
@@ -47,6 +48,41 @@ async function fetchJson<T>(
   }
 
   return response.json();
+}
+
+/** Store the existing frontend audit record for out-of-band report generation. */
+export async function registerIncident(entry: AuditLogEntry): Promise<void> {
+  await fetchJson("/audit/incidents", {
+    method: "POST",
+    body: JSON.stringify({
+      id: entry.id,
+      timestamp: entry.timestamp || null,
+      sim_time: entry.simTime || null,
+      rtu_id: entry.rtuId ?? null,
+      asset_name: entry.assetName || null,
+      verdict: entry.classification || null,
+      subtype: entry.subtype || null,
+      confidence: typeof entry.confidence === "number" ? entry.confidence : null,
+      network_evidence: entry.networkSummary || null,
+      physics_evidence: entry.physicsSummary || null,
+      conclusion: entry.conclusion || null,
+      recommended_action: entry.recommendedAction || null,
+      formatted_alert: entry.formattedAlert || null,
+    }),
+  });
+}
+
+/** Fetch a generated PDF for an existing incident record. */
+export async function downloadIncidentReport(incidentId: string): Promise<Blob> {
+  const response = await fetch(`${API_BASE}/audit/${encodeURIComponent(incidentId)}/report.pdf`);
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status} ${response.statusText}`);
+  }
+  const blob = await response.blob();
+  if (blob.size === 0) {
+    throw new Error("The server returned an empty report.");
+  }
+  return blob;
 }
 
 /** Fetch feeder topology (buses and lines with coordinates) */

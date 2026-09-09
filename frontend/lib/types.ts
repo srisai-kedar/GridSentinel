@@ -214,6 +214,7 @@ export interface AuditLogEntry {
   confidence: number;
   networkSummary: string;
   physicsSummary: string;
+  conclusion?: string;
   recommendedAction: string;
   formattedAlert: string;
 }

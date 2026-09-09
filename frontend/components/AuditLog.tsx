@@ -20,11 +20,13 @@ import {
   Download,
   FileSpreadsheet,
   FileText,
+  LoaderCircle,
   Search,
   Shield,
   ShieldAlert,
   Trash2,
 } from "lucide-react";
+import { downloadIncidentReport } from "@/lib/api";
 
 interface AuditLogProps {
   entries: AuditLogEntry[];
@@ -74,6 +76,8 @@ export const AuditLog: React.FC<AuditLogProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedFilter, setSelectedFilter] = useState<string>("ALL");
+  const [reportLoadingId, setReportLoadingId] = useState<string | null>(null);
+  const [reportError, setReportError] = useState<string | null>(null);
 
   const filteredEntries = entries.filter((entry) => {
     const matchesSearch =
@@ -124,6 +128,26 @@ export const AuditLog: React.FC<AuditLogProps> = ({
     document.body.removeChild(link);
   };
 
+  const handleDownloadReport = async (entry: AuditLogEntry) => {
+    setReportLoadingId(entry.id);
+    setReportError(null);
+    try {
+      const blob = await downloadIncidentReport(entry.id);
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `GridSentinel-incident-${entry.id}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      setReportError(error instanceof Error ? error.message : "Report unavailable");
+    } finally {
+      setReportLoadingId(null);
+    }
+  };
+
   return (
     <div data-testid="audit-log" className="scada-audit-panel flex flex-col h-full overflow-hidden text-xs select-none">
       {/* Header */}
@@ -140,6 +164,7 @@ export const AuditLog: React.FC<AuditLogProps> = ({
 
         {/* Action Controls: Search, Export, Clear */}
         <div className="scada-audit-actions flex items-center space-x-2">
+          {reportError && <span role="status" className="text-[10px] text-[#EF4444]">{reportError}</span>}
           {/* Search bar */}
           <div className="relative">
             <Search className="w-3.5 h-3.5 text-[#5A6275] absolute left-2.5 top-1/2 -translate-y-1/2" />
@@ -222,6 +247,7 @@ export const AuditLog: React.FC<AuditLogProps> = ({
                 <th className="p-2.5 font-medium text-[#9CA3AF] min-w-[180px]">Network Signal</th>
                 <th className="p-2.5 font-medium text-[#9CA3AF] min-w-[180px]">Physics Signal</th>
                 <th className="p-2.5 font-medium text-[#9CA3AF] min-w-[200px]">Recommended Action</th>
+                <th className="p-2.5 font-medium text-[#9CA3AF]">Report</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/[0.04] bg-[#0E1118]">
@@ -290,6 +316,20 @@ export const AuditLog: React.FC<AuditLogProps> = ({
                     {/* Recommended Action */}
                     <td className="p-2.5 text-[#F59E0B] text-[10px] leading-relaxed font-sans">
                       {entry.recommendedAction}
+                    </td>
+
+                    <td className="p-2.5 whitespace-nowrap">
+                      <button
+                        type="button"
+                        onClick={() => void handleDownloadReport(entry)}
+                        disabled={reportLoadingId !== null}
+                        className="inline-flex items-center gap-1 rounded-[2px] border border-white/[0.08] bg-[#131722] px-2 py-1 text-[10px] font-medium text-[#AAB8CE] hover:border-[#7D8FB0] hover:text-[#EDEDF0] disabled:cursor-not-allowed disabled:opacity-40"
+                        title="Download incident report PDF"
+                        aria-label={`Download report for ${entry.assetName}`}
+                      >
+                        {reportLoadingId === entry.id ? <LoaderCircle className="h-3 w-3 animate-spin" /> : <Download className="h-3 w-3" />}
+                        <span className="hidden sm:inline">Download</span>
+                      </button>
                     </td>
                   </tr>
                 );
