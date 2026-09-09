@@ -44,6 +44,11 @@ export const StatusBar: React.FC<StatusBarProps> = ({ connectionStatus, latestSt
         <div className="scada-readout"><Zap size={14} /><span>LOAD</span><strong>{typeof load === "number" ? `${load.toFixed(2)} MW` : "—"}</strong></div>
         <div className="scada-readout"><Activity size={14} /><span>ESTIMATION</span><strong className={estimation?.success ? "text-normal" : ""}>{estimation ? (estimation.bad_data_detected ? "BAD DATA" : "WLS OK") : "STANDBY"}</strong></div>
         <div className="scada-readout"><Radio size={14} /><span>TELEMETRY</span><strong className={streamStatus === "streaming" ? "text-normal" : "text-fault"}>{streamLabel}</strong></div>
+        <div className="scada-performance-readout" aria-label="Live inference performance">
+          <div><Activity size={13} /><span>INFERENCE</span></div>
+          <strong>p50 {typeof latestState?.inference_p50_ms === "number" ? `${latestState.inference_p50_ms.toFixed(2)} ms` : "—"}</strong>
+          <small>p95 {typeof latestState?.inference_p95_ms === "number" ? `${latestState.inference_p95_ms.toFixed(2)} ms` : "—"} · {typeof latestState?.ticks_per_second === "number" ? latestState.ticks_per_second.toFixed(2) : "—"} ticks/s</small>
+        </div>
         <div className="scada-health" style={{ color: health.color, borderColor: `${health.color}55`, backgroundColor: `${health.color}12` }}>
           {health.icon}<span>{health.label}</span>
         </div>

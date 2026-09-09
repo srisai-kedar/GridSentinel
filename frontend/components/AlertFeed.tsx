@@ -7,6 +7,7 @@ import { formatAlert, getRtuAssetLabel, getVerdictColor } from "@/lib/alertText"
 
 export interface AlertFeedItem {
   id: string;
+  tick: number;
   rtuId: number;
   simTime: string;
   wallTimestamp: string;
@@ -44,6 +45,7 @@ export const AlertFeed: React.FC<AlertFeedProps> = ({ latestState, onAlertClick,
       if (changed || (!previous && verdict !== "Normal")) {
         const item: AlertFeedItem = {
           id: `alert-${Date.now()}-${rtuId}-${Math.random().toString(36).slice(2, 6)}`,
+          tick: latestState.tick,
           rtuId,
           simTime: latestState.sim_time || "--:--:--",
           wallTimestamp: new Date().toISOString(),

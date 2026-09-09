@@ -53,6 +53,9 @@ async def test_simulation_tick_evaluates_classifier_from_polled_telemetry(monkey
     assert observed["polled_telemetry"] == polled
     assert observed["traffic_events"] == []
     assert len(snapshot["ml_verdicts"]) == 5
+    assert isinstance(snapshot["inference_p50_ms"], (int, float))
+    assert isinstance(snapshot["inference_p95_ms"], (int, float))
+    assert isinstance(snapshot["ticks_per_second"], (int, float))
     assert snapshot["stream_status"] == "streaming"
     assert snapshot["simulation_running"] is True
 

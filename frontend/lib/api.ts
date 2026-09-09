@@ -6,6 +6,7 @@
 
 import {
   AuditLogEntry,
+  IncidentReplayResponse,
   OTStatusResponse,
   ResetResponse,
   ScenarioActionResponse,
@@ -56,6 +57,7 @@ export async function registerIncident(entry: AuditLogEntry): Promise<void> {
     method: "POST",
     body: JSON.stringify({
       id: entry.id,
+      trigger_tick: entry.tick ?? null,
       timestamp: entry.timestamp || null,
       sim_time: entry.simTime || null,
       rtu_id: entry.rtuId ?? null,
@@ -70,6 +72,11 @@ export async function registerIncident(entry: AuditLogEntry): Promise<void> {
       formatted_alert: entry.formattedAlert || null,
     }),
   });
+}
+
+/** Fetch the static forensic replay window attached to an incident. */
+export async function getIncidentReplay(incidentId: string): Promise<IncidentReplayResponse> {
+  return fetchJson<IncidentReplayResponse>(`/audit/${encodeURIComponent(incidentId)}/replay`);
 }
 
 /** Fetch a generated PDF for an existing incident record. */

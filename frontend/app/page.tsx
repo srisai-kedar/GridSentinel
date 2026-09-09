@@ -70,6 +70,7 @@ export default function SCADACommandCenter() {
   const handleNewVerdictChange = useCallback((item: AlertFeedItem) => {
     const entry: AuditLogEntry = {
       id: `audit-${Date.now()}-${item.rtuId}-${Math.random().toString(36).slice(2, 6)}`,
+      tick: item.tick,
       timestamp: item.wallTimestamp,
       simTime: item.simTime,
       rtuId: item.rtuId,

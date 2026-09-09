@@ -36,6 +36,7 @@ from app.ot.rtu_server import RTU_CONFIGS, rtu_pool
 from app.ot.scada_master import scada_master
 from app.ot.scenario_injector import scenario_injector
 from app.ot.traffic_logger import traffic_logger
+from app.replay_capture import replay_capture_store
 
 logger = logging.getLogger("GridSentinel.SimulationLoop")
 
@@ -97,6 +98,8 @@ class SimulationLoop:
         self.last_error: Optional[str] = None
         self.last_error_at: Optional[str] = None
         self.last_tick_at: Optional[str] = None
+        self.ticks_per_second: float = 0.0
+        self._last_tick_started_at: Optional[float] = None
 
         # WebSocket broadcast subscribers
         self._ws_subscribers: Set[asyncio.Queue] = set()
@@ -144,6 +147,9 @@ class SimulationLoop:
         await rtu_pool.start_all()
 
         classifier_service.clear_cache()
+        replay_capture_store.clear()
+        self.ticks_per_second = 0.0
+        self._last_tick_started_at = None
         self.last_error = None
         self.last_error_at = None
         self.task_status = "running"
@@ -197,6 +203,11 @@ class SimulationLoop:
         try:
             while self.is_running:
                 start_tick = time.perf_counter()
+                if self._last_tick_started_at is not None:
+                    tick_period = start_tick - self._last_tick_started_at
+                    if tick_period > 0:
+                        self.ticks_per_second = round(1.0 / tick_period, 3)
+                self._last_tick_started_at = start_tick
                 try:
                     await self.tick()
                 except asyncio.CancelledError:
@@ -345,6 +356,8 @@ class SimulationLoop:
                 "flagged_measurements": detection_result.get("flagged_measurements", []),
             },
             polled_telemetry=polled_telemetry,
+            tick=self.tick_count,
+            sim_time=sim_time_str,
         )
         overall_status = (
             "ANOMALY_DETECTED"
@@ -380,6 +393,8 @@ class SimulationLoop:
             "active_scenarios": active_scenarios,
             "recent_traffic_log": recent_traffic,
             "ml_verdicts": classifier_verdicts,
+            **classifier_service.get_inference_performance(),
+            "ticks_per_second": self.ticks_per_second,
             "overall_status": overall_status,
             "simulation_running": True,
             "stream_status": "streaming",
@@ -449,6 +464,8 @@ class SimulationLoop:
                 "last_error": self.last_error,
                 "last_error_at": self.last_error_at,
                 "ml_verdicts": snapshot.get("ml_verdicts", {}),
+                **classifier_service.get_inference_performance(),
+                "ticks_per_second": self.ticks_per_second,
             }
         )
         if not had_telemetry:
