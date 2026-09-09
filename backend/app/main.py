@@ -44,6 +44,7 @@ import numpy as np
 from fastapi import FastAPI, HTTPException, Query, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.audit_routes import router as audit_router
 from app.core.feeder import build_feeder, run_power_flow
 from app.core.state_estimation import (
     add_measurements,
@@ -136,6 +137,7 @@ app.add_middleware(
     allow_methods=["GET", "POST"],
     allow_headers=["Content-Type"],
 )
+app.include_router(audit_router)
 
 
 # ===========================================================================

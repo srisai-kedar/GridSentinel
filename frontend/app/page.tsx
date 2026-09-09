@@ -26,10 +26,9 @@ import { StatusBar } from "@/components/StatusBar";
 import { useLiveSocket } from "@/lib/useLiveSocket";
 import { useSessionRecorder } from "@/lib/sessionRecorder";
 import { useReplayEngine } from "@/lib/replayEngine";
+import { registerIncident } from "@/lib/api";
 import { AuditLogEntry, LiveSocketPayload } from "@/lib/types";
 import {
-  getNetworkEvidenceSummary,
-  getPhysicsEvidenceSummary,
   getRecommendedAction,
   getRtuAssetLabel,
 } from "@/lib/alertText";
@@ -69,23 +68,23 @@ export default function SCADACommandCenter() {
   const estimationState = activePayload?.state_estimation;
 
   const handleNewVerdictChange = useCallback((item: AlertFeedItem) => {
-    setAuditEntries((prev) => [
-      {
-        id: `audit-${Date.now()}-${item.rtuId}-${Math.random().toString(36).slice(2, 6)}`,
-        timestamp: item.wallTimestamp,
-        simTime: item.simTime,
-        rtuId: item.rtuId,
-        assetName: getRtuAssetLabel(item.rtuId),
-        classification: item.verdict,
-        subtype: item.subtype || "normal",
-        confidence: item.confidence,
-        networkSummary: getNetworkEvidenceSummary(item.verdict, item.subtype),
-        physicsSummary: getPhysicsEvidenceSummary(item.verdict, item.subtype),
-        recommendedAction: getRecommendedAction(item.verdict, item.subtype),
-        formattedAlert: item.message,
-      },
-      ...prev,
-    ]);
+    const entry: AuditLogEntry = {
+      id: `audit-${Date.now()}-${item.rtuId}-${Math.random().toString(36).slice(2, 6)}`,
+      timestamp: item.wallTimestamp,
+      simTime: item.simTime,
+      rtuId: item.rtuId,
+      assetName: getRtuAssetLabel(item.rtuId),
+      classification: item.verdict,
+      subtype: item.subtype || "normal",
+      confidence: item.confidence,
+      networkSummary: item.networkEvidence || "",
+      physicsSummary: item.physicsEvidence || "",
+      conclusion: item.conclusion,
+      recommendedAction: getRecommendedAction(item.verdict, item.subtype),
+      formattedAlert: item.message,
+    };
+    setAuditEntries((prev) => [entry, ...prev]);
+    void registerIncident(entry).catch(() => undefined);
   }, []);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {

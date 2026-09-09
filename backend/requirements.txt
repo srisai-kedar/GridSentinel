@@ -32,3 +32,4 @@ httpx==0.28.1          # required by FastAPI TestClient
 
 # Utilities
 networkx>=3.4.0
+reportlab>=4.2.5
