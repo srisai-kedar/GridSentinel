@@ -193,6 +193,9 @@ export interface LiveSocketPayload {
   };
   recent_traffic_log: TrafficEvent[];
   ml_verdicts?: Record<string, RTUVerdict>;
+  inference_p50_ms?: number;
+  inference_p95_ms?: number;
+  ticks_per_second?: number;
   overall_status?: string;
   simulation_running?: boolean;
   stream_status?: "streaming" | "stopped" | "waiting" | "error";
@@ -205,6 +208,7 @@ export interface LiveSocketPayload {
 
 export interface AuditLogEntry {
   id: string;
+  tick?: number;
   timestamp: string;
   simTime: string;
   rtuId: number;
@@ -217,6 +221,28 @@ export interface AuditLogEntry {
   conclusion?: string;
   recommendedAction: string;
   formattedAlert: string;
+}
+
+export interface ReplayWindowPoint {
+  tick: number;
+  tick_offset: number;
+  sim_time: string | null;
+  timestamp: string | null;
+  voltage_pu: number | null;
+  p_mw: number | null;
+  q_mvar: number | null;
+  nbd: Record<string, number>;
+  pcd: Record<string, number>;
+  verdict: VerdictType | null;
+  subtype: string | null;
+  confidence: number | null;
+}
+
+export interface IncidentReplayResponse {
+  id: string;
+  rtu_id: number | null;
+  trigger_tick: number | null;
+  replay_window: ReplayWindowPoint[];
 }
 
 export type ConnectionStatus = "connecting" | "connected" | "disconnected";

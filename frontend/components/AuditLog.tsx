@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import {
   AuditLogEntry,
+  IncidentReplayResponse,
+  ReplayWindowPoint,
   VerdictType,
 } from "@/lib/types";
 import {
@@ -24,9 +26,10 @@ import {
   Search,
   Shield,
   ShieldAlert,
+  History,
   Trash2,
 } from "lucide-react";
-import { downloadIncidentReport } from "@/lib/api";
+import { downloadIncidentReport, getIncidentReplay } from "@/lib/api";
 
 interface AuditLogProps {
   entries: AuditLogEntry[];
@@ -78,6 +81,13 @@ export const AuditLog: React.FC<AuditLogProps> = ({
   const [selectedFilter, setSelectedFilter] = useState<string>("ALL");
   const [reportLoadingId, setReportLoadingId] = useState<string | null>(null);
   const [reportError, setReportError] = useState<string | null>(null);
+  const [replayLoadingId, setReplayLoadingId] = useState<string | null>(null);
+  const [replayError, setReplayError] = useState<string | null>(null);
+  const [selectedReplay, setSelectedReplay] = useState<{
+    entry: AuditLogEntry;
+    data: IncidentReplayResponse;
+  } | null>(null);
+  const [replayIndex, setReplayIndex] = useState(0);
 
   const filteredEntries = entries.filter((entry) => {
     const matchesSearch =
@@ -148,6 +158,32 @@ export const AuditLog: React.FC<AuditLogProps> = ({
     }
   };
 
+  const handleOpenReplay = async (entry: AuditLogEntry) => {
+    setReplayLoadingId(entry.id);
+    setReplayError(null);
+    try {
+      const data = await getIncidentReplay(entry.id);
+      if (data.replay_window.length === 0) {
+        throw new Error("Replay window is not available for this incident yet.");
+      }
+      setSelectedReplay({ entry, data });
+      setReplayIndex(Math.max(0, data.replay_window.findIndex((point) => point.tick_offset === 0)));
+    } catch (error) {
+      setReplayError(error instanceof Error ? error.message : "Replay unavailable");
+    } finally {
+      setReplayLoadingId(null);
+    }
+  };
+
+  const activeReplayPoint: ReplayWindowPoint | null = selectedReplay?.data.replay_window[replayIndex] || null;
+  const replayResidual = activeReplayPoint?.pcd.pcd_max_lnr;
+  const replayAnomaly = activeReplayPoint
+    ? activeReplayPoint.nbd.nbd_unexpected_write_count > 0 || activeReplayPoint.nbd.nbd_modbus_anomaly_rate > 0
+    : false;
+
+  const formatReplayNumber = (value: number | null | undefined, digits = 4) =>
+    typeof value === "number" ? value.toFixed(digits) : "Not recorded";
+
   return (
     <div data-testid="audit-log" className="scada-audit-panel flex flex-col h-full overflow-hidden text-xs select-none">
       {/* Header */}
@@ -164,7 +200,7 @@ export const AuditLog: React.FC<AuditLogProps> = ({
 
         {/* Action Controls: Search, Export, Clear */}
         <div className="scada-audit-actions flex items-center space-x-2">
-          {reportError && <span role="status" className="text-[10px] text-[#EF4444]">{reportError}</span>}
+          {(reportError || replayError) && <span role="status" className="text-[10px] text-[#EF4444]">{reportError || replayError}</span>}
           {/* Search bar */}
           <div className="relative">
             <Search className="w-3.5 h-3.5 text-[#5A6275] absolute left-2.5 top-1/2 -translate-y-1/2" />
@@ -247,7 +283,7 @@ export const AuditLog: React.FC<AuditLogProps> = ({
                 <th className="p-2.5 font-medium text-[#9CA3AF] min-w-[180px]">Network Signal</th>
                 <th className="p-2.5 font-medium text-[#9CA3AF] min-w-[180px]">Physics Signal</th>
                 <th className="p-2.5 font-medium text-[#9CA3AF] min-w-[200px]">Recommended Action</th>
-                <th className="p-2.5 font-medium text-[#9CA3AF]">Report</th>
+                <th className="p-2.5 font-medium text-[#9CA3AF]">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/[0.04] bg-[#0E1118]">
@@ -321,6 +357,17 @@ export const AuditLog: React.FC<AuditLogProps> = ({
                     <td className="p-2.5 whitespace-nowrap">
                       <button
                         type="button"
+                        onClick={() => void handleOpenReplay(entry)}
+                        disabled={replayLoadingId !== null}
+                        className="mr-1 inline-flex items-center gap-1 rounded-[2px] border border-white/[0.08] bg-[#131722] px-2 py-1 text-[10px] font-medium text-[#AAB8CE] hover:border-[#7D8FB0] hover:text-[#EDEDF0] disabled:cursor-not-allowed disabled:opacity-40"
+                        title="Open forensic replay"
+                        aria-label={`Replay incident for ${entry.assetName}`}
+                      >
+                        {replayLoadingId === entry.id ? <LoaderCircle className="h-3 w-3 animate-spin" /> : <History className="h-3 w-3" />}
+                        <span className="hidden sm:inline">Replay</span>
+                      </button>
+                      <button
+                        type="button"
                         onClick={() => void handleDownloadReport(entry)}
                         disabled={reportLoadingId !== null}
                         className="inline-flex items-center gap-1 rounded-[2px] border border-white/[0.08] bg-[#131722] px-2 py-1 text-[10px] font-medium text-[#AAB8CE] hover:border-[#7D8FB0] hover:text-[#EDEDF0] disabled:cursor-not-allowed disabled:opacity-40"
@@ -338,6 +385,70 @@ export const AuditLog: React.FC<AuditLogProps> = ({
           </table>
         )}
       </div>
+
+      {selectedReplay && activeReplayPoint && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" role="presentation" onMouseDown={(event) => {
+          if (event.target === event.currentTarget) setSelectedReplay(null);
+        }}>
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="incident-replay-title"
+            className="w-full max-w-lg rounded-[4px] border border-[#29394e] bg-[#0E1118] p-4 text-[#EDEDF0] shadow-2xl"
+          >
+            <div className="flex items-start justify-between gap-4 border-b border-white/[0.07] pb-3">
+              <div>
+                <span className="scada-kicker">Forensic replay · static captured window</span>
+                <h2 id="incident-replay-title" className="mt-1 text-sm font-semibold">{selectedReplay.entry.assetName}</h2>
+              </div>
+              <button type="button" onClick={() => setSelectedReplay(null)} className="text-xs text-[#9CA3AF] hover:text-[#EDEDF0]" aria-label="Close replay">Close</button>
+            </div>
+
+            <div className="mt-4 space-y-3">
+              <label className="block text-[10px] uppercase tracking-wider text-[#9CA3AF]" htmlFor="incident-replay-scrubber">
+                Tick {activeReplayPoint.tick_offset > 0 ? `+${activeReplayPoint.tick_offset}` : activeReplayPoint.tick_offset} · {activeReplayPoint.sim_time || "Not recorded"}
+              </label>
+              <input
+                id="incident-replay-scrubber"
+                type="range"
+                min={0}
+                max={selectedReplay.data.replay_window.length - 1}
+                value={replayIndex}
+                onChange={(event) => setReplayIndex(Number(event.target.value))}
+                className="w-full accent-[#AAB8CE]"
+              />
+              <div className="flex justify-between text-[9px] font-mono text-[#5A6275]">
+                <span>{selectedReplay.data.replay_window[0].tick_offset}</span>
+                <span>{selectedReplay.data.replay_window[selectedReplay.data.replay_window.length - 1].tick_offset}</span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 text-[10px]">
+                <div className="rounded-[3px] border border-white/[0.07] bg-[#131722] p-3">
+                  <span className="text-[#5A6275]">Affected RTU</span>
+                  <strong className="mt-1 block text-[#EDEDF0]">RTU-{selectedReplay.data.rtu_id ?? "Not recorded"}</strong>
+                  <span className="mt-2 block text-[#5A6275]">Verdict</span>
+                  <strong className="mt-1 block" style={{ color: activeReplayPoint.verdict === "Cyber Intrusion" ? "#EF4444" : activeReplayPoint.verdict === "Natural Fault" ? "#F59E0B" : "#10B981" }}>
+                    {activeReplayPoint.verdict || "Not recorded"}
+                  </strong>
+                </div>
+                <div className="rounded-[3px] border border-white/[0.07] bg-[#131722] p-3">
+                  <span className="text-[#5A6275]">Feeder state</span>
+                  <strong className={`mt-1 block ${replayAnomaly ? "text-[#EF4444]" : "text-[#10B981]"}`}>{replayAnomaly ? "ANOMALOUS" : "NOMINAL"}</strong>
+                  <span className="mt-2 block text-[#5A6275]">Max normalized residual</span>
+                  <strong className="mt-1 block font-mono text-[#EDEDF0]">{formatReplayNumber(replayResidual, 2)}</strong>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2 border-t border-white/[0.07] pt-3 text-[10px] font-mono text-[#AAB8CE]">
+                <span>V {formatReplayNumber(activeReplayPoint.voltage_pu, 5)} pu</span>
+                <span>P {formatReplayNumber(activeReplayPoint.p_mw, 5)} MW</span>
+                <span>Q {formatReplayNumber(activeReplayPoint.q_mvar, 5)} Mvar</span>
+              </div>
+              <div className="text-[9px] text-[#5A6275]">Network anomaly: {replayAnomaly ? "detected in captured NBD fields" : "not detected in captured NBD fields"}. Values are the recorded classifier inputs for this tick.</div>
+            </div>
+          </section>
+        </div>
+      )}
     </div>
   );
 };

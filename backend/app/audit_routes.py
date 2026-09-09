@@ -20,6 +20,15 @@ def register_incident(record: IncidentRecord) -> IncidentRecord:
     return store_incident(record)
 
 
+@router.get("/{incident_id}/replay", response_model=IncidentRecord)
+def get_incident_replay(incident_id: str) -> IncidentRecord:
+    """Return the captured static forensic window for an audit incident."""
+    record = get_incident(incident_id)
+    if record is None:
+        raise HTTPException(status_code=404, detail="Incident record not found")
+    return record
+
+
 @router.get("/{incident_id}/report.pdf", response_class=Response)
 def get_incident_report(incident_id: str) -> Response:
     record = get_incident(incident_id)

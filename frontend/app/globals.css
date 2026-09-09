@@ -101,6 +101,12 @@ button, a, input, select { transition: color .15s ease, background-color .15s ea
 .scada-readout svg { color: #8392a8; flex: none; }
 .scada-readout span { font: 10px ui-monospace, monospace; letter-spacing: .08em; white-space: nowrap; }
 .scada-readout strong { color: var(--text-primary); font: 600 12px ui-monospace, monospace; white-space: nowrap; }
+.scada-performance-readout { display: flex; flex-direction: column; gap: 1px; min-width: 125px; color: var(--text-muted); }
+.scada-performance-readout > div { display: flex; align-items: center; gap: 6px; }
+.scada-performance-readout svg { color: #8392a8; flex: none; }
+.scada-performance-readout span, .scada-performance-readout small { font: 9px ui-monospace, monospace; letter-spacing: .07em; white-space: nowrap; }
+.scada-performance-readout strong { color: var(--text-primary); font: 600 10px ui-monospace, monospace; white-space: nowrap; }
+.scada-performance-readout small { color: var(--text-muted); letter-spacing: 0; }
 .scada-health { display: flex; align-items: center; gap: 7px; padding: 8px 10px; border: 1px solid; border-radius: 2px; font: 700 10px ui-monospace, monospace; letter-spacing: .08em; white-space: nowrap; }
 .scada-connection { display: flex; align-items: center; gap: 7px; padding-left: 20px; border-left: 1px solid var(--border-hairline); font: 700 10px ui-monospace, monospace; letter-spacing: .07em; white-space: nowrap; }
 .scada-connection.connected { color: var(--verdict-normal); }

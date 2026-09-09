@@ -1,8 +1,16 @@
 import React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { beforeEach, describe, it, expect, vi } from "vitest";
+import { getIncidentReplay } from "../lib/api";
 import { AuditLog, generateCsvData } from "../components/AuditLog";
 import { AuditLogEntry } from "../lib/types";
+
+vi.mock("../lib/api", () => ({
+  downloadIncidentReport: vi.fn(),
+  getIncidentReplay: vi.fn(),
+}));
+
+const mockedGetIncidentReplay = vi.mocked(getIncidentReplay);
 
 const makeAuditEntry = (id: string): AuditLogEntry => ({
   id,
@@ -20,6 +28,10 @@ const makeAuditEntry = (id: string): AuditLogEntry => ({
 });
 
 describe("AuditLog CSV Export", () => {
+  beforeEach(() => {
+    mockedGetIncidentReplay.mockReset();
+  });
+
   it("produces correctly formatted CSV data with proper headers and escaping", () => {
     const sampleEntries: AuditLogEntry[] = [
       {
@@ -90,5 +102,40 @@ describe("AuditLog CSV Export", () => {
     });
     expect(screen.getByText("0 Events Logged")).toBeInTheDocument();
     expect(screen.queryAllByRole("row")).toHaveLength(0);
+  });
+
+  it("opens the captured replay and moves the static scrubber without another fetch", async () => {
+    mockedGetIncidentReplay.mockResolvedValue({
+      id: "audit-replay",
+      rtu_id: 2,
+      trigger_tick: 6,
+      replay_window: [-1, 0, 1].map((tickOffset) => ({
+        tick: 6 + tickOffset,
+        tick_offset: tickOffset,
+        sim_time: `08:0${tickOffset + 5}:00`,
+        timestamp: "2026-09-04T10:00:00.000Z",
+        voltage_pu: 0.98 + tickOffset * 0.001,
+        p_mw: 0.2,
+        q_mvar: 0.05,
+        nbd: { nbd_unexpected_write_count: tickOffset === 1 ? 1 : 0, nbd_modbus_anomaly_rate: tickOffset === 1 ? 0.5 : 0 },
+        pcd: { pcd_max_lnr: tickOffset === 1 ? 4.2 : 0.4 },
+        verdict: tickOffset === 1 ? "Cyber Intrusion" : "Normal",
+        subtype: tickOffset === 1 ? "data_injection" : "normal",
+        confidence: 0.95,
+      })),
+    });
+
+    render(React.createElement(AuditLog, { entries: [makeAuditEntry("audit-replay")] }));
+    fireEvent.click(screen.getByRole("button", { name: "Replay incident for RTU-2-FeederA" }));
+
+    await waitFor(() => expect(screen.getByRole("dialog")).toBeInTheDocument());
+    expect(screen.getByText("Tick 0 · 08:05:00")).toBeInTheDocument();
+    expect(screen.getByText("NOMINAL")).toBeInTheDocument();
+
+    fireEvent.change(screen.getByRole("slider"), { target: { value: "2" } });
+    expect(screen.getByText("Tick +1 · 08:06:00")).toBeInTheDocument();
+    expect(screen.getByText("ANOMALOUS")).toBeInTheDocument();
+    expect(screen.getByText("4.20")).toBeInTheDocument();
+    expect(mockedGetIncidentReplay).toHaveBeenCalledTimes(1);
   });
 });

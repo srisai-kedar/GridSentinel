@@ -19,6 +19,8 @@ decisions rest with qualified grid operators.
 from __future__ import annotations
 
 import logging
+import time
+from collections import deque
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -26,6 +28,7 @@ import joblib
 import numpy as np
 
 from app.ml.feature_engineering import FEATURE_SCHEMA, extract_features
+from app.replay_capture import replay_capture_store
 
 logger = logging.getLogger("GridSentinel.ClassifierService")
 
@@ -170,6 +173,7 @@ class ClassifierService:
 
         # Cache of latest verdicts per RTU
         self.latest_verdicts: Dict[int, Dict[str, Any]] = {}
+        self._inference_latencies_ms = deque(maxlen=50)
 
         # Attempt initial load
         self.load_model()
@@ -215,9 +219,33 @@ class ClassifierService:
     def clear_cache(self) -> None:
         """Discard verdicts from a prior simulation/session lifecycle."""
         self.latest_verdicts = {}
+        self._inference_latencies_ms.clear()
         logger.info("[ClassifierService] Cleared cached RTU verdicts.")
 
     def predict(self, features: Dict[str, float]) -> Dict[str, Any]:
+        """Time one inference call while preserving the existing prediction path."""
+        started_at = time.perf_counter()
+        try:
+            return self._predict_untimed(features)
+        finally:
+            self._inference_latencies_ms.append((time.perf_counter() - started_at) * 1000.0)
+
+    def get_inference_performance(self) -> Dict[str, float]:
+        """Return rolling p50/p95 inference latency in milliseconds."""
+        samples = sorted(self._inference_latencies_ms)
+        if not samples:
+            return {"inference_p50_ms": 0.0, "inference_p95_ms": 0.0}
+
+        def percentile(fraction: float) -> float:
+            index = min(len(samples) - 1, int((len(samples) - 1) * fraction))
+            return round(float(samples[index]), 4)
+
+        return {
+            "inference_p50_ms": percentile(0.50),
+            "inference_p95_ms": percentile(0.95),
+        }
+
+    def _predict_untimed(self, features: Dict[str, float]) -> Dict[str, Any]:
         """
         Run inference on a single feature dictionary.
 
@@ -350,9 +378,13 @@ class ClassifierService:
         traffic_events: List[Dict[str, Any]],
         state_estimation_result: Dict[str, Any],
         polled_telemetry: Optional[Dict[int, Dict[str, Any]]] = None,
+        tick: Optional[int] = None,
+        sim_time: Optional[str] = None,
+        tick_timestamp: Optional[str] = None,
     ) -> Dict[int, Dict[str, Any]]:
         """Extract features and run classification for all 5 monitored RTUs."""
         results = {}
+        features_by_rtu: Dict[int, Dict[str, float]] = {}
         for rtu_id in range(1, 6):
             feats = extract_features(
                 traffic_events=traffic_events,
@@ -361,7 +393,21 @@ class ClassifierService:
                 polled_telemetry=polled_telemetry,
             )
             res = self.predict(feats)
+            features_by_rtu[rtu_id] = feats
             results[rtu_id] = res
+
+        # This is a bounded copy of the feature dictionaries already produced
+        # above. It is intentionally after inference and is never read by the
+        # live classifier, simulation decisions, or WebSocket broadcaster.
+        if tick is not None:
+            replay_capture_store.record_tick(
+                tick=tick,
+                sim_time=sim_time,
+                timestamp=tick_timestamp,
+                features_by_rtu=features_by_rtu,
+                verdicts_by_rtu=results,
+                telemetry_by_rtu=polled_telemetry,
+            )
 
         self.latest_verdicts = results
         return results
