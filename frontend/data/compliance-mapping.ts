@@ -3,6 +3,11 @@
  * ---------------------
  * Hardcoded, verified CEA-2026 regulation facts and feature mappings for GridSentinel.
  * Content derived strictly from official Gazette text.
+ *
+ * Canonical Reference:
+ * R1. Central Electricity Authority (Cyber Security in Power Sector) Regulations, 2026.
+ * Gazette of India, 31 July 2026, issued under Section 177 read with Section 73(c),
+ * Electricity Act 2003. General provisions effective 1 April 2027.
  */
 
 export interface CeaFacts {

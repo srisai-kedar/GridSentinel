@@ -140,3 +140,10 @@ contains the current Render backend as a fallback for non-local browser hosts,
 but deployment variables remain the authoritative configuration.
 
 > **Security Best Practice**: Never commit production credentials, actual secrets, or live API tokens to version control. Only commit `.env.example` template files.
+
+---
+
+## References
+
+GridSentinel references canonical statutory regulations and research literature. See [Canonical References](docs/REFERENCES.md) and [Citation Integrity Audit](docs/CITATION_AUDIT.md).
+

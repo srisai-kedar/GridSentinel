@@ -348,15 +348,25 @@ curl -X POST http://127.0.0.1:8000/ot/reset
 
 ---
 
-## 10. External Benchmark: MSU/ORNL ICS Dataset
+## 10. External Dataset Reference: MSU/ORNL ICS Dataset
 
-GridSentinel includes `app/ml/msu_ornl_loader.py` for coarse feature alignment against the [Mississippi State University & ORNL Power System Attack Dataset](https://www.ece.msstate.edu/~donohoe/documentation_powersystem.zip).
+Feature categories informed by the MSU/ORNL Power System Attack Datasets (2014); GridSentinel has not been benchmarked on this dataset in this repository.
 
-The MSU/ORNL dataset captures Modbus TCP traffic from a real ICS testbed under 37 attack scenarios. It can be used as a coarse sanity check (not a direct GridSentinel benchmark, since its physics residuals and feeder topology differ from GridSentinel's Indian 11kV model).
+Reference: Mississippi State University / Oak Ridge National Laboratory, Power System Attack Datasets (2014): hardware-in-the-loop RTDS testbed, 4 PMUs, 37 labeled event scenarios. This is a dataset-level reference only; no journal citation has been verified.
+
+GridSentinel includes `app/ml/msu_ornl_loader.py` for coarse feature category mapping against the [Mississippi State University & ORNL Power System Attack Dataset](https://www.ece.msstate.edu/~donohoe/documentation_powersystem.zip).
 
 ```powershell
 # Download dataset manually from:
 # https://www.ece.msstate.edu/~donohoe/documentation_powersystem.zip
 # Then:
-.venv\Scripts\python -c "from app.ml.msu_ornl_loader import load_msu_ornl_dataset; print(load_msu_ornl_dataset('path/to/dataset.csv'))"
+.venv\Scripts\python -c "from app.ml.msu_ornl_loader import load_msu_ornl_data; print(load_msu_ornl_data('path/to/dataset.csv'))"
 ```
+
+---
+
+## References
+
+GridSentinel references canonical statutory regulations and research literature. See [Canonical References](../docs/REFERENCES.md) and [Citation Integrity Audit](../docs/CITATION_AUDIT.md).
+
+

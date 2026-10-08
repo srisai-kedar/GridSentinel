@@ -204,3 +204,10 @@ gridsentinel/frontend/
 │   └── FeederMapFallback.test.tsx
 └── backup-demo/               # Generated backup video output directory
 ```
+
+---
+
+## References
+
+GridSentinel references canonical statutory regulations and research literature. See [Canonical References](../docs/REFERENCES.md) and [Citation Integrity Audit](../docs/CITATION_AUDIT.md).
+
