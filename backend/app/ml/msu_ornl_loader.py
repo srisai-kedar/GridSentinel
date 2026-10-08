@@ -4,16 +4,18 @@ msu_ornl_loader.py
 Loader and mapper for the Mississippi State University / Oak Ridge National Laboratory
 (MSU/ORNL) Power System Attack Datasets.
 
-This module is designed for external benchmark validation:
+Feature categories informed by the MSU/ORNL Power System Attack Datasets (2014);
+GridSentinel has not been benchmarked on this dataset in this repository.
+
+Reference:
+Mississippi State University / Oak Ridge National Laboratory, Power System Attack Datasets (2014):
+hardware-in-the-loop RTDS testbed, 4 PMUs, 37 labeled event scenarios. This is a dataset-level
+reference only; no journal citation has been verified.
+
+This module provides optional category mapping utilities:
 - If CSV files are manually placed in `data/msu_ornl/`, this module loads them and
   maps their labeled categories to GridSentinel's 3-way taxonomy.
 - If no files are present, it logs a clear notice and skips gracefully without error.
-
-NOTE ON BENCHMARK COMPARISON:
-Validation against MSU/ORNL datasets serves as a coarse sanity check for cyber-vs-physical
-triage behavior, not an apples-to-apples benchmark, because the external dataset derives
-from a 15-bus transmission system (IEEE 9-bus or 39-bus with PMU/relay telemetry) rather
-than our 11kV radial distribution feeder with pandapower state estimation residuals.
 """
 
 from __future__ import annotations
@@ -112,7 +114,8 @@ def validate_against_msu_ornl(
     data_dir: str = "data/msu_ornl",
 ) -> Dict[str, Any]:
     """
-    Evaluate how the trained model's logic holds up against mapped MSU/ORNL data.
+    Feature categories informed by the MSU/ORNL Power System Attack Datasets (2014);
+    GridSentinel has not been benchmarked on this dataset in this repository.
 
     If data is not present, returns a structured status indicating graceful skip.
     """
