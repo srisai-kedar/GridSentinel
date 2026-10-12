@@ -29,11 +29,15 @@ class IncidentRecord(BaseModel):
     replay_window: List[Dict[str, Any]] = Field(default_factory=list)
 
 
+MAX_INCIDENTS_CAP: int = 500
 _records: Dict[str, IncidentRecord] = {}
 
 
 def store_incident(record: IncidentRecord) -> IncidentRecord:
     record.replay_window = replay_capture_store.get_window(record.rtu_id, record.trigger_tick)
+    if len(_records) >= MAX_INCIDENTS_CAP and record.id not in _records:
+        oldest_key = next(iter(_records))
+        _records.pop(oldest_key, None)
     _records[record.id] = record
     return record
 

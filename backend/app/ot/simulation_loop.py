@@ -101,8 +101,9 @@ class SimulationLoop:
         self.ticks_per_second: float = 0.0
         self._last_tick_started_at: Optional[float] = None
 
-        # WebSocket broadcast subscribers
+        # WebSocket broadcast subscribers and stalled client drop tracking
         self._ws_subscribers: Set[asyncio.Queue] = set()
+        self._ws_dropped_counts: Dict[asyncio.Queue, int] = {}
 
     def get_sim_time_string(self) -> str:
         """Format total simulated minutes as HH:MM:SS."""
@@ -215,7 +216,15 @@ class SimulationLoop:
                 except Exception as exc:
                     self._record_error(exc)
                     logger.error(f"Error during simulation tick: {exc}", exc_info=True)
+                    self.task_status = "error"
+                    scenario_injector.clear_all_scenarios(net=self.net)
+                    traffic_logger.clear()
+                    classifier_service.clear_cache()
                     self.latest_state = self._status_snapshot("error", stale=True)
+                    self.latest_state["active_scenarios"] = scenario_injector.get_active_scenarios()
+                    self.latest_state["recent_traffic_log"] = []
+                    self.latest_state["ml_verdicts"] = {}
+                    self.latest_state["overall_status"] = "NORMAL"
                     await self._broadcast_ws(self.latest_state)
 
                 elapsed = time.perf_counter() - start_tick
@@ -421,11 +430,13 @@ class SimulationLoop:
         """Register a new WebSocket client queue."""
         q: asyncio.Queue = asyncio.Queue(maxsize=10)
         self._ws_subscribers.add(q)
+        self._ws_dropped_counts[q] = 0
         return q
 
     def unsubscribe_ws(self, q: asyncio.Queue) -> None:
         """Unregister a WebSocket client queue."""
         self._ws_subscribers.discard(q)
+        self._ws_dropped_counts.pop(q, None)
 
     def get_ws_snapshot(self) -> Dict[str, Any]:
         """Return the latest telemetry or an explicit lifecycle status frame."""
@@ -480,13 +491,23 @@ class SimulationLoop:
 
     async def _broadcast_ws(self, payload: Dict[str, Any]) -> None:
         """Push snapshot to all subscribed WebSocket queues non-blockingly."""
+        stalled_to_drop: List[asyncio.Queue] = []
         for q in list(self._ws_subscribers):
             try:
                 if q.full():
                     q.get_nowait()
+                    drops = self._ws_dropped_counts.get(q, 0) + 1
+                    self._ws_dropped_counts[q] = drops
+                    if drops >= 10:
+                        stalled_to_drop.append(q)
+                else:
+                    self._ws_dropped_counts[q] = 0
                 q.put_nowait(payload)
             except Exception:
                 pass
+        for stalled_q in stalled_to_drop:
+            logger.warning("[_broadcast_ws] Dropping stalled WebSocket queue after 10 consecutive dropped frames.")
+            self.unsubscribe_ws(stalled_q)
 
 
 # Global singleton instance

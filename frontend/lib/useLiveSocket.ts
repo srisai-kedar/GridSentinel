@@ -85,7 +85,22 @@ export function useLiveSocket(urlOverride?: string) {
                 data.state_estimation &&
                 Array.isArray(data.state_estimation.estimated_voltages)
             );
-            if (hasTelemetry) setLatestState(data as LiveSocketPayload);
+            if (hasTelemetry) {
+              setLatestState(data as LiveSocketPayload);
+            } else if (data.stream_status === "stopped" || data.simulation_running === false) {
+              setLatestState((prev) =>
+                prev
+                  ? {
+                      ...prev,
+                      simulation_running: false,
+                      stream_status: "stopped",
+                      stale: true,
+                      ml_verdicts: {},
+                      overall_status: "NORMAL",
+                    }
+                  : null
+              );
+            }
 
             if (data.stream_status === "stopped" || data.simulation_running === false) {
               setStreamStatus("stopped");
@@ -124,7 +139,10 @@ export function useLiveSocket(urlOverride?: string) {
           socketRef.current = null;
           clearStaleTimer();
 
-          // Schedule reconnection with exponential backoff (1s -> 2s -> 4s -> ... -> max 10s)
+          // Ensure disconnected state marks telemetry as stale to prevent displaying stale verdicts as current
+          setLatestState((prev) => (prev ? { ...prev, stale: true, stream_status: "error" } : null));
+
+          // Schedule reconnection with exponential backoff (1s -> 1.5s -> ... -> max 10s)
           const delay = reconnectDelayRef.current;
           reconnectDelayRef.current = Math.min(delay * 1.5, 10000);
 
