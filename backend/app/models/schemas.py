@@ -73,6 +73,13 @@ class HealthResponse(BaseModel):
     status: str = "ok"
 
 
+class VersionResponse(BaseModel):
+    git_sha: str
+    model_sha256_short: str
+    feature_schema_version: str
+    started_at_utc: str
+
+
 class TopologyResponse(BaseModel):
     feeder_name: str
     buses: List[BusTopology]

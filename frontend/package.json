@@ -10,7 +10,9 @@
     "test": "vitest run --pool=forks",
     "test:layout": "playwright test -c playwright.config.mjs tests/scenarioPanel.layout.spec.mjs",
     "test:watch": "vitest --pool=forks",
-    "record-demo": "node scripts/record-demo.mjs"
+    "record-demo": "node scripts/record-demo.mjs",
+    "preflight": "python ../scripts/demo-preflight.py --backend-url http://localhost:8000 --frontend-dir .",
+    "preflight:prod": "python ../scripts/demo-preflight.py --backend-url https://gridsentinel-72tf.onrender.com --frontend-dir ."
   },
   "dependencies": {
     "clsx": "^2.1.1",

@@ -81,13 +81,64 @@ from app.models.schemas import (
     TrafficLogResponse,
     VerdictRequest,
     VerdictResponse,
+    VersionResponse,
 )
 from app.ml.classifier_service import classifier_service
+from app.ml.feature_engineering import FEATURE_SCHEMA_VERSION
 from app.ot.rtu_server import rtu_pool
 from app.ot.scada_master import scada_master
 from app.ot.scenario_injector import scenario_injector
 from app.ot.simulation_loop import sim_loop
 from app.ot.traffic_logger import traffic_logger
+
+import hashlib
+import os
+import subprocess
+from datetime import datetime, timezone
+from pathlib import Path
+
+_SERVER_STARTED_AT_UTC: str = datetime.now(timezone.utc).isoformat()
+
+
+def get_git_sha() -> str:
+    """Resolve short git SHA from deployment platform env vars or local git CLI."""
+    for var in ("RENDER_GIT_COMMIT", "VERCEL_GIT_COMMIT_SHA", "GIT_COMMIT", "COMMIT_SHA"):
+        val = os.environ.get(var)
+        if val:
+            return val.strip()[:7]
+    try:
+        res = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=2.0,
+        )
+        if res.returncode == 0 and res.stdout.strip():
+            return res.stdout.strip()[:7]
+    except Exception:
+        pass
+    return "unknown"
+
+
+def get_model_sha256_short() -> str:
+    """Compute sha256 prefix of the ML fusion classifier model artifact."""
+    candidate_paths = [
+        Path(__file__).resolve().parent.parent / "models" / "fusion_classifier.joblib",
+        Path("models/fusion_classifier.joblib"),
+        Path("backend/models/fusion_classifier.joblib"),
+    ]
+    for p in candidate_paths:
+        if p.exists():
+            try:
+                h = hashlib.sha256()
+                with open(p, "rb") as f:
+                    while chunk := f.read(65536):
+                        h.update(chunk)
+                return h.hexdigest()[:8]
+            except Exception:
+                pass
+    return "unknown"
 
 
 # ---------------------------------------------------------------------------
@@ -129,25 +180,50 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+cors_origins = [
+    "https://grid-sentinel-sepia.vercel.app",
+]
+env_cors = os.environ.get("CORS_ALLOW_ORIGINS")
+if env_cors:
+    for orig in env_cors.split(","):
+        orig = orig.strip()
+        if orig and orig not in cors_origins:
+            cors_origins.append(orig)
+
+for local_origin in ("http://localhost:3000", "http://127.0.0.1:3000"):
+    if local_origin not in cors_origins:
+        cors_origins.append(local_origin)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://grid-sentinel-sepia.vercel.app"],
+    allow_origins=cors_origins,
     allow_origin_regex=r"^https://grid-sentinel-[a-z0-9]+-srisai-kedars-projects\.vercel\.app$",
     allow_credentials=False,
-    allow_methods=["GET", "POST"],
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Content-Type"],
 )
 app.include_router(audit_router)
 
 
 # ===========================================================================
-# Phase 1 Endpoints (Physics Engine)
+# Phase 1 Endpoints (Physics Engine) & System
 # ===========================================================================
 
 @app.get("/health", response_model=HealthResponse, tags=["System"])
 def health_check():
     """Liveness probe."""
     return HealthResponse(status="ok")
+
+
+@app.get("/version", response_model=VersionResponse, tags=["System"])
+def get_version():
+    """Return platform git SHA, ML model sha256 prefix, feature schema version, and start time."""
+    return VersionResponse(
+        git_sha=get_git_sha(),
+        model_sha256_short=get_model_sha256_short(),
+        feature_schema_version=FEATURE_SCHEMA_VERSION,
+        started_at_utc=_SERVER_STARTED_AT_UTC,
+    )
 
 
 @app.get("/feeder/topology", response_model=TopologyResponse, tags=["Feeder Physics"])
@@ -649,14 +725,25 @@ async def websocket_live_endpoint(websocket: WebSocket):
         # status. This prevents clients from waiting forever when the loop is
         # stopped or has not produced its first tick yet.
         initial = sim_loop.get_ws_snapshot()
-        await websocket.send_text(json.dumps(initial, default=_json_default))
+        await asyncio.wait_for(
+            websocket.send_text(json.dumps(initial, default=_json_default)),
+            timeout=5.0,
+        )
 
         while True:
             # Wait for next simulation tick broadcast
             payload = await queue.get()
-            await websocket.send_text(json.dumps(payload, default=_json_default))
+            await asyncio.wait_for(
+                websocket.send_text(json.dumps(payload, default=_json_default)),
+                timeout=5.0,
+            )
 
     except (WebSocketDisconnect, asyncio.CancelledError):
         pass
+    except asyncio.TimeoutError:
+        try:
+            await websocket.close(code=1008)
+        except Exception:
+            pass
     finally:
         sim_loop.unsubscribe_ws(queue)
