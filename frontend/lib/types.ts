@@ -134,6 +134,16 @@ export type SubtypeType =
   | "short_circuit"
   | string;
 
+export interface PhysicsDisagreementEvidence {
+  measurement: string;
+  reported_value: number;
+  physics_implied_value: number;
+  delta_sigma: number;
+  persistence_ticks: number;
+  concentration: number;
+  breadth: number;
+}
+
 export interface RTUVerdict {
   rtu_id: number;
   verdict: VerdictType;
@@ -145,6 +155,7 @@ export interface RTUVerdict {
   network_evidence?: string;
   physics_evidence?: string;
   conclusion?: string;
+  disagreement?: PhysicsDisagreementEvidence | null;
   model_status: string;
 }
 

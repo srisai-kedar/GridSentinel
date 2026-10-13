@@ -289,6 +289,7 @@ def detect_bad_data(net: pp.pandapowerNet) -> dict:
         return {
             "bad_data_detected": True,
             "flagged_measurements": [],
+            "all_residuals": [],
             "chi2_test_passed": False,
             "chi2_statistic": 9999.0,
             "chi2_threshold": 20.0,
@@ -317,6 +318,7 @@ def detect_bad_data(net: pp.pandapowerNet) -> dict:
     return {
         "bad_data_detected": bad_detected,
         "flagged_measurements": flagged,
+        "all_residuals": residuals,
         "chi2_test_passed": chi2_passed,
         "chi2_statistic": chi2_stat,
         "chi2_threshold": chi2_thresh,

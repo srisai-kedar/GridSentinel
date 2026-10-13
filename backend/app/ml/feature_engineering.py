@@ -18,13 +18,22 @@ import math
 from typing import Any, Dict, List, Optional
 import numpy as np
 
+from app.ml.dpn_features import (
+    compute_dpn_legacy,
+    compute_resid_breadth,
+    compute_resid_concentration,
+    compute_resid_jump,
+    compute_resid_persist,
+    compute_resid_rtu_share,
+)
+
 # ---------------------------------------------------------------------------
 # FIXED FEATURE SCHEMA (Exact Ordering for Training & Real-Time Inference)
 # ---------------------------------------------------------------------------
 # ---------------------------------------------------------------------------
 # FIXED FEATURE SCHEMA (Exact Ordering for Training & Real-Time Inference)
 # ---------------------------------------------------------------------------
-FEATURE_SCHEMA_VERSION: str = "2.0.0"
+FEATURE_SCHEMA_VERSION: str = "2.1.0"
 
 FEATURE_SCHEMA: List[str] = [
     # --- NBD: Network Behavioral Features (Traffic Logger) ---
@@ -58,6 +67,17 @@ FEATURE_SCHEMA: List[str] = [
     "pcd_temporal_dp_dt_3tick",         # Rolling 3-tick window rate-of-change dP/dt
     "pcd_temporal_dq_dt_3tick",         # Rolling 3-tick window rate-of-change dQ/dt
     "pcd_cross_rtu_voltage_divergence", # Voltage difference between target RTU and electrical neighbors
+
+    # --- CHANGE 5: Physics-Residual Structure & Disagreement Family ---
+    "pcd_resid_jump",                   # F1: max over RTU's measurements of |d_i(t) - d_i(t-1)|
+    "pcd_resid_persist",                # F2: consecutive ticks capped at W=5 where max RTU |d_i| > tau_low
+    "pcd_resid_concentration",          # F3: max_i |d_i| / sqrt(sum_j d_j^2) over all measurements
+    "pcd_resid_rtu_share",              # F3: sum over RTU's measurements of d_i^2 / sum_j d_j^2
+    "pcd_resid_breadth_count",          # F4: count of measurements with |d_j| > 3.0
+    "pcd_resid_breadth_frac",           # F4: fraction of measurements with |d_j| > 3.0
+    "dpn_legacy",                       # F5: (|delta P| / sigma_P) * (1 + r_max / chi2_threshold)
+    "dpn_ing_delta",                    # Control: |delta reported active power| / sigma_P
+    "dpn_ing_resid",                    # Control: 1 + r_max / chi2_threshold
 ]
 
 # Mapping of RTU IDs to their pandapower element bindings
@@ -89,6 +109,7 @@ def extract_features(
     target_rtu_id: int,
     polled_telemetry: Optional[Dict[int, Dict[str, Any]]] = None,
     telemetry_history: Optional[List[Dict[int, Dict[str, Any]]]] = None,
+    residual_history: Optional[List[Any]] = None,
 ) -> Dict[str, float]:
     """
     Extract a fixed-schema feature dictionary combining NBD and PCD metrics for a target RTU.
@@ -270,6 +291,58 @@ def extract_features(
     physics_net_disagreement = float(norm_p_delta * lnr_multiplier)
 
     # -----------------------------------------------------------------------
+    # d) Change 5: Physics-Residual Structure & Disagreement Features
+    # -----------------------------------------------------------------------
+    all_residuals = state_estimation_result.get("all_residuals", [])
+    if all_residuals:
+        rtu_meas = [
+            r for r in all_residuals
+            if (r.get("element_type") == "bus" and r.get("element") == target_bus)
+            or (r.get("element_type") in ("line", "trafo") and r.get("element") == (target_rtu_id - 1 if target_rtu_id > 1 else 0))
+        ]
+        curr_rtu_resids = [float(r.get("normalised_residual", 0.0)) for r in rtu_meas]
+        all_norm_resids = [float(r.get("normalised_residual", 0.0)) for r in all_residuals]
+    else:
+        # Fallback when all_residuals not provided (mock/legacy dict)
+        curr_rtu_resids = [target_v_res, target_p_res]
+        all_norm_resids = [float(fm.get("normalised_residual", 0.0)) for fm in flagged]
+        if not all_norm_resids and max_lnr > 0.0:
+            all_norm_resids = [max_lnr]
+
+    # F1: Jump & F2: Persist using residual_history if provided
+    prev_rtu_resids = None
+    hist_rtu_maxes: List[float] = []
+    if residual_history:
+        for snap in residual_history:
+            if isinstance(snap, dict) and target_rtu_id in snap:
+                res_seq = snap[target_rtu_id]
+                hist_rtu_maxes.append(max(res_seq) if res_seq else 0.0)
+            elif isinstance(snap, (list, tuple)):
+                hist_rtu_maxes.append(max(snap) if snap else 0.0)
+        if isinstance(residual_history[-1], dict) and target_rtu_id in residual_history[-1]:
+            prev_rtu_resids = residual_history[-1][target_rtu_id]
+        elif isinstance(residual_history[-1], (list, tuple)):
+            prev_rtu_resids = residual_history[-1]
+
+    # Current tick's max residual added for persistence evaluation
+    curr_max = max(curr_rtu_resids) if curr_rtu_resids else 0.0
+    hist_rtu_maxes.append(curr_max)
+
+    resid_jump = compute_resid_jump(curr_rtu_resids, prev_rtu_resids)
+    resid_persist = compute_resid_persist(hist_rtu_maxes, tau_low=2.0, window_w=5)
+    resid_conc = compute_resid_concentration(all_norm_resids)
+    resid_share = compute_resid_rtu_share(curr_rtu_resids, all_norm_resids)
+    resid_breadth_cnt, resid_breadth_frac = compute_resid_breadth(all_norm_resids, threshold=3.0)
+
+    # F5: Legacy composite and controls
+    dpn_legacy, dpn_ing_delta, dpn_ing_resid = compute_dpn_legacy(
+        delta_p_reported=p_delta,
+        sigma_p=p_std_safe,
+        r_max=max_lnr,
+        chi2_threshold=chi2_thresh if chi2_thresh > 0 else 3.0,
+    )
+
+    # -----------------------------------------------------------------------
     # Assemble Feature Vector strictly according to FEATURE_SCHEMA
     # -----------------------------------------------------------------------
     features = {
@@ -301,6 +374,15 @@ def extract_features(
         "pcd_temporal_dp_dt_3tick": round(dp_dt, 5),
         "pcd_temporal_dq_dt_3tick": round(dq_dt, 5),
         "pcd_cross_rtu_voltage_divergence": round(cross_rtu_v_divergence, 5),
+        "pcd_resid_jump": round(float(resid_jump), 4),
+        "pcd_resid_persist": float(resid_persist),
+        "pcd_resid_concentration": round(float(resid_conc), 4),
+        "pcd_resid_rtu_share": round(float(resid_share), 4),
+        "pcd_resid_breadth_count": float(resid_breadth_cnt),
+        "pcd_resid_breadth_frac": round(float(resid_breadth_frac), 4),
+        "dpn_legacy": round(float(dpn_legacy), 4),
+        "dpn_ing_delta": round(float(dpn_ing_delta), 4),
+        "dpn_ing_resid": round(float(dpn_ing_resid), 4),
     }
 
     # Verify all schema keys are present

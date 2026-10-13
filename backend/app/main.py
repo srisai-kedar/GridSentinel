@@ -649,6 +649,7 @@ def get_classifier_verdict(req: Optional[VerdictRequest] = None):
             network_evidence=v.get("network_evidence", ""),
             physics_evidence=v.get("physics_evidence", ""),
             conclusion=v.get("conclusion", ""),
+            disagreement=v.get("disagreement"),
             model_status=v.get("model_status", "loaded"),
         )
         for rtu_id, v in sorted(verdicts.items())

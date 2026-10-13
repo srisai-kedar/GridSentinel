@@ -278,6 +278,10 @@ class RTUVerdict(BaseModel):
         "",
         description="Single-line combined decision rationale and operator guidance.",
     )
+    disagreement: Optional[Dict[str, Any]] = Field(
+        None,
+        description="Explainable physics-network disagreement evidence figure (Change 5).",
+    )
     model_status: str = Field(description="loaded | heuristic_fallback")
 
 
