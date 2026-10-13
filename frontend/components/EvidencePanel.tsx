@@ -62,6 +62,12 @@ export const EvidencePanel: React.FC<EvidencePanelProps> = ({ latestState, selec
           </div>
           <div className="scada-evidence-line"><span>Network evidence</span><p>{networkEvidence.replace(/^Network:\s*/, "")}</p></div>
           <div className="scada-evidence-line"><span>Physics evidence</span><p>{physicsEvidence.replace(/^Physics:\s*/, "")}</p></div>
+          {selected.disagreement && (
+            <div className="scada-evidence-line">
+              <span>Physics disagreement</span>
+              <p>{`Reported ${selected.disagreement.reported_value.toFixed(2)} V vs physics-implied ${selected.disagreement.physics_implied_value.toFixed(2)} V (${selected.disagreement.delta_sigma.toFixed(1)}σ), persisting ${selected.disagreement.persistence_ticks} ticks`}</p>
+            </div>
+          )}
           <div className="scada-next-action"><span>Next operator check</span><strong>{getRecommendedAction(verdict, selected.subtype || "normal")}</strong><ArrowUpRight size={14} /></div>
         </div>
       )}

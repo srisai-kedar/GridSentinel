@@ -308,7 +308,7 @@ def evaluate_dataset(
     confidences: List[float] = []
 
     for _, row in df.iterrows():
-        feat_dict = {k: float(row[k]) for k in FEATURE_SCHEMA}
+        feat_dict = {k: float(row.get(k, 0.0)) for k in FEATURE_SCHEMA}
         res = service.predict(feat_dict)
         predictions.append(res["verdict"])
         subtypes_pred.append(res.get("subtype"))

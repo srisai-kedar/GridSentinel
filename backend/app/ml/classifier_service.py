@@ -192,6 +192,9 @@ class ClassifierService:
 
         try:
             bundle = joblib.load(target_path)
+            schema_ver = str(bundle.get("feature_schema_version", "2.0.0"))
+            if schema_ver not in ("2.0.0", "2.1.0"):
+                raise ValueError(f"Unsupported feature schema version: {schema_ver}")
             self.bundle = bundle
             self.top_model = bundle.get("top_level_model")
             self.subtype_model = bundle.get("subtype_model")
@@ -208,7 +211,7 @@ class ClassifierService:
             logger.info(
                 f"[ClassifierService] Loaded Fusion Classifier v{bundle.get('version', '?')} "
                 f"from '{target_path}' (model={bundle.get('model_name', 'RF')}, "
-                f"threshold={self.decision_threshold:.2f})."
+                f"threshold={self.decision_threshold:.2f}, schema_ver={schema_ver})."
             )
             return True
         except Exception as exc:
@@ -271,8 +274,9 @@ class ClassifierService:
             return self._heuristic_fallback(features)
 
         try:
-            # Build strictly ordered feature vector
-            vector = np.array([[float(features.get(k, 0.0)) for k in FEATURE_SCHEMA]])
+            # Build strictly ordered feature vector matching bundle schema if present
+            feature_cols = self.bundle.get("feature_schema", FEATURE_SCHEMA) if self.bundle else FEATURE_SCHEMA
+            vector = np.array([[float(features.get(k, 0.0)) for k in feature_cols]])
 
             # Stage 1: Primary Triage (with tuned threshold)
             proba = self.top_model.predict_proba(vector)[0]
@@ -395,6 +399,39 @@ class ClassifierService:
             res = self.predict(feats)
             features_by_rtu[rtu_id] = feats
             results[rtu_id] = res
+
+        # CHANGE 5: Explainable physics-network disagreement evidence
+        # Generated whenever state estimation executed (observable evidence only, never model input)
+        if state_estimation_result:
+            all_resids = state_estimation_result.get("all_residuals", [])
+            from app.ml.dpn_features import build_disagreement_payload
+            from app.ml.feature_engineering import RTU_BUS_MAPPING
+
+            max_rtu_id = None
+            max_rtu_resid = -1.0
+            rtu_measurements_map: Dict[int, List[Dict[str, Any]]] = {i: [] for i in range(1, 6)}
+
+            for r in all_resids:
+                elem = int(r.get("element", -1))
+                elem_type = str(r.get("element_type", "")).lower()
+                norm_r = float(r.get("normalised_residual", 0.0))
+                for rid in range(1, 6):
+                    bus_idx = RTU_BUS_MAPPING.get(rid, rid)
+                    dev_idx = rid - 1 if rid > 1 else 0
+                    if (elem_type == "bus" and elem == bus_idx) or (elem_type in ("line", "trafo") and elem == dev_idx):
+                        rtu_measurements_map[rid].append(r)
+                        if norm_r > max_rtu_resid:
+                            max_rtu_resid = norm_r
+                            max_rtu_id = rid
+
+            if max_rtu_id is not None and rtu_measurements_map[max_rtu_id]:
+                disagreement = build_disagreement_payload(
+                    target_rtu_id=f"RTU_{max_rtu_id}",
+                    all_residuals=all_resids,
+                    rtu_measurements=rtu_measurements_map[max_rtu_id],
+                )
+                if disagreement and max_rtu_id in results:
+                    results[max_rtu_id]["disagreement"] = disagreement
 
         # This is a bounded copy of the feature dictionaries already produced
         # above. It is intentionally after inference and is never read by the

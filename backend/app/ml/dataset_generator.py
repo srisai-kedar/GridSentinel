@@ -70,6 +70,7 @@ async def generate_dataset(
     attack_target_rtu = 1
 
     telemetry_history: collections.deque = collections.deque(maxlen=3)
+    residual_history: collections.deque = collections.deque(maxlen=6)
 
     try:
         for tick_idx in range(1, total_ticks + 1):
@@ -139,6 +140,20 @@ async def generate_dataset(
             polled_t = snap.get("polled_modbus_telemetry", {})
             telemetry_history.append(polled_t)
 
+            # Collect per-RTU standardized residuals for history
+            from app.ml.feature_engineering import RTU_BUS_MAPPING
+            all_resids = se_res.get("all_residuals", [])
+            tick_residuals_by_rtu: Dict[int, List[float]] = {i: [] for i in range(1, 6)}
+            for r in all_resids:
+                elem = int(r.get("element", -1))
+                elem_type = str(r.get("element_type", "")).lower()
+                norm_r = float(r.get("normalised_residual", 0.0))
+                for rid in range(1, 6):
+                    bus_idx = RTU_BUS_MAPPING.get(rid, rid)
+                    dev_idx = rid - 1 if rid > 1 else 0
+                    if (elem_type == "bus" and elem == bus_idx) or (elem_type in ("line", "trafo") and elem == dev_idx):
+                        tick_residuals_by_rtu[rid].append(norm_r)
+
             for rtu_id in range(1, 6):
                 feats = extract_features(
                     traffic_events=recent_traffic,
@@ -146,6 +161,7 @@ async def generate_dataset(
                     target_rtu_id=rtu_id,
                     polled_telemetry=polled_t,
                     telemetry_history=list(telemetry_history),
+                    residual_history=list(residual_history),
                 )
 
                 # Determine RTU-specific label
@@ -171,6 +187,8 @@ async def generate_dataset(
                 record["top_level_label"] = rtu_top_label
                 record["subtype_label"] = rtu_sub_label
                 records.append(record)
+
+            residual_history.append(tick_residuals_by_rtu)
 
             if tick_idx % 200 == 0 or tick_idx == total_ticks:
                 print(f"  ... Tick {tick_idx}/{total_ticks} complete ({len(records)} samples generated)")
