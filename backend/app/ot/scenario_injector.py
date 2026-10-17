@@ -42,6 +42,9 @@ class ScenarioInjector:
         # Replay attack state: {rtu_id: {"buffer": list, "remaining_ticks": int}}
         self.replay_attacks: Dict[int, Dict[str, Any]] = {}
 
+        # Sensor drift / decalibration state: {rtu_id: {"drift_percent": float, "remaining_ticks": int}}
+        self.sensor_drifts: Dict[int, Dict[str, Any]] = {}
+
         # Physical fault state
         self.tripped_lines: List[int] = []
         self.short_circuit_loads: List[int] = []  # indices of created temporary loads in pandapower
@@ -258,6 +261,32 @@ class ScenarioInjector:
             "duration_ticks": duration_ticks,
         }
 
+    def inject_sensor_drift(
+        self,
+        rtu_id: int,
+        drift_percent: float = 0.08,
+        duration_ticks: int = 25,
+    ) -> Dict[str, Any]:
+        """
+        Simulate sensor drift / decalibration on RTU `rtu_id`.
+        Applies a moderate bias to sensor measurements. OT Modbus network traffic remains clean!
+        """
+        self.sensor_drifts[rtu_id] = {
+            "drift_percent": float(drift_percent),
+            "remaining_ticks": int(duration_ticks),
+        }
+        self.active_scenario_summary = (
+            f"FAULT: Sensor Drift / Malfunction on RTU-{rtu_id} ({drift_percent*100:+.1f}%) for {duration_ticks} ticks"
+        )
+        logger.info(self.active_scenario_summary)
+        return {
+            "status": "injected",
+            "type": "SENSOR_DRIFT",
+            "rtu_id": rtu_id,
+            "drift_percent": drift_percent,
+            "duration_ticks": duration_ticks,
+        }
+
     # -----------------------------------------------------------------------
     # Tick Update & Scenario Maintenance
     # -----------------------------------------------------------------------
@@ -284,6 +313,15 @@ class ScenarioInjector:
         for rtu_id in expired_replay:
             del self.replay_attacks[rtu_id]
 
+        # Decrement sensor drifts
+        expired_drift = []
+        for rtu_id, item in self.sensor_drifts.items():
+            item["remaining_ticks"] -= 1
+            if item["remaining_ticks"] <= 0:
+                expired_drift.append(rtu_id)
+        for rtu_id in expired_drift:
+            del self.sensor_drifts[rtu_id]
+
         # Decrement short circuit fault
         if self.short_circuit_remaining_ticks > 0:
             self.short_circuit_remaining_ticks -= 1
@@ -295,7 +333,7 @@ class ScenarioInjector:
                 self.short_circuit_loads.clear()
 
         # Update active scenario summary
-        if not self.silent_overrides and not self.replay_attacks and not self.tripped_lines and not self.short_circuit_loads:
+        if not self.silent_overrides and not self.replay_attacks and not self.sensor_drifts and not self.tripped_lines and not self.short_circuit_loads:
             self.active_scenario_summary = "NORMAL_OPERATION"
 
     def clear_all_scenarios(self, net: Optional[pp.pandapowerNet] = None) -> None:
@@ -304,6 +342,7 @@ class ScenarioInjector:
         """
         self.silent_overrides.clear()
         self.replay_attacks.clear()
+        self.sensor_drifts.clear()
 
         if net is not None:
             # Restore all lines
@@ -328,6 +367,9 @@ class ScenarioInjector:
                 rtu_id: item["overrides"] for rtu_id, item in self.silent_overrides.items()
             },
             "replay_attacks": list(self.replay_attacks.keys()),
+            "sensor_drifts": {
+                rtu_id: item["drift_percent"] for rtu_id, item in self.sensor_drifts.items()
+            },
             "tripped_lines": list(self.tripped_lines),
             "short_circuit_active": len(self.short_circuit_loads) > 0,
         }

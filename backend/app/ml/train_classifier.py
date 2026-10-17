@@ -232,15 +232,18 @@ def train_and_evaluate(
         print(f"\n  Training {name}...")
         fit_start = time.perf_counter()
 
-        # XGBoost requires integer-encoded labels
+        # Dynamic integer-encoded labels for XGBoost supporting any taxonomy
+        unique_labels = sorted(list(y_top_train.unique()))
+        label_map = {lbl: idx for idx, lbl in enumerate(unique_labels)}
+        label_map_inv = {idx: lbl for lbl, idx in label_map.items()}
+
         if name == "XGBoost":
-            label_map = {"Cyber Intrusion": 0, "Natural Fault": 1, "Normal": 2}
             y_train_enc = y_top_train.map(label_map)
             y_val_enc = y_val.map(label_map)
             # class weights for XGBoost via sample_weight
             counts = y_train_enc.value_counts()
             total = len(y_train_enc)
-            sw = y_train_enc.map({k: total / (3 * v) for k, v in counts.items()})
+            sw = y_train_enc.map({k: total / (len(unique_labels) * v) for k, v in counts.items()})
             clf.fit(X_train, y_train_enc, sample_weight=sw)
         else:
             clf.fit(X_train, y_top_train)
@@ -327,14 +330,14 @@ def train_and_evaluate(
     # Step 3: Evaluate with Tuned Threshold on Test Set
     # -----------------------------------------------------------------------
     print(f"\n[Trainer] == Step 3: Evaluating with Tuned Threshold (threshold={best_threshold:.2f}) ==")
-    classes = sorted(list(best_top_model.classes_)) if best_model_name != "XGBoost" else [
-        "Cyber Intrusion", "Natural Fault", "Normal"
-    ]
+    unique_labels = sorted(list(y_top_train.unique()))
+    classes = sorted(list(best_top_model.classes_)) if best_model_name != "XGBoost" else unique_labels
 
     if best_model_name == "XGBoost":
-        label_map_inv = {0: "Cyber Intrusion", 1: "Natural Fault", 2: "Normal"}
+        label_map = {lbl: idx for idx, lbl in enumerate(unique_labels)}
+        label_map_inv = {idx: lbl for lbl, idx in label_map.items()}
         xgb_proba = best_top_model.predict_proba(X_test)
-        cyber_idx_xgb = 0
+        cyber_idx_xgb = label_map.get("Cyber Intrusion", 0)
         cyber_proba_test = xgb_proba[:, cyber_idx_xgb]
         # Apply tuned threshold: if cyber_proba >= threshold => Cyber Intrusion,
         # else argmax of remaining

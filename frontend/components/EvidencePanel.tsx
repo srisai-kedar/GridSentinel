@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { ArrowUpRight, CheckCircle2, ShieldAlert, TriangleAlert } from "lucide-react";
+import { Activity, ArrowUpRight, CheckCircle2, ShieldAlert, TriangleAlert } from "lucide-react";
 import { LiveSocketPayload, RTUVerdict, VerdictType } from "@/lib/types";
 import {
   getMitreIcsTag,
@@ -20,8 +20,9 @@ interface EvidencePanelProps {
 const busToRtu: Record<number, number> = { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5 };
 
 function verdictIcon(verdict: VerdictType) {
-  if (verdict === "Cyber Intrusion") return <ShieldAlert size={14} />;
-  if (verdict === "Natural Fault") return <TriangleAlert size={14} />;
+  if (verdict === "Cyber Intrusion" || verdict === "CYBER_ATTACK") return <ShieldAlert size={14} />;
+  if (verdict === "Natural Fault" || verdict === "PHYSICAL_ELECTRICAL_FAULT") return <TriangleAlert size={14} />;
+  if (verdict === "Sensor Malfunction" || verdict === "SENSOR_MALFUNCTION") return <Activity size={14} />;
   return <CheckCircle2 size={14} />;
 }
 

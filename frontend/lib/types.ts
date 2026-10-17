@@ -122,11 +122,22 @@ export interface ScenarioActionResponse {
   details: Record<string, any>;
 }
 
-export type VerdictType = "Normal" | "Natural Fault" | "Cyber Intrusion" | "No Data";
+export type VerdictType =
+  | "Normal"
+  | "Natural Fault"
+  | "Sensor Malfunction"
+  | "Cyber Intrusion"
+  | "SENSOR_MALFUNCTION"
+  | "PHYSICAL_ELECTRICAL_FAULT"
+  | "CYBER_ATTACK"
+  | "NORMAL"
+  | "No Data";
 
 export type SubtypeType =
   | "normal"
   | "physical_fault"
+  | "sensor_drift"
+  | "sensor_malfunction"
   | "data_injection"
   | "command_injection"
   | "replay"
@@ -208,6 +219,7 @@ export interface LiveSocketPayload {
     summary: string;
     silent_overrides: Record<string, { voltage_pu?: number; p_mw?: number; q_mvar?: number }>;
     replay_attacks: number[];
+    sensor_drifts?: Record<string, number>;
     tripped_lines: number[];
     short_circuit_active: boolean;
   };

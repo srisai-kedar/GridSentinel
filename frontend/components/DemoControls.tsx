@@ -9,10 +9,12 @@ import {
   startOtSimulation,
   stopOtSimulation,
   triggerLineTrip,
+  triggerSensorDrift,
   triggerShortCircuit,
 } from "@/lib/api";
 import { LiveSocketPayload } from "@/lib/types";
 import {
+  Activity,
   AlertTriangle,
   Flame,
   Lock,
@@ -59,6 +61,10 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
     activeScenarios?.tripped_lines && activeScenarios.tripped_lines.length > 0
   );
   const isShortCircuitActive = Boolean(activeScenarios?.short_circuit_active);
+  const isSensorDriftActive = Boolean(
+    activeScenarios?.sensor_drifts &&
+      Object.keys(activeScenarios.sensor_drifts).length > 0
+  );
 
   const showFeedback = (msg: string, isError: boolean = false) => {
     setActionFeedback({ message: msg, isError });
@@ -186,6 +192,23 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
       showFeedback(res.message || `Short circuit fault triggered on Bus ${selectedBus}.`);
     } catch (err: any) {
       showFeedback(err.message || "Failed to trigger short circuit.", true);
+    } finally {
+      setLoadingAction(null);
+    }
+  };
+
+  const handleSensorDrift = async () => {
+    if (isReplayMode) return;
+    try {
+      setLoadingAction("sensor_drift");
+      const res = await triggerSensorDrift({
+        rtu_id: selectedRtu,
+        drift_percent: 0.08,
+        duration_ticks: 25,
+      });
+      showFeedback(res.message || `Sensor drift injected on RTU-${selectedRtu} (+8%).`);
+    } catch (err: any) {
+      showFeedback(err.message || "Failed to inject sensor drift.", true);
     } finally {
       setLoadingAction(null);
     }
@@ -389,14 +412,14 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
           </div>
         </div>
 
-        {/* Section 2: Physical Grid Faults */}
+        {/* Section 2: Physical & Sensor Faults */}
         <div>
           <div className="flex items-center space-x-1.5 text-[#F59E0B] font-semibold uppercase tracking-wider text-[10px] mb-2">
             <AlertTriangle className="w-3.5 h-3.5" />
-            <span>Physical Grid Faults</span>
+            <span>Physical Grid & Sensor Faults</span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
             {/* Line Trip Outage */}
             <button
               onClick={handleLineTrip}
@@ -446,6 +469,35 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
               </p>
               <div className="mt-2 text-[9px] font-mono text-[#F59E0B]">
                 {loadingAction === "short_circuit" ? "Applying fault..." : "Duration: 6 ticks"}
+              </div>
+            </button>
+
+            {/* Sensor Drift / Malfunction */}
+            <button
+              onClick={handleSensorDrift}
+              disabled={isReplayMode || isSensorDriftActive || loadingAction !== null}
+              className={`p-2.5 rounded-[3px] border text-left flex flex-col justify-between transition ${
+                isSensorDriftActive
+                  ? "bg-[#131722] border-[#3B82F6]/60 text-[#3B82F6] cursor-not-allowed"
+                  : "bg-[#131722] hover:bg-[#181E2C] border-white/[0.06] text-[#EDEDF0] hover:border-[#3B82F6]/40 disabled:opacity-40 disabled:cursor-not-allowed"
+              }`}
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-semibold text-[11px] flex items-center gap-1">
+                  <Activity className="w-3 h-3 text-[#3B82F6]" />
+                  <span>Sensor Drift Fault</span>
+                </span>
+                {isSensorDriftActive && (
+                  <span className="text-[9px] px-1.5 py-0.5 rounded-[2px] bg-[#3B82F6]/20 text-[#3B82F6] font-mono">
+                    DRIFTING
+                  </span>
+                )}
+              </div>
+              <p className="text-[10px] text-[#5A6275] leading-tight">
+                Simulates broken wire / PT calibration bias (+8%). Residual localized, clean Modbus traffic.
+              </p>
+              <div className="mt-2 text-[9px] font-mono text-[#3B82F6]">
+                {loadingAction === "sensor_drift" ? "Injecting..." : `RTU-${selectedRtu} (+8% bias)`}
               </div>
             </button>
           </div>

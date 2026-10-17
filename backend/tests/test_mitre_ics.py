@@ -173,14 +173,22 @@ def test_format_cyber_alert_pydantic_model():
 # ---------------------------------------------------------------------------
 
 def test_classifier_predict_attaches_mitre_to_cyber_intrusion():
-    """Verify classifier_service attaches mitre_ics when Cyber Intrusion (FDI or command injection) is detected."""
+    """Verify classifier_service attaches mitre_ics when Cyber Intrusion (FDI or command injection) is detected.
+
+    A real FDI attack involves both physics residuals (state estimation flags the target RTU)
+    AND network anomalies (anomalous Modbus traffic from the spoofing agent). The heuristic
+    requires nbd_modbus_anomaly_rate > 0.05 to distinguish FDI from isolated sensor drift.
+    """
     from app.ml.classifier_service import ClassifierService
     svc = ClassifierService(model_path="models/does_not_exist.joblib")
 
     # 1. Test False Data Injection (FDI) trigger -> T0856 Spoof Reporting Message
+    # FDI attacks generate anomalous Modbus traffic (spoofed reads/writes) alongside
+    # physics residuals: include nbd_modbus_anomaly_rate to reflect real attack pattern.
     fdi_features = {
         "pcd_target_rtu_is_flagged": 1.0,
         "pcd_max_lnr": 4.5,
+        "nbd_modbus_anomaly_rate": 0.15,  # FDI: suspicious Modbus transaction rate
     }
     fdi_verdict = svc.predict(fdi_features)
     assert fdi_verdict["verdict"] == "Cyber Intrusion"

@@ -197,6 +197,18 @@ export async function triggerShortCircuit(params: {
   });
 }
 
+/** Trigger sensor calibration drift / hardware decalibration */
+export async function triggerSensorDrift(params: {
+  rtu_id: number;
+  drift_percent?: number;
+  duration_ticks?: number;
+}): Promise<ScenarioActionResponse> {
+  return fetchJson<ScenarioActionResponse>("/ot/fault/sensor-drift", {
+    method: "POST",
+    body: JSON.stringify(params),
+  });
+}
+
 /** Run ML classifier on current snapshot */
 export async function getClassifierVerdict(): Promise<VerdictResponse> {
   return fetchJson<VerdictResponse>("/classifier/verdict", {

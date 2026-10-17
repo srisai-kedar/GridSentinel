@@ -99,6 +99,15 @@ def build_incident_report(record: IncidentRecord) -> bytes:
         )],
     ]
 
+    if record.mitre_ics:
+        tech_id = record.mitre_ics.get("technique_id", "")
+        tech_name = record.mitre_ics.get("technique_name", "")
+        tactic = record.mitre_ics.get("tactic", "")
+        metadata.append([
+            _paragraph("MITRE ATT&CK (ICS)", label),
+            _paragraph(f"{tech_id}: {tech_name} [{tactic}]", body),
+        ])
+
     evidence = [
         [_paragraph("Network / Modbus evidence", label), _paragraph(record.network_evidence, body)],
         [_paragraph("Physics / power-flow evidence", label), _paragraph(record.physics_evidence, body)],

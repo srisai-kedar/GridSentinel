@@ -79,13 +79,13 @@ async def generate_dataset(
                 scenario_injector.clear_all_scenarios(net=net)
 
                 # Pick next scenario type roughly balanced
-                # 35% Normal, 30% Natural Fault, 35% Cyber Intrusion
+                # 25% Normal, 25% Natural Fault, 25% Sensor Malfunction, 25% Cyber Intrusion
                 p = random.random()
-                if p < 0.35:
+                if p < 0.25:
                     current_scenario_type = "Normal"
                     current_subtype = "normal"
                     scenario_remaining_ticks = random.randint(8, 20)
-                elif p < 0.65:
+                elif p < 0.50:
                     current_scenario_type = "Natural Fault"
                     current_subtype = random.choice(["line_trip", "short_circuit"])
                     scenario_remaining_ticks = random.randint(4, 10)
@@ -102,6 +102,17 @@ async def generate_dataset(
                             fault_load_mvar=random.uniform(1.0, 2.0),
                             duration_ticks=scenario_remaining_ticks,
                         )
+                elif p < 0.75:
+                    current_scenario_type = "Sensor Malfunction"
+                    current_subtype = "sensor_drift"
+                    attack_target_rtu = random.choice([1, 2, 3, 4, 5])
+                    scenario_remaining_ticks = random.randint(5, 15)
+                    drift_val = random.choice([-0.08, -0.06, 0.07, 0.09])
+                    scenario_injector.inject_sensor_drift(
+                        rtu_id=attack_target_rtu,
+                        drift_percent=drift_val,
+                        duration_ticks=scenario_remaining_ticks,
+                    )
                 else:
                     current_scenario_type = "Cyber Intrusion"
                     current_subtype = random.choice(["data_injection", "command_injection", "replay"])
@@ -165,12 +176,17 @@ async def generate_dataset(
                 )
 
                 # Determine RTU-specific label
-                # If a cyber attack is active on a specific RTU, that RTU is Cyber Intrusion.
-                # Other unaffected RTUs during targeted silent attacks remain Normal.
                 if current_scenario_type == "Cyber Intrusion":
                     if rtu_id == attack_target_rtu:
                         rtu_top_label = "Cyber Intrusion"
                         rtu_sub_label = current_subtype
+                    else:
+                        rtu_top_label = "Normal"
+                        rtu_sub_label = "normal"
+                elif current_scenario_type == "Sensor Malfunction":
+                    if rtu_id == attack_target_rtu:
+                        rtu_top_label = "Sensor Malfunction"
+                        rtu_sub_label = "sensor_drift"
                     else:
                         rtu_top_label = "Normal"
                         rtu_sub_label = "normal"

@@ -1,6 +1,6 @@
 # GridSentinel — Machine Learning Classifier Validation Report
 
-**Report Generated:** 2026-10-08T19:02:38.261598+00:00  
+**Report Generated:** 2026-10-17T17:56:58.529274+00:00  
 **Evaluation Mode:** Production inference path (`ClassifierService.predict`)  
 **Dataset Evaluated:** Held-out test set (`data/generated/test_dataset_seed1337.csv`)  
 
@@ -10,11 +10,11 @@
 
 | Property | Value |
 |:---|:---|
-| **Git Commit Hash** | `c7a446af1bf4916c32a968860e57094c9ec52ef7` |
+| **Git Commit Hash** | `5494c00c32652ebef06f5647b69bd5e46e16cc91` |
 | **Model Artifact** | [`models/fusion_classifier.joblib`](models/fusion_classifier.joblib) |
 | **Model SHA-256** | `ee5211510e41eddac32ed1eed405af982a0a550bd0b75e8867253135b812ccae` |
 | **Model Selected** | **XGBoost** (decision threshold = 0.58) |
-| **Feature Schema Version** | `2.0.0` (28 features) |
+| **Feature Schema Version** | `2.1.0` (37 features) |
 | **Test Dataset** | `data/generated/test_dataset_seed1337.csv` |
 | **Test Dataset SHA-256** | `a8ca03f3dd18f2454f132bd8e41a4f95e35bd0d1426e2a5e9085c5b1c6e22f2c` |
 | **Test Sample Count** | 3500 samples |
@@ -42,10 +42,10 @@
 ## 3. Confusion Matrix
 
 | True Label \ Predicted Label | Pred: Cyber Intrusion | Pred: Natural Fault | Pred: Normal | Total Support |
-|:---|:---:|:---:|:---:|:---:|
+|:---||:---:|:---:|:---:|:---:|
 | **True: Cyber Intrusion** | **139** | 9 | 116 | **264** |
-| **True: Natural Fault** | **5** | 584 | 116 | **705** |
-| **True: Normal** | **9** | 68 | 2454 | **2531** |
+| **True: Natural Fault** | 5 | **584** | 116 | **705** |
+| **True: Normal** | 9 | 68 | **2454** | **2531** |
 | **Total Predicted** | **153** | **661** | **2686** | **3500** |
 
 ---

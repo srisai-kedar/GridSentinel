@@ -98,13 +98,16 @@ export const AuditLog: React.FC<AuditLogProps> = ({
       entry.formattedAlert.toLowerCase().includes(searchTerm.toLowerCase());
 
     if (selectedFilter === "CYBER") {
-      return matchesSearch && entry.classification === "Cyber Intrusion";
+      return matchesSearch && (entry.classification === "Cyber Intrusion" || entry.classification === "CYBER_ATTACK");
     }
     if (selectedFilter === "FAULT") {
-      return matchesSearch && entry.classification === "Natural Fault";
+      return matchesSearch && (entry.classification === "Natural Fault" || entry.classification === "PHYSICAL_ELECTRICAL_FAULT");
+    }
+    if (selectedFilter === "SENSOR") {
+      return matchesSearch && (entry.classification === "Sensor Malfunction" || entry.classification === "SENSOR_MALFUNCTION");
     }
     if (selectedFilter === "NORMAL") {
-      return matchesSearch && entry.classification === "Normal";
+      return matchesSearch && (entry.classification === "Normal" || entry.classification === "NORMAL");
     }
     return matchesSearch;
   });
@@ -222,7 +225,8 @@ export const AuditLog: React.FC<AuditLogProps> = ({
           >
             <option value="ALL">All Categories</option>
             <option value="CYBER">Cyber Intrusion</option>
-            <option value="FAULT">Natural Fault</option>
+            <option value="FAULT">Physical Fault</option>
+            <option value="SENSOR">Sensor Drift / Malfunction</option>
             <option value="NORMAL">Normal Operation</option>
           </select>
 
