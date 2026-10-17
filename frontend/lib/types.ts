@@ -134,6 +134,14 @@ export type SubtypeType =
   | "short_circuit"
   | string;
 
+export interface MitreIcsMapping {
+  technique_id: string;
+  technique_name: string;
+  tactic: string;
+  tactical_phase?: string;
+  description?: string;
+}
+
 export interface PhysicsDisagreementEvidence {
   measurement: string;
   reported_value: number;
@@ -157,6 +165,7 @@ export interface RTUVerdict {
   conclusion?: string;
   disagreement?: PhysicsDisagreementEvidence | null;
   model_status: string;
+  mitre_ics?: MitreIcsMapping | null;
 }
 
 export interface VerdictResponse {
@@ -232,6 +241,7 @@ export interface AuditLogEntry {
   conclusion?: string;
   recommendedAction: string;
   formattedAlert: string;
+  mitre_ics?: MitreIcsMapping | null;
 }
 
 export interface ReplayWindowPoint {

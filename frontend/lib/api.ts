@@ -14,6 +14,7 @@ import {
   TrafficLogResponse,
   VerdictResponse,
 } from "./types";
+import { getMitreIcsTag } from "./alertText";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL ||
@@ -70,6 +71,7 @@ export async function registerIncident(entry: AuditLogEntry): Promise<void> {
       conclusion: entry.conclusion || null,
       recommended_action: entry.recommendedAction || null,
       formatted_alert: entry.formattedAlert || null,
+      mitre_ics: entry.mitre_ics || (entry.classification === "Cyber Intrusion" ? getMitreIcsTag(entry.classification, entry.subtype) : null),
     }),
   });
 }

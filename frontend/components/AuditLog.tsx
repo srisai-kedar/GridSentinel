@@ -9,6 +9,7 @@ import {
 } from "@/lib/types";
 import {
   formatAlert,
+  getMitreIcsTag,
   getNetworkEvidenceSummary,
   getPhysicsEvidenceSummary,
   getRecommendedAction,
@@ -331,7 +332,18 @@ export const AuditLog: React.FC<AuditLogProps> = ({
 
                     {/* Subtype */}
                     <td className="p-2.5 whitespace-nowrap text-[#5A6275]">
-                      {entry.subtype || "none"}
+                      <span>{entry.subtype || "none"}</span>
+                      {(() => {
+                        const tag = entry.mitre_ics || (entry.classification === "Cyber Intrusion" ? getMitreIcsTag(entry.classification, entry.subtype) : null);
+                        return tag ? (
+                          <span
+                            className="ml-1.5 inline-flex items-center px-1.5 py-0.5 rounded-[2px] bg-red-950/70 text-red-400 border border-red-500/40 text-[9px] font-mono font-semibold tracking-tight"
+                            title={`MITRE ATT&CK for ICS: ${tag.technique_id} - ${tag.technique_name} [${tag.tactic}]`}
+                          >
+                            {tag.technique_id}
+                          </span>
+                        ) : null;
+                      })()}
                     </td>
 
                     {/* Confidence */}
@@ -438,6 +450,17 @@ export const AuditLog: React.FC<AuditLogProps> = ({
                   <strong className="mt-1 block font-mono text-[#EDEDF0]">{formatReplayNumber(replayResidual, 2)}</strong>
                 </div>
               </div>
+
+              {activeReplayPoint.verdict === "Cyber Intrusion" && (() => {
+                const tag = getMitreIcsTag("Cyber Intrusion", activeReplayPoint.subtype);
+                return tag ? (
+                  <div className="rounded-[3px] border border-red-500/30 bg-red-950/20 p-2.5 text-[10px]">
+                    <span className="text-red-400 font-semibold font-mono">MITRE ATT&CK for ICS: {tag.technique_id}</span>
+                    <span className="text-[#EDEDF0] ml-1.5 font-medium">{tag.technique_name}</span>
+                    <span className="text-[#9CA3AF] ml-1.5 font-mono text-[9px]">[{tag.tactic}]</span>
+                  </div>
+                ) : null;
+              })()}
 
               <div className="grid grid-cols-3 gap-2 border-t border-white/[0.07] pt-3 text-[10px] font-mono text-[#AAB8CE]">
                 <span>V {formatReplayNumber(activeReplayPoint.voltage_pu, 5)} pu</span>
