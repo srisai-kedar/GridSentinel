@@ -9,18 +9,30 @@ import { MitreIcsMapping, SubtypeType, VerdictType } from "./types";
 
 export const SCADA_COLORS = {
   NORMAL: "#10B981",       // Green
-  FAULT: "#F59E0B",        // Amber
-  CYBER: "#EF4444",        // Red
+  FAULT: "#F59E0B",        // Amber (Physical Fault)
+  SENSOR_DRIFT: "#3B82F6", // Blue (Sensor Drift / Malfunction)
+  CYBER: "#EF4444",        // Red (Cyber Intrusion)
   NODATA: "#6B7280",       // Gray
 } as const;
 
 export function getVerdictColor(verdict: VerdictType | string): string {
   switch (verdict) {
     case "Normal":
+    case "NORMAL":
       return SCADA_COLORS.NORMAL;
     case "Natural Fault":
+    case "PHYSICAL_ELECTRICAL_FAULT":
+    case "Physical Fault":
       return SCADA_COLORS.FAULT;
+    case "Sensor Malfunction":
+    case "SENSOR_MALFUNCTION":
+    case "Sensor Drift":
+    case "SENSOR_DRIFT":
+    case "sensor_drift":
+      return SCADA_COLORS.SENSOR_DRIFT;
     case "Cyber Intrusion":
+    case "CYBER_ATTACK":
+    case "Cyber Attack":
       return SCADA_COLORS.CYBER;
     default:
       return SCADA_COLORS.NODATA;
@@ -77,7 +89,11 @@ export function formatAlert(
     }
   }
 
-  if (verdict === "Natural Fault") {
+  if (verdict === "Sensor Malfunction" || verdict === "SENSOR_MALFUNCTION" || verdict === "Sensor Drift" || verdict === "SENSOR_DRIFT") {
+    return `${rtuName} — Localized sensor calibration drift / hardware malfunction isolated by state estimation (${confPct}% conf); telemetry deviates without anomalous OT network packets or line tripping.`;
+  }
+
+  if (verdict === "Natural Fault" || verdict === "PHYSICAL_ELECTRICAL_FAULT") {
     switch (subtype) {
       case "line_trip":
       case "physical_fault":
@@ -92,7 +108,7 @@ export function formatAlert(
     }
   }
 
-  if (verdict === "Normal") {
+  if (verdict === "Normal" || verdict === "NORMAL") {
     return `${rtuName} — Grid operating in normal bounds. Telemetry is physically consistent with WLS state estimation and no anomalous OT traffic.`;
   }
 
@@ -106,7 +122,7 @@ export function getRecommendedAction(
   verdict: VerdictType | string,
   subtype: SubtypeType | null | undefined
 ): string {
-  if (verdict === "Cyber Intrusion") {
+  if (verdict === "Cyber Intrusion" || verdict === "CYBER_ATTACK") {
     switch (subtype) {
       case "command_injection":
         return "Isolate RTU network segment; block unauthorized Modbus master IP; verify physical breaker status.";
@@ -121,7 +137,11 @@ export function getRecommendedAction(
     }
   }
 
-  if (verdict === "Natural Fault") {
+  if (verdict === "Sensor Malfunction" || verdict === "SENSOR_MALFUNCTION" || verdict === "Sensor Drift" || verdict === "SENSOR_DRIFT") {
+    return "Dispatch instrumentation technician for sensor calibration and wire continuity inspection; temporarily flag telemetry in state estimator.";
+  }
+
+  if (verdict === "Natural Fault" || verdict === "PHYSICAL_ELECTRICAL_FAULT") {
     switch (subtype) {
       case "line_trip":
         return "Dispatch line inspection crew to tripped feeder section; check auto-recloser lockouts.";
@@ -142,7 +162,7 @@ export function getPhysicsEvidenceSummary(
   verdict: VerdictType | string,
   subtype: SubtypeType | null | undefined
 ): string {
-  if (verdict === "Cyber Intrusion") {
+  if (verdict === "Cyber Intrusion" || verdict === "CYBER_ATTACK") {
     if (subtype === "data_injection" || subtype === "silent_data_injection") {
       return "WLS Chi-squared test failed; high normalized residual (r_N > 3.0); adjacent bus conservation violated.";
     }
@@ -152,7 +172,11 @@ export function getPhysicsEvidenceSummary(
     return "Physical state estimation mismatch; power flow equations not satisfied at monitored node.";
   }
 
-  if (verdict === "Natural Fault") {
+  if (verdict === "Sensor Malfunction" || verdict === "SENSOR_MALFUNCTION" || verdict === "Sensor Drift" || verdict === "SENSOR_DRIFT") {
+    return "Moderate normalized residual (r_N > 2.5) strictly localized to target sensor; adjacent buses confirm normal physical power flow.";
+  }
+
+  if (verdict === "Natural Fault" || verdict === "PHYSICAL_ELECTRICAL_FAULT") {
     if (subtype === "line_trip") {
       return "Power flow converged with zero current on isolated branch; downstream bus voltage collapsed.";
     }
@@ -169,7 +193,7 @@ export function getNetworkEvidenceSummary(
   verdict: VerdictType | string,
   subtype: SubtypeType | null | undefined
 ): string {
-  if (verdict === "Cyber Intrusion") {
+  if (verdict === "Cyber Intrusion" || verdict === "CYBER_ATTACK") {
     if (subtype === "command_injection") {
       return "Unauthorized source IP executing FC 06/16 Write Register outside scheduled SCADA master window.";
     }
@@ -179,7 +203,11 @@ export function getNetworkEvidenceSummary(
     return "Legitimate Modbus Read traffic observed, but payload values contradict physical grid state.";
   }
 
-  if (verdict === "Natural Fault") {
+  if (verdict === "Sensor Malfunction" || verdict === "SENSOR_MALFUNCTION" || verdict === "Sensor Drift" || verdict === "SENSOR_DRIFT") {
+    return "Nominal Modbus TCP polling; zero unauthorized writes or anomalous function codes.";
+  }
+
+  if (verdict === "Natural Fault" || verdict === "PHYSICAL_ELECTRICAL_FAULT") {
     return "Modbus polling nominal (FC 03 Read Holding Registers); no unauthorized write transactions logged.";
   }
 

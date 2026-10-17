@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { AlertCircle, Bell, CheckCircle2, ShieldAlert, Trash2, TriangleAlert } from "lucide-react";
+import { Activity, AlertCircle, Bell, CheckCircle2, ShieldAlert, Trash2, TriangleAlert } from "lucide-react";
 import { LiveSocketPayload, MitreIcsMapping, RTUVerdict, VerdictType } from "@/lib/types";
 import { formatAlert, getMitreIcsTag, getRtuAssetLabel, getVerdictColor } from "@/lib/alertText";
 
@@ -28,7 +28,7 @@ interface AlertFeedProps {
   onNewVerdictChange?: (item: AlertFeedItem) => void;
 }
 
-type AlertFilter = "ALL" | "CYBER" | "FAULT" | "NORMAL";
+type AlertFilter = "ALL" | "CYBER" | "FAULT" | "DRIFT" | "NORMAL";
 
 export const AlertFeed: React.FC<AlertFeedProps> = ({ latestState, onAlertClick, onNewVerdictChange }) => {
   const [alerts, setAlerts] = useState<AlertFeedItem[]>([]);
@@ -43,7 +43,7 @@ export const AlertFeed: React.FC<AlertFeedProps> = ({ latestState, onAlertClick,
       const verdict = data.verdict as VerdictType;
       const previous = previousRef.current[rtuId];
       const changed = previous && (previous.verdict !== verdict || previous.subtype !== data.subtype);
-      if (changed || (!previous && verdict !== "Normal")) {
+      if (changed || (!previous && verdict !== "Normal" && verdict !== "NORMAL")) {
         const item: AlertFeedItem = {
           id: `alert-${Date.now()}-${rtuId}-${Math.random().toString(36).slice(2, 6)}`,
           tick: latestState.tick,
@@ -69,20 +69,23 @@ export const AlertFeed: React.FC<AlertFeedProps> = ({ latestState, onAlertClick,
   }, [latestState, onNewVerdictChange]);
 
   const counts = {
-    cyber: alerts.filter((item) => item.verdict === "Cyber Intrusion").length,
-    fault: alerts.filter((item) => item.verdict === "Natural Fault").length,
-    normal: alerts.filter((item) => item.verdict === "Normal").length,
+    cyber: alerts.filter((item) => item.verdict === "Cyber Intrusion" || item.verdict === "CYBER_ATTACK").length,
+    fault: alerts.filter((item) => item.verdict === "Natural Fault" || item.verdict === "PHYSICAL_ELECTRICAL_FAULT").length,
+    drift: alerts.filter((item) => item.verdict === "Sensor Malfunction" || item.verdict === "SENSOR_MALFUNCTION").length,
+    normal: alerts.filter((item) => item.verdict === "Normal" || item.verdict === "NORMAL").length,
   };
   const visibleAlerts = alerts.filter((item) =>
-    filter === "CYBER" ? item.verdict === "Cyber Intrusion" :
-    filter === "FAULT" ? item.verdict === "Natural Fault" :
-    filter === "NORMAL" ? item.verdict === "Normal" : true
+    filter === "CYBER" ? (item.verdict === "Cyber Intrusion" || item.verdict === "CYBER_ATTACK") :
+    filter === "FAULT" ? (item.verdict === "Natural Fault" || item.verdict === "PHYSICAL_ELECTRICAL_FAULT") :
+    filter === "DRIFT" ? (item.verdict === "Sensor Malfunction" || item.verdict === "SENSOR_MALFUNCTION") :
+    filter === "NORMAL" ? (item.verdict === "Normal" || item.verdict === "NORMAL") : true
   );
 
   const iconFor = (verdict: VerdictType) => {
-    if (verdict === "Cyber Intrusion") return <ShieldAlert size={15} />;
-    if (verdict === "Natural Fault") return <TriangleAlert size={15} />;
-    if (verdict === "Normal") return <CheckCircle2 size={15} />;
+    if (verdict === "Cyber Intrusion" || verdict === "CYBER_ATTACK") return <ShieldAlert size={15} />;
+    if (verdict === "Natural Fault" || verdict === "PHYSICAL_ELECTRICAL_FAULT") return <TriangleAlert size={15} />;
+    if (verdict === "Sensor Malfunction" || verdict === "SENSOR_MALFUNCTION") return <Activity size={15} />;
+    if (verdict === "Normal" || verdict === "NORMAL") return <CheckCircle2 size={15} />;
     return <AlertCircle size={15} />;
   };
 
@@ -93,9 +96,9 @@ export const AlertFeed: React.FC<AlertFeedProps> = ({ latestState, onAlertClick,
         <div className="scada-feed-actions"><span>{visibleAlerts.length} shown</span>{alerts.length > 0 && <button onClick={() => setAlerts([])} title="Clear incident queue"><Trash2 size={14} /></button>}</div>
       </div>
       <div className="scada-alert-filters">
-        {(["ALL", "CYBER", "FAULT", "NORMAL"] as AlertFilter[]).map((item) => (
+        {(["ALL", "CYBER", "FAULT", "DRIFT", "NORMAL"] as AlertFilter[]).map((item) => (
           <button key={item} className={`${filter === item ? "is-active" : ""} ${item.toLowerCase()}`} onClick={() => setFilter(item)}>
-            {item === "ALL" ? "All" : item === "CYBER" ? `Cyber · ${counts.cyber}` : item === "FAULT" ? `Fault · ${counts.fault}` : `Normal · ${counts.normal}`}
+            {item === "ALL" ? "All" : item === "CYBER" ? `Cyber · ${counts.cyber}` : item === "FAULT" ? `Fault · ${counts.fault}` : item === "DRIFT" ? `Sensor Drift · ${counts.drift}` : `Normal · ${counts.normal}`}
           </button>
         ))}
       </div>

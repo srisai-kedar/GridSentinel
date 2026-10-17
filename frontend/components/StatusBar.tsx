@@ -15,15 +15,21 @@ export const StatusBar: React.FC<StatusBarProps> = ({ connectionStatus, latestSt
   let verdict: VerdictType = "Normal";
   const verdicts = Object.values(latestState?.ml_verdicts || {});
   if (!latestState) verdict = "No Data";
-  else if (verdicts.some((item) => item.verdict === "Cyber Intrusion")) verdict = "Cyber Intrusion";
-  else if (verdicts.some((item) => item.verdict === "Natural Fault")) verdict = "Natural Fault";
+  else if (verdicts.some((item) => item.verdict === "Cyber Intrusion" || item.verdict === "CYBER_ATTACK")) verdict = "Cyber Intrusion";
+  else if (verdicts.some((item) => item.verdict === "Natural Fault" || item.verdict === "PHYSICAL_ELECTRICAL_FAULT")) verdict = "Natural Fault";
+  else if (verdicts.some((item) => item.verdict === "Sensor Malfunction" || item.verdict === "SENSOR_MALFUNCTION")) verdict = "Sensor Malfunction";
 
   const health = {
     Normal: { label: "NOMINAL", color: SCADA_COLORS.NORMAL, icon: <CheckCircle2 size={14} /> },
+    NORMAL: { label: "NOMINAL", color: SCADA_COLORS.NORMAL, icon: <CheckCircle2 size={14} /> },
     "Natural Fault": { label: "PHYSICAL FAULT", color: SCADA_COLORS.FAULT, icon: <TriangleAlert size={14} /> },
+    "PHYSICAL_ELECTRICAL_FAULT": { label: "PHYSICAL FAULT", color: SCADA_COLORS.FAULT, icon: <TriangleAlert size={14} /> },
+    "Sensor Malfunction": { label: "SENSOR MALFUNCTION", color: SCADA_COLORS.SENSOR_DRIFT, icon: <Activity size={14} /> },
+    "SENSOR_MALFUNCTION": { label: "SENSOR MALFUNCTION", color: SCADA_COLORS.SENSOR_DRIFT, icon: <Activity size={14} /> },
     "Cyber Intrusion": { label: "CYBER INTRUSION", color: SCADA_COLORS.CYBER, icon: <ShieldAlert size={14} /> },
+    "CYBER_ATTACK": { label: "CYBER INTRUSION", color: SCADA_COLORS.CYBER, icon: <ShieldAlert size={14} /> },
     "No Data": { label: "NO TELEMETRY", color: SCADA_COLORS.NODATA, icon: <Radio size={14} /> },
-  }[verdict];
+  }[verdict] || { label: "NOMINAL", color: SCADA_COLORS.NORMAL, icon: <CheckCircle2 size={14} /> };
 
   const connectionLabel = connectionStatus === "connected" ? "CONNECTED" : connectionStatus === "connecting" ? "RECONNECTING" : "DISCONNECTED";
   const streamLabel = streamStatus === "streaming" ? "STREAMING" : streamStatus === "waiting" ? "WAITING" : streamStatus === "stopped" ? "SIM STOPPED" : streamStatus === "stale" ? "STALE" : streamStatus === "error" ? "ERROR" : "CONNECTING";

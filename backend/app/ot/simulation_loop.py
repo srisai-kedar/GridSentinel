@@ -330,6 +330,12 @@ class SimulationLoop:
                 for k, v in overrides.items():
                     rtu_telemetry_to_write[rtu_id][k] = v
 
+            # Check Sensor Drift / decalibration (clean Modbus network, localized telemetry bias)
+            if rtu_id in scenario_injector.sensor_drifts:
+                drift_pct = scenario_injector.sensor_drifts[rtu_id]["drift_percent"]
+                cur_v = rtu_telemetry_to_write[rtu_id]["voltage_pu"]
+                rtu_telemetry_to_write[rtu_id]["voltage_pu"] = round(cur_v * (1.0 + drift_pct), 4)
+
             # Write to RTU server registers
             rtu = rtu_pool.get_rtu(rtu_id)
             if rtu and rtu.is_running:
@@ -371,7 +377,7 @@ class SimulationLoop:
         )
         overall_status = (
             "ANOMALY_DETECTED"
-            if any(v.get("verdict") in ("Natural Fault", "Cyber Intrusion") for v in classifier_verdicts.values())
+            if any(v.get("verdict") in ("Natural Fault", "Sensor Malfunction", "Cyber Intrusion") for v in classifier_verdicts.values())
             else "NORMAL"
         )
 

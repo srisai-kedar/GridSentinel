@@ -73,6 +73,7 @@ from app.models.schemas import (
     RTUListResponse,
     RTUVerdict,
     ScenarioActionResponse,
+    SensorDriftRequest,
     ShortCircuitRequest,
     SilentDataInjectionRequest,
     TickResponse,
@@ -564,6 +565,24 @@ def trigger_short_circuit_endpoint(req: ShortCircuitRequest):
     )
 
 
+@app.post("/ot/fault/sensor-drift", response_model=ScenarioActionResponse, tags=["Scenario Injector"])
+def trigger_sensor_drift_endpoint(req: SensorDriftRequest):
+    """
+    Trigger sensor calibration drift or hardware decalibration on target RTU.
+    Produces localized measurement residual while Modbus network traffic remains clean.
+    """
+    res = scenario_injector.inject_sensor_drift(
+        rtu_id=req.rtu_id,
+        drift_percent=req.drift_percent,
+        duration_ticks=req.duration_ticks,
+    )
+    return ScenarioActionResponse(
+        status="injected",
+        message=f"Sensor drift ({req.drift_percent*100:+.1f}%) injected on RTU-{req.rtu_id} for {req.duration_ticks} ticks.",
+        details=res,
+    )
+
+
 @app.post("/ot/reset", response_model=ScenarioActionResponse, tags=["Scenario Injector"])
 def reset_ot_scenarios():
     """Clear all active cyber overrides and physical faults, restoring normal grid operation."""
@@ -651,6 +670,7 @@ def get_classifier_verdict(req: Optional[VerdictRequest] = None):
             conclusion=v.get("conclusion", ""),
             disagreement=v.get("disagreement"),
             model_status=v.get("model_status", "loaded"),
+            mitre_ics=v.get("mitre_ics"),
         )
         for rtu_id, v in sorted(verdicts.items())
     ]

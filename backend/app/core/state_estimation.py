@@ -16,7 +16,7 @@ Key design choices:
   and Chi-Square (χ²) hypothesis test against the 95% confidence threshold.
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 import numpy as np
 import pandapower as pp
 import pandapower.estimation as est
@@ -325,3 +325,82 @@ def detect_bad_data(net: pp.pandapowerNet) -> dict:
         "lnr_threshold": LNR_THRESHOLD,
         "error": None,
     }
+
+
+def inject_sensor_drift(
+    net: pp.pandapowerNet,
+    measurement_index: int,
+    drift_factor: float = 1.08,
+) -> None:
+    """
+    Simulate gradual calibration drift or decalibration on a single measurement.
+    """
+    if measurement_index not in net.measurement.index:
+        raise IndexError(
+            f"Measurement index {measurement_index} not found. "
+            f"Valid indices: {list(net.measurement.index)}"
+        )
+    val = net.measurement.at[measurement_index, "value"]
+    net.measurement.at[measurement_index, "value"] = val * drift_factor
+
+
+def classify_residual_taxonomy(
+    residuals: List[Union[Dict[str, Any], float, int]],
+    has_network_anomaly: bool = False,
+    lnr_threshold: float = 3.0,
+) -> Dict[str, Any]:
+    """
+    3-class residual taxonomy classifier:
+    - High physics residual + network anomaly => CYBER_ATTACK
+    - High physics residual + clean network + multi-element => PHYSICAL_ELECTRICAL_FAULT
+    - Moderate physics residual localized to single sensor + clean network => SENSOR_MALFUNCTION
+    - Nominal residuals + clean network => NORMAL
+    """
+    def _extract_val(r: Union[Dict[str, Any], float, int]) -> float:
+        if isinstance(r, (int, float)):
+            return float(r)
+        if isinstance(r, dict):
+            return float(r.get("normalised_residual", 0.0))
+        return 0.0
+
+    vals = [_extract_val(r) for r in residuals]
+    flagged = [v for v in vals if v > lnr_threshold]
+    breadth = len(flagged)
+    max_lnr = max(vals, default=0.0)
+
+    if has_network_anomaly and (breadth > 0 or max_lnr > 1.5):
+        return {
+            "taxonomy_class": "CYBER_ATTACK",
+            "class_id": 3,
+            "display_name": "Cyber Intrusion",
+            "reason": "Elevated residual with network behavioral anomaly (Modbus unexpected write or rate spike).",
+            "breadth": breadth,
+            "max_lnr": max_lnr,
+        }
+    if breadth > 1 or max_lnr > 6.0:
+        return {
+            "taxonomy_class": "PHYSICAL_ELECTRICAL_FAULT",
+            "class_id": 1,
+            "display_name": "Natural Fault",
+            "reason": f"Widespread physics residual disturbance across {breadth} sensors with clean network.",
+            "breadth": breadth,
+            "max_lnr": max_lnr,
+        }
+    if breadth == 1 or (2.0 <= max_lnr <= 6.0 and breadth >= 1):
+        return {
+            "taxonomy_class": "SENSOR_MALFUNCTION",
+            "class_id": 2,
+            "display_name": "Sensor Malfunction",
+            "reason": "Moderate residual localized to single measurement without network intrusion signatures.",
+            "breadth": breadth,
+            "max_lnr": max_lnr,
+        }
+    return {
+        "taxonomy_class": "NORMAL",
+        "class_id": 0,
+        "display_name": "Normal",
+        "reason": "Nominal residuals and clean network telemetry.",
+        "breadth": breadth,
+        "max_lnr": max_lnr,
+    }
+

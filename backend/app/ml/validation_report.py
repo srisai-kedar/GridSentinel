@@ -127,16 +127,18 @@ def compute_cyber_breakdown(
     tp = sum(1 for idx in cyber_true_indices if predictions[idx] == "Cyber Intrusion")
     miss_to_normal = sum(1 for idx in cyber_true_indices if predictions[idx] == "Normal")
     miss_to_fault = sum(1 for idx in cyber_true_indices if predictions[idx] == "Natural Fault")
+    miss_to_sensor = sum(1 for idx in cyber_true_indices if predictions[idx] == "Sensor Malfunction")
 
-    fn = miss_to_normal + miss_to_fault
+    fn = miss_to_normal + miss_to_fault + miss_to_sensor
     fnr_strict = fn / n
     miss_normal_rate = miss_to_normal / n
     miss_fault_rate = miss_to_fault / n
+    miss_sensor_rate = miss_to_sensor / n
     recall = tp / n
 
     assert fn == (n - tp), "Inconsistent Cyber true positive and false negative counts"
-    assert abs(fnr_strict - (miss_normal_rate + miss_fault_rate)) < 1e-9, (
-        "fnr_strict must equal miss_to_normal + miss_to_fault"
+    assert abs(fnr_strict - (miss_normal_rate + miss_fault_rate + miss_sensor_rate)) < 1e-9, (
+        "fnr_strict must equal miss_to_normal + miss_to_fault + miss_to_sensor"
     )
 
     return {
@@ -145,6 +147,7 @@ def compute_cyber_breakdown(
         "fn": fn,
         "miss_to_normal": miss_to_normal,
         "miss_to_fault": miss_to_fault,
+        "miss_to_sensor": miss_to_sensor,
         "recall": recall,
         "recall_ci": wilson_score_interval(tp, n),
         "fnr_strict": fnr_strict,
@@ -153,6 +156,8 @@ def compute_cyber_breakdown(
         "miss_to_normal_ci": wilson_score_interval(miss_to_normal, n),
         "miss_to_fault_rate": miss_fault_rate,
         "miss_to_fault_ci": wilson_score_interval(miss_to_fault, n),
+        "miss_to_sensor_rate": miss_sensor_rate,
+        "miss_to_sensor_ci": wilson_score_interval(miss_to_sensor, n),
     }
 
 
@@ -317,7 +322,9 @@ def evaluate_dataset(
     df["pred_verdict"] = predictions
     df["pred_subtype"] = subtypes_pred
 
-    classes = ["Normal", "Natural Fault", "Cyber Intrusion"]
+    active_labels = set(df["top_level_label"].dropna().unique()) | set(predictions)
+    base_order = ["Normal", "Natural Fault", "Sensor Malfunction", "Cyber Intrusion"]
+    classes = [c for c in base_order if c in active_labels] or ["Normal", "Natural Fault", "Cyber Intrusion"]
     y_true = df["top_level_label"].tolist()
     y_pred = predictions
 
@@ -545,18 +552,22 @@ def generate_markdown_report(
     # 3. Confusion Matrix
     md.append("## 3. Confusion Matrix")
     md.append("")
-    md.append("| True Label \\ Predicted Label | Pred: Cyber Intrusion | Pred: Natural Fault | Pred: Normal | Total Support |")
-    md.append("|:---|:---:|:---:|:---:|:---:|")
-    for cl in ["Cyber Intrusion", "Natural Fault", "Normal"]:
-        r_cyber = cm[cl]["Cyber Intrusion"]
-        r_fault = cm[cl]["Natural Fault"]
-        r_normal = cm[cl]["Normal"]
-        r_tot = r_cyber + r_fault + r_normal
-        md.append(f"| **True: {cl}** | **{r_cyber}** | {r_fault} | {r_normal} | **{r_tot}** |")
-    tot_cyber = sum(cm[cl]["Cyber Intrusion"] for cl in ["Cyber Intrusion", "Natural Fault", "Normal"])
-    tot_fault = sum(cm[cl]["Natural Fault"] for cl in ["Cyber Intrusion", "Natural Fault", "Normal"])
-    tot_normal = sum(cm[cl]["Normal"] for cl in ["Cyber Intrusion", "Natural Fault", "Normal"])
-    md.append(f"| **Total Predicted** | **{tot_cyber}** | **{tot_fault}** | **{tot_normal}** | **{test_metrics['n_samples']}** |")
+    cm_classes = [c for c in ["Cyber Intrusion", "Natural Fault", "Sensor Malfunction", "Normal"] if c in cm]
+    if not cm_classes:
+        cm_classes = list(cm.keys())
+
+    header = "| True Label \\ Predicted Label | " + " | ".join(f"Pred: {c}" for c in cm_classes) + " | Total Support |"
+    sep = "|:---|" + "|:---:" * len(cm_classes) + "|:---:|"
+    md.append(header)
+    md.append(sep)
+    for cl in cm_classes:
+        row_vals = [cm[cl].get(pc_col, 0) for pc_col in cm_classes]
+        r_tot = sum(row_vals)
+        vals_str = " | ".join(f"**{v}**" if pc_col == cl else str(v) for pc_col, v in zip(cm_classes, row_vals))
+        md.append(f"| **True: {cl}** | {vals_str} | **{r_tot}** |")
+    col_totals = [sum(cm[cl_row].get(pc_col, 0) for cl_row in cm_classes) for pc_col in cm_classes]
+    tot_str = " | ".join(f"**{t}**" for t in col_totals)
+    md.append(f"| **Total Predicted** | {tot_str} | **{test_metrics['n_samples']}** |")
     md.append("")
     md.append("---")
     md.append("")
@@ -566,7 +577,9 @@ def generate_markdown_report(
     md.append("")
     md.append("| Class | Support | TP | FP | FN | TN | Precision [95% CI] | Recall [95% CI] | F1-Score | FPR [95% CI] | FNR [95% CI] |")
     md.append("|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|")
-    for cl in ["Cyber Intrusion", "Natural Fault", "Normal"]:
+    for cl in cm_classes:
+        if cl not in pc:
+            continue
         d = pc[cl]
         p_str = f"{d['precision']*100:.2f}% [{d['precision_ci'][0]*100:.1f}%, {d['precision_ci'][1]*100:.1f}%]"
         r_str = f"{d['recall']*100:.2f}% [{d['recall_ci'][0]*100:.1f}%, {d['recall_ci'][1]*100:.1f}%]"

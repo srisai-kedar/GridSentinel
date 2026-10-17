@@ -9,6 +9,8 @@ from __future__ import annotations
 from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field, field_validator
 
+from app.mitre_ics import MitreIcsMapping
+
 
 # ---------------------------------------------------------------------------
 # Phase 1 Sub-models & Responses
@@ -224,6 +226,12 @@ class ShortCircuitRequest(BaseModel):
     duration_ticks: int = Field(4, ge=1, le=50, description="Duration in ticks before fault is cleared")
 
 
+class SensorDriftRequest(BaseModel):
+    rtu_id: int = Field(..., ge=1, le=5, description="Target RTU ID (1 to 5)")
+    drift_percent: float = Field(0.08, description="Drift magnitude in fraction (e.g. 0.08 for +8% voltage/power decalibration)")
+    duration_ticks: int = Field(25, ge=1, le=500, description="Duration in ticks before sensor recalibration")
+
+
 class ScenarioActionResponse(BaseModel):
     status: str
     message: str
@@ -260,8 +268,8 @@ class VerdictRequest(BaseModel):
 class RTUVerdict(BaseModel):
     """ML verdict for a single RTU, with 3-line explainable evidence panel."""
     rtu_id: int
-    verdict: str = Field(description="Normal | Natural Fault | Cyber Intrusion")
-    subtype: Optional[str] = Field(None, description="normal | physical_fault | data_injection | command_injection | replay")
+    verdict: str = Field(description="Normal | Natural Fault | Sensor Malfunction | Cyber Intrusion")
+    subtype: Optional[str] = Field(None, description="normal | physical_fault | sensor_drift | sensor_malfunction | data_injection | command_injection | replay")
     confidence: float = Field(ge=0.0, le=1.0)
     probabilities: Dict[str, float]
     decision_threshold: float = Field(0.5, description="Cyber Intrusion decision threshold applied")
@@ -283,6 +291,10 @@ class RTUVerdict(BaseModel):
         description="Explainable physics-network disagreement evidence figure (Change 5).",
     )
     model_status: str = Field(description="loaded | heuristic_fallback")
+    mitre_ics: Optional[MitreIcsMapping] = Field(
+        None,
+        description="Formal MITRE ATT&CK for ICS mapping if cyber intrusion; null for normal or natural faults.",
+    )
 
 
 class VerdictResponse(BaseModel):
