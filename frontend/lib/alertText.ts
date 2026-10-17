@@ -5,7 +5,7 @@
  * Implements DISTINCT template strings per verdict and subtype combination.
  */
 
-import { SubtypeType, VerdictType } from "./types";
+import { MitreIcsMapping, SubtypeType, VerdictType } from "./types";
 
 export const SCADA_COLORS = {
   NORMAL: "#10B981",       // Green
@@ -184,4 +184,75 @@ export function getNetworkEvidenceSummary(
   }
 
   return "Standard SCADA Master periodic polling (FC 03); response latency < 25ms; no anomalous writes.";
+}
+
+/**
+ * Resolves MITRE ATT&CK for ICS technique tag for cyber intrusion alerts.
+ * Natural electrical faults and normal operation strictly map to null.
+ */
+export function getMitreIcsTag(
+  verdict: VerdictType | string,
+  subtype?: SubtypeType | null
+): MitreIcsMapping | null {
+  if (verdict !== "Cyber Intrusion") {
+    return null;
+  }
+
+  const subKey = (subtype || "").toLowerCase();
+  switch (subKey) {
+    case "data_injection":
+    case "silent_data_injection":
+    case "fdi":
+    case "false_data_injection":
+      return {
+        technique_id: "T0856",
+        technique_name: "Spoof Reporting Message",
+        tactic: "Impact",
+        tactical_phase: "Impact",
+        description:
+          "Adversary injects falsified telemetry readings (voltage, active/reactive power) to mask grid anomalies or bypass state estimation.",
+      };
+
+    case "command_injection":
+    case "unauthorized_command":
+      return {
+        technique_id: "T0855",
+        technique_name: "Unauthorized Command Message",
+        tactic: "Impair Process Control",
+        tactical_phase: "Impair Process Control",
+        description:
+          "Adversary transmits unauthorized Modbus write commands (FC 06/16) to force breaker operations or alter RTU register setpoints.",
+      };
+
+    case "replay":
+    case "replay_attack":
+      return {
+        technique_id: "T0856",
+        technique_name: "Spoof Reporting Message",
+        tactic: "Impact",
+        tactical_phase: "Impact",
+        description:
+          "Adversary replays historical telemetry frames with static values to conceal active grid disturbances.",
+      };
+
+    case "manipulation_of_control":
+    case "control_manipulation":
+      return {
+        technique_id: "T0831",
+        technique_name: "Manipulation of Control",
+        tactic: "Impair Process Control",
+        tactical_phase: "Impair Process Control",
+        description:
+          "Adversary manipulates physical control devices or parameters to disrupt normal grid operations.",
+      };
+
+    default:
+      return {
+        technique_id: "T0856",
+        technique_name: "Spoof Reporting Message",
+        tactic: "Impact",
+        tactical_phase: "Impact",
+        description: "Cyber anomaly flagged on monitored RTU.",
+      };
+  }
 }

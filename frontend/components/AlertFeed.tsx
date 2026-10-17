@@ -2,8 +2,8 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { AlertCircle, Bell, CheckCircle2, ShieldAlert, Trash2, TriangleAlert } from "lucide-react";
-import { LiveSocketPayload, RTUVerdict, VerdictType } from "@/lib/types";
-import { formatAlert, getRtuAssetLabel, getVerdictColor } from "@/lib/alertText";
+import { LiveSocketPayload, MitreIcsMapping, RTUVerdict, VerdictType } from "@/lib/types";
+import { formatAlert, getMitreIcsTag, getRtuAssetLabel, getVerdictColor } from "@/lib/alertText";
 
 export interface AlertFeedItem {
   id: string;
@@ -19,6 +19,7 @@ export interface AlertFeedItem {
   networkEvidence?: string;
   physicsEvidence?: string;
   conclusion?: string;
+  mitre_ics?: MitreIcsMapping | null;
 }
 
 interface AlertFeedProps {
@@ -57,6 +58,7 @@ export const AlertFeed: React.FC<AlertFeedProps> = ({ latestState, onAlertClick,
           networkEvidence: data.network_evidence,
           physicsEvidence: data.physics_evidence,
           conclusion: data.conclusion,
+          mitre_ics: data.mitre_ics || getMitreIcsTag(verdict, data.subtype),
         };
         newItems.push(item);
         onNewVerdictChange?.(item);
@@ -108,7 +110,18 @@ export const AlertFeed: React.FC<AlertFeedProps> = ({ latestState, onAlertClick,
               <span className="scada-alert-copy">
                 <span className="scada-alert-row-head"><strong>{getRtuAssetLabel(alert.rtuId)}</strong><time>{alert.simTime}</time></span>
                 <span className="scada-alert-message">{alert.message}</span>
-                <span className="scada-alert-row-foot"><em style={{ color }}>{alert.verdict}{alert.subtype ? ` · ${alert.subtype.replaceAll("_", " ")}` : ""}</em><span>confidence {(alert.confidence * 100).toFixed(0)}%</span></span>
+                <span className="scada-alert-row-foot">
+                  <em style={{ color }}>{alert.verdict}{alert.subtype ? ` · ${alert.subtype.replaceAll("_", " ")}` : ""}</em>
+                  {alert.mitre_ics?.technique_id && (
+                    <span
+                      className="inline-flex items-center px-1.5 py-0.5 rounded-[2px] bg-red-950/70 text-red-400 border border-red-500/40 text-[9px] font-mono font-semibold tracking-tight"
+                      title={`MITRE ATT&CK for ICS: ${alert.mitre_ics.technique_id} — ${alert.mitre_ics.technique_name} [${alert.mitre_ics.tactic}]`}
+                    >
+                      MITRE {alert.mitre_ics.technique_id}
+                    </span>
+                  )}
+                  <span>confidence {(alert.confidence * 100).toFixed(0)}%</span>
+                </span>
               </span>
             </button>
           );

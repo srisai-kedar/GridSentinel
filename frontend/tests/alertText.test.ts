@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   formatAlert,
+  getMitreIcsTag,
   getNetworkEvidenceSummary,
   getPhysicsEvidenceSummary,
   getRecommendedAction,
@@ -77,5 +78,39 @@ describe("alertText formatAlert", () => {
 
     expect(netCyber).toContain("FC 06/16 Write");
     expect(physCyber).toContain("Chi-squared test failed");
+  });
+
+  it("maps cyber intrusions to correct MITRE ATT&CK for ICS techniques", () => {
+    // FDI / data injection -> T0856 Spoof Reporting Message
+    const fdiTag = getMitreIcsTag("Cyber Intrusion", "data_injection");
+    expect(fdiTag).not.toBeNull();
+    expect(fdiTag?.technique_id).toBe("T0856");
+    expect(fdiTag?.technique_name).toBe("Spoof Reporting Message");
+    expect(fdiTag?.tactic).toBe("Impact");
+
+    // Command injection -> T0855 Unauthorized Command Message
+    const cmdTag = getMitreIcsTag("Cyber Intrusion", "command_injection");
+    expect(cmdTag).not.toBeNull();
+    expect(cmdTag?.technique_id).toBe("T0855");
+    expect(cmdTag?.technique_name).toBe("Unauthorized Command Message");
+    expect(cmdTag?.tactic).toBe("Impair Process Control");
+
+    // Replay attack -> T0856 Spoof Reporting Message
+    const replayTag = getMitreIcsTag("Cyber Intrusion", "replay");
+    expect(replayTag).not.toBeNull();
+    expect(replayTag?.technique_id).toBe("T0856");
+
+    // Control manipulation -> T0831 Manipulation of Control
+    const ctrlTag = getMitreIcsTag("Cyber Intrusion", "manipulation_of_control");
+    expect(ctrlTag).not.toBeNull();
+    expect(ctrlTag?.technique_id).toBe("T0831");
+    expect(ctrlTag?.tactic).toBe("Impair Process Control");
+  });
+
+  it("ensures natural faults and normal operation map to null for MITRE tags", () => {
+    expect(getMitreIcsTag("Natural Fault", "line_trip")).toBeNull();
+    expect(getMitreIcsTag("Natural Fault", "short_circuit")).toBeNull();
+    expect(getMitreIcsTag("Normal", "normal")).toBeNull();
+    expect(getMitreIcsTag("No Data", null)).toBeNull();
   });
 });

@@ -4,6 +4,7 @@ import React, { useMemo } from "react";
 import { ArrowUpRight, CheckCircle2, ShieldAlert, TriangleAlert } from "lucide-react";
 import { LiveSocketPayload, RTUVerdict, VerdictType } from "@/lib/types";
 import {
+  getMitreIcsTag,
   getNetworkEvidenceSummary,
   getPhysicsEvidenceSummary,
   getRecommendedAction,
@@ -40,6 +41,7 @@ export const EvidencePanel: React.FC<EvidencePanelProps> = ({ latestState, selec
   const color = getVerdictColor(verdict);
   const networkEvidence = selected?.network_evidence || getNetworkEvidenceSummary(verdict, selected?.subtype || "normal");
   const physicsEvidence = selected?.physics_evidence || getPhysicsEvidenceSummary(verdict, selected?.subtype || "normal");
+  const mitreTag = selected?.mitre_ics || getMitreIcsTag(verdict, selected?.subtype);
 
   return (
     <section className="scada-surface scada-evidence-panel" aria-labelledby="evidence-heading">
@@ -66,6 +68,16 @@ export const EvidencePanel: React.FC<EvidencePanelProps> = ({ latestState, selec
             <div className="scada-evidence-line">
               <span>Physics disagreement</span>
               <p>{`Reported ${selected.disagreement.reported_value.toFixed(2)} V vs physics-implied ${selected.disagreement.physics_implied_value.toFixed(2)} V (${selected.disagreement.delta_sigma.toFixed(1)}σ), persisting ${selected.disagreement.persistence_ticks} ticks`}</p>
+            </div>
+          )}
+          {mitreTag && (
+            <div className="scada-evidence-line">
+              <span>MITRE ATT&CK (ICS)</span>
+              <p>
+                <strong className="text-[#EF4444] font-mono font-bold mr-1">{mitreTag.technique_id}</strong>
+                <span>{mitreTag.technique_name}</span>
+                <span className="text-[#9CA3AF] text-[10px] ml-1.5 font-mono">[{mitreTag.tactic}]</span>
+              </p>
             </div>
           )}
           <div className="scada-next-action"><span>Next operator check</span><strong>{getRecommendedAction(verdict, selected.subtype || "normal")}</strong><ArrowUpRight size={14} /></div>
