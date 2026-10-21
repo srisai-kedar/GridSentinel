@@ -79,6 +79,34 @@ class VerdictLabel(str):
         return super().__hash__()
 
 
+def detect_sensor_drift_signature(features: Dict[str, float]) -> bool:
+    """
+    Check if telemetry features match the dedicated sensor-drift / malfunction signature:
+    - Single-sensor localized residual (breadth == 1, concentration >= 0.70 or concentration present)
+    - Mild/moderate voltage deviation (<= 0.10 pu)
+    - Clean OT Modbus traffic (zero unexpected writes, anomaly rate <= 0.05)
+    - Residual indicator (target RTU flagged, max_lnr > 2.5, or target_v_residual > 2.0)
+    """
+    breadth_count = features.get("pcd_resid_breadth_count", 0.0)
+    concentration = features.get("pcd_resid_concentration", 0.0)
+    v_dev = max(
+        features.get("pcd_voltage_dev_nominal", 0.0),
+        features.get("pcd_voltage_deviation_pu", 0.0),
+    )
+    return bool(
+        breadth_count == 1.0
+        and (concentration >= 0.70 or "pcd_resid_concentration" in features)
+        and v_dev <= 0.10
+        and features.get("nbd_unexpected_write_count", 0.0) == 0.0
+        and features.get("nbd_modbus_anomaly_rate", 0.0) <= 0.05
+        and (
+            features.get("pcd_target_rtu_is_flagged", 0.0) > 0
+            or features.get("pcd_max_lnr", 0.0) > 2.5
+            or features.get("pcd_target_rtu_v_residual", 0.0) > 2.0
+        )
+    )
+
+
 def evaluate_residual_disagreement(features: Dict[str, float]) -> Tuple[VerdictLabel, str, Dict[str, float]]:
     """
     Core residual disagreement triage logic:
@@ -487,7 +515,7 @@ class ClassifierService:
             proba = self.top_model.predict_proba(vector)[0]
             raw_top_classes = list(self.top_model.classes_)
             # Ensure top_classes are string names
-            label_map = {0: "Cyber Intrusion", 1: "Natural Fault", 2: "Normal"}
+            label_map = {0: "Cyber Intrusion", 1: "Natural Fault", 2: "Normal", 3: "Sensor Malfunction"}
             top_classes = [
                 label_map[int(c)] if isinstance(c, (int, np.integer)) and int(c) in label_map else str(c)
                 for c in raw_top_classes
@@ -530,26 +558,7 @@ class ClassifierService:
             # Intercept for SENSOR MALFUNCTION / DRIFT when single-sensor drift telemetry
             # signatures are present (neutralizing the judge trap: "Is your system
             # confusing a broken sensor wire with an active cyber attack?"):
-            # Specifically: localized single-sensor residual (breadth == 1, concentration >= 0.70),
-            # mild/moderate voltage deviation (<= 0.10 pu), and clean OT Modbus traffic.
-            breadth_count = features.get("pcd_resid_breadth_count", 0.0)
-            concentration = features.get("pcd_resid_concentration", 0.0)
-            v_dev = max(
-                features.get("pcd_voltage_dev_nominal", 0.0),
-                features.get("pcd_voltage_deviation_pu", 0.0),
-            )
-            has_sensor_drift_sig = (
-                breadth_count == 1.0
-                and (concentration >= 0.70 or "pcd_resid_concentration" in features)
-                and v_dev <= 0.10
-                and features.get("nbd_unexpected_write_count", 0.0) == 0.0
-                and features.get("nbd_modbus_anomaly_rate", 0.0) <= 0.05
-                and (
-                    features.get("pcd_target_rtu_is_flagged", 0.0) > 0
-                    or features.get("pcd_max_lnr", 0.0) > 2.5
-                    or features.get("pcd_target_rtu_v_residual", 0.0) > 2.0
-                )
-            )
+            has_sensor_drift_sig = detect_sensor_drift_signature(features)
 
             if has_sensor_drift_sig:
                 verdict = VerdictLabel("Sensor Malfunction")
