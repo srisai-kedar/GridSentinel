@@ -53,7 +53,11 @@ from sklearn.metrics import (
     precision_recall_curve,
 )
 
+from app.ml.classifier_service import detect_sensor_drift_signature
 from app.ml.feature_engineering import FEATURE_SCHEMA, FEATURE_SCHEMA_VERSION
+
+PRIMARY_CLASSES: List[str] = ["Cyber Intrusion", "Natural Fault", "Normal"]
+SENSOR_MALFUNCTION_LABEL: str = "Sensor Malfunction"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Optional heavy dependencies – import gracefully so tests still pass if absent
@@ -94,6 +98,124 @@ def load_dataset(csv_path: str) -> Tuple[pd.DataFrame, pd.Series, pd.Series]:
     X = X.fillna(0.0)
 
     return X, y_top, y_sub
+
+
+def partition_primary_and_drift(
+    X: pd.DataFrame,
+    y_top: pd.Series,
+    y_sub: pd.Series,
+) -> Tuple[pd.DataFrame, pd.Series, pd.Series, pd.DataFrame, pd.Series, pd.Series]:
+    """
+    Partition dataset into:
+    1. Primary triage set (3 classes: Normal, Natural Fault, Cyber Intrusion)
+    2. Sensor Malfunction / Drift set (held out for separate evaluation)
+    """
+    is_drift = y_top == SENSOR_MALFUNCTION_LABEL
+    X_primary = X[~is_drift].copy()
+    y_top_primary = y_top[~is_drift].copy()
+    y_sub_primary = y_sub[~is_drift].copy()
+
+    X_drift = X[is_drift].copy()
+    y_top_drift = y_top[is_drift].copy()
+    y_sub_drift = y_sub[is_drift].copy()
+
+    return X_primary, y_top_primary, y_sub_primary, X_drift, y_top_drift, y_sub_drift
+
+
+def decode_xgb_predictions(
+    y_pred_encoded: np.ndarray,
+    label_map_inv: Dict[int, str],
+) -> np.ndarray:
+    """
+    Safely decode XGBoost integer predictions back to class label strings.
+    Never silently maps unexpected or unknown class indices to 'Normal'.
+    """
+    decoded = []
+    for p in y_pred_encoded:
+        idx = int(p)
+        if idx in label_map_inv:
+            decoded.append(label_map_inv[idx])
+        else:
+            raise KeyError(f"Unexpected XGBoost class index {idx} not in label map {label_map_inv}")
+    return np.array(decoded)
+
+
+def evaluate_sensor_drift_scenarios(
+    model: Any,
+    X_drift: pd.DataFrame,
+    model_name: str = "Model",
+    label_map_inv: Optional[Dict[int, str]] = None,
+    threshold: Optional[float] = None,
+    classes: Optional[List[str]] = None,
+) -> Dict[str, Any]:
+    """
+    Dedicated evaluation of Sensor Malfunction / Drift scenarios.
+    Ensures sensor-drift instances are evaluated separately rather than
+    silently mapped to Normal or counted incorrectly in 3-class primary triage.
+    """
+    n_samples = len(X_drift)
+    if n_samples == 0:
+        return {
+            "n_samples": 0,
+            "status": "no_drift_samples",
+            "primary_model_verdicts": {},
+            "primary_model_cyber_fp_count": 0,
+            "primary_model_cyber_fpr": 0.0,
+            "dedicated_pathway_intercepted": 0,
+            "dedicated_pathway_recall": 0.0,
+        }
+
+    # 1. Primary Model predictions on drift rows
+    if model_name == "XGBoost" and label_map_inv:
+        proba = model.predict_proba(X_drift)
+        label_values = list(label_map_inv.values())
+        cyber_idx = label_values.index("Cyber Intrusion") if "Cyber Intrusion" in label_values else 0
+        preds = []
+        for row in proba:
+            if threshold is not None and row[cyber_idx] >= threshold:
+                preds.append("Cyber Intrusion")
+            else:
+                row_copy = row.copy()
+                if threshold is not None:
+                    row_copy[cyber_idx] = 0.0
+                best_idx = int(np.argmax(row_copy))
+                preds.append(label_map_inv.get(best_idx, str(best_idx)))
+    else:
+        if threshold is not None and classes and "Cyber Intrusion" in classes:
+            proba = model.predict_proba(X_drift)
+            cyber_idx = classes.index("Cyber Intrusion")
+            preds = []
+            for row in proba:
+                if row[cyber_idx] >= threshold:
+                    preds.append("Cyber Intrusion")
+                else:
+                    row_copy = row.copy()
+                    row_copy[cyber_idx] = 0.0
+                    preds.append(classes[int(np.argmax(row_copy))])
+        else:
+            preds = list(model.predict(X_drift))
+
+    cyber_fp = sum(1 for p in preds if p == "Cyber Intrusion")
+    cyber_fpr = float(cyber_fp / n_samples) if n_samples > 0 else 0.0
+    verdict_counts = {str(k): int(v) for k, v in pd.Series(preds).value_counts().items()}
+
+    # 2. Dedicated physics-based sensor drift signature interception
+    intercepted_count = 0
+    for _, row in X_drift.iterrows():
+        feat_dict = {k: float(row.get(k, 0.0)) for k in FEATURE_SCHEMA}
+        if detect_sensor_drift_signature(feat_dict):
+            intercepted_count += 1
+
+    pathway_recall = float(intercepted_count / n_samples) if n_samples > 0 else 0.0
+
+    return {
+        "n_samples": n_samples,
+        "primary_model_verdicts": verdict_counts,
+        "primary_model_cyber_fp_count": cyber_fp,
+        "primary_model_cyber_fpr": round(cyber_fpr, 4),
+        "dedicated_pathway_intercepted": intercepted_count,
+        "dedicated_pathway_recall": round(pathway_recall, 4),
+    }
 
 
 def _cyber_f2(y_true: pd.Series, y_proba_cyber: np.ndarray, threshold: float) -> float:
@@ -200,10 +322,35 @@ def train_and_evaluate(
     print(f"  Training samples: {len(X_train)} rows across {len(FEATURE_SCHEMA)} features")
     print(f"  Training class distribution:\n{y_top_train.value_counts()}")
 
+    (
+        X_train_primary,
+        y_top_train_primary,
+        y_sub_train_primary,
+        X_train_drift,
+        y_top_train_drift,
+        y_sub_train_drift,
+    ) = partition_primary_and_drift(X_train, y_top_train, y_sub_train)
+
+    if len(X_train_drift) > 0:
+        print(f"  [Taxonomy] Partitioned {len(X_train_drift)} Sensor Malfunction rows from primary training set;")
+        print(f"             primary triage trains strictly on {len(X_train_primary)} 3-class samples.")
+
     print(f"\n[Trainer] Loading held-out test set from {test_csv}...")
     X_test, y_top_test, y_sub_test = load_dataset(test_csv)
     print(f"  Test samples: {len(X_test)} rows")
     print(f"  Test class distribution:\n{y_top_test.value_counts()}")
+
+    (
+        X_test_primary,
+        y_top_test_primary,
+        y_sub_test_primary,
+        X_test_drift,
+        y_top_test_drift,
+        y_sub_test_drift,
+    ) = partition_primary_and_drift(X_test, y_top_test, y_sub_test)
+
+    if len(X_test_drift) > 0:
+        print(f"  [Taxonomy] Partitioned {len(X_test_drift)} Sensor Malfunction rows from primary test set for separate evaluation.")
 
     # Load validation set for threshold tuning (may not exist yet)
     has_val = Path(val_csv).exists()
@@ -211,9 +358,21 @@ def train_and_evaluate(
         print(f"\n[Trainer] Loading validation set from {val_csv}...")
         X_val, y_val, _ = load_dataset(val_csv)
         print(f"  Val samples: {len(X_val)} rows")
+        (
+            X_val_primary,
+            y_val_primary,
+            _,
+            X_val_drift,
+            _,
+            _,
+        ) = partition_primary_and_drift(X_val, y_val, pd.Series(index=y_val.index))
+        if len(X_val_drift) > 0:
+            print(f"  [Taxonomy] Partitioned {len(X_val_drift)} Sensor Malfunction rows from validation set.")
     else:
         print(f"\n[Trainer] WARNING: {val_csv} not found – will use test set for threshold tuning.")
         X_val, y_val = X_test, y_top_test
+        X_val_primary, y_val_primary = X_test_primary, y_top_test_primary
+        X_val_drift = X_test_drift
 
     # -----------------------------------------------------------------------
     # Step 4: Model Comparison
@@ -232,60 +391,46 @@ def train_and_evaluate(
         print(f"\n  Training {name}...")
         fit_start = time.perf_counter()
 
-        # Dynamic integer-encoded labels for XGBoost supporting any taxonomy
-        unique_labels = sorted(list(y_top_train.unique()))
+        # Dynamic integer-encoded labels for XGBoost supporting primary taxonomy
+        unique_labels = sorted(list(y_top_train_primary.unique()))
         label_map = {lbl: idx for idx, lbl in enumerate(unique_labels)}
         label_map_inv = {idx: lbl for lbl, idx in label_map.items()}
 
         if name == "XGBoost":
-            y_train_enc = y_top_train.map(label_map)
-            y_val_enc = y_val.map(label_map)
+            y_train_enc = y_top_train_primary.map(label_map)
+            y_val_enc = y_val_primary.map(label_map)
             # class weights for XGBoost via sample_weight
             counts = y_train_enc.value_counts()
             total = len(y_train_enc)
             sw = y_train_enc.map({k: total / (len(unique_labels) * v) for k, v in counts.items()})
-            clf.fit(X_train, y_train_enc, sample_weight=sw)
+            clf.fit(X_train_primary, y_train_enc, sample_weight=sw)
         else:
-            clf.fit(X_train, y_top_train)
+            clf.fit(X_train_primary, y_top_train_primary)
 
         fit_time = time.perf_counter() - fit_start
         print(f"    Fit time: {fit_time:.1f}s")
 
         # Latency benchmark
-        latency_ms = measure_latency(clf, X_test)
+        latency_ms = measure_latency(clf, X_test_primary)
         print(f"    Inference latency: {latency_ms:.3f} ms/verdict")
 
         # Threshold tuning on validation set
         if name == "XGBoost":
-            # Map val labels back for F2 calc via raw proba
-            xgb_classes = [0, 1, 2]
-            cyber_idx_xgb = xgb_classes.index(0)  # "Cyber Intrusion" = 0
-            val_proba = clf.predict_proba(X_val)
-            cyber_proba_val = val_proba[:, cyber_idx_xgb]
-            y_val_is_cyber = (y_val == "Cyber Intrusion").astype(int)
-
-            best_thr_c, best_f2_c = 0.5, 0.0
-            for thr in np.arange(0.10, 0.61, 0.01):
-                pred = (cyber_proba_val >= thr).astype(int)
-                f2 = float(fbeta_score(y_val_is_cyber, pred, beta=2, zero_division=0))
-                if f2 > best_f2_c:
-                    best_f2_c = f2
-                    best_thr_c = float(thr)
+            xgb_classes_named = [label_map_inv[int(c)] for c in clf.classes_]
+            best_thr_c, best_f2_c = tune_threshold(clf, X_val_primary, y_val_primary, xgb_classes_named)
         else:
             classes_list = list(clf.classes_)
-            best_thr_c, best_f2_c = tune_threshold(clf, X_val, y_val, classes_list)
+            best_thr_c, best_f2_c = tune_threshold(clf, X_val_primary, y_val_primary, classes_list)
 
         print(f"    Best Cyber threshold: {best_thr_c:.2f} (val F2={best_f2_c:.4f})")
 
         # Evaluate on test set at argmax (default threshold)
         if name == "XGBoost":
-            test_proba = clf.predict_proba(X_test)
-            y_pred_default = np.array(["Cyber Intrusion" if p == 0 else ("Natural Fault" if p == 1 else "Normal")
-                                       for p in clf.predict(X_test)])
+            y_pred_default = decode_xgb_predictions(clf.predict(X_test_primary), label_map_inv)
         else:
-            y_pred_default = clf.predict(X_test)
+            y_pred_default = clf.predict(X_test_primary)
 
-        acc = float(accuracy_score(y_top_test, y_pred_default))
+        acc = float(accuracy_score(y_top_test_primary, y_pred_default))
 
         comparison_results[name] = {
             "fit_time_s": round(fit_time, 2),
@@ -313,9 +458,9 @@ def train_and_evaluate(
     # Stage 2: Secondary Cyber Subtype Model
     # -----------------------------------------------------------------------
     print("[Trainer] Training Secondary Forensic Cyber Subtyping Model...")
-    cyber_mask_train = y_top_train == "Cyber Intrusion"
-    X_train_cyber = X_train[cyber_mask_train]
-    y_sub_train_cyber = y_sub_train[cyber_mask_train]
+    cyber_mask_train = y_top_train_primary == "Cyber Intrusion"
+    X_train_cyber = X_train_primary[cyber_mask_train]
+    y_sub_train_cyber = y_sub_train_primary[cyber_mask_train]
 
     subtype_model = RandomForestClassifier(
         n_estimators=200,
@@ -330,13 +475,13 @@ def train_and_evaluate(
     # Step 3: Evaluate with Tuned Threshold on Test Set
     # -----------------------------------------------------------------------
     print(f"\n[Trainer] == Step 3: Evaluating with Tuned Threshold (threshold={best_threshold:.2f}) ==")
-    unique_labels = sorted(list(y_top_train.unique()))
+    unique_labels = sorted(list(y_top_train_primary.unique()))
     classes = sorted(list(best_top_model.classes_)) if best_model_name != "XGBoost" else unique_labels
 
     if best_model_name == "XGBoost":
         label_map = {lbl: idx for idx, lbl in enumerate(unique_labels)}
         label_map_inv = {idx: lbl for lbl, idx in label_map.items()}
-        xgb_proba = best_top_model.predict_proba(X_test)
+        xgb_proba = best_top_model.predict_proba(X_test_primary)
         cyber_idx_xgb = label_map.get("Cyber Intrusion", 0)
         cyber_proba_test = xgb_proba[:, cyber_idx_xgb]
         # Apply tuned threshold: if cyber_proba >= threshold => Cyber Intrusion,
@@ -352,7 +497,7 @@ def train_and_evaluate(
                 y_top_pred.append(label_map_inv[int(np.argmax(row_copy))])
         y_top_pred = np.array(y_top_pred)
     else:
-        proba_all = best_top_model.predict_proba(X_test)
+        proba_all = best_top_model.predict_proba(X_test_primary)
         cyber_idx = classes.index("Cyber Intrusion")
         cyber_proba_test = proba_all[:, cyber_idx]
         y_top_pred = []
@@ -366,12 +511,12 @@ def train_and_evaluate(
                 y_top_pred.append(classes[int(np.argmax(row_copy))])
         y_top_pred = np.array(y_top_pred)
 
-    acc = float(accuracy_score(y_top_test, y_top_pred))
-    cm = confusion_matrix(y_top_test, y_top_pred, labels=classes)
-    clf_report = classification_report(y_top_test, y_top_pred, output_dict=True)
+    acc = float(accuracy_score(y_top_test_primary, y_top_pred))
+    cm = confusion_matrix(y_top_test_primary, y_top_pred, labels=classes)
+    clf_report = classification_report(y_top_test_primary, y_top_pred, output_dict=True)
 
     # Cyber-specific metrics
-    is_true_cyber = (y_top_test == "Cyber Intrusion")
+    is_true_cyber = (y_top_test_primary == "Cyber Intrusion")
     is_pred_cyber = (y_top_pred == "Cyber Intrusion")
     total_non_cyber = int((~is_true_cyber).sum())
     false_positives_cyber = int(((~is_true_cyber) & is_pred_cyber).sum())
@@ -384,7 +529,7 @@ def train_and_evaluate(
 
     # Cyber F2 on test set
     test_cyber_f2 = float(fbeta_score(
-        (y_top_test == "Cyber Intrusion").astype(int),
+        (y_top_test_primary == "Cyber Intrusion").astype(int),
         (y_top_pred == "Cyber Intrusion").astype(int),
         beta=2, zero_division=0,
     ))
@@ -430,15 +575,37 @@ def train_and_evaluate(
     # -----------------------------------------------------------------------
     # Subtyping on Cyber instances in test set
     # -----------------------------------------------------------------------
-    cyber_mask_test = y_top_test == "Cyber Intrusion"
+    cyber_mask_test = y_top_test_primary == "Cyber Intrusion"
     if cyber_mask_test.sum() > 0:
-        X_test_cyber = X_test[cyber_mask_test]
-        y_sub_test_cyber = y_sub_test[cyber_mask_test]
+        X_test_cyber = X_test_primary[cyber_mask_test]
+        y_sub_test_cyber = y_sub_test_primary[cyber_mask_test]
         y_sub_pred_cyber = subtype_model.predict(X_test_cyber)
         sub_acc = float(accuracy_score(y_sub_test_cyber, y_sub_pred_cyber))
         print(f"\nCyber Subtype Accuracy:         {sub_acc * 100:.2f}%")
     else:
         sub_acc = 0.0
+
+    # -----------------------------------------------------------------------
+    # Separate Evaluation: Sensor Malfunction / Drift Scenarios
+    # -----------------------------------------------------------------------
+    sensor_drift_eval = None
+    if len(X_test_drift) > 0:
+        print(f"\n[Trainer] == Separate Evaluation: Sensor Malfunction / Drift ({len(X_test_drift)} samples) ==")
+        label_map_inv_opt = label_map_inv if best_model_name == "XGBoost" else None
+        sensor_drift_eval = evaluate_sensor_drift_scenarios(
+            model=best_top_model,
+            X_drift=X_test_drift,
+            model_name=best_model_name,
+            label_map_inv=label_map_inv_opt,
+            threshold=best_threshold,
+            classes=classes,
+        )
+        print(f"  Samples:                        {sensor_drift_eval['n_samples']}")
+        print(f"  Primary Model Verdicts:         {sensor_drift_eval['primary_model_verdicts']}")
+        print(f"  Primary Cyber False Alarms:     {sensor_drift_eval['primary_model_cyber_fp_count']} ({sensor_drift_eval['primary_model_cyber_fpr']*100:.2f}%)")
+        print(f"  Dedicated Pathway Intercepted:  {sensor_drift_eval['dedicated_pathway_intercepted']}/{sensor_drift_eval['n_samples']} ({sensor_drift_eval['dedicated_pathway_recall']*100:.2f}%)")
+    else:
+        print("\n[Trainer] Note: Test set contains no 'Sensor Malfunction' rows (pure 3-class primary triage held-out set).")
 
     # -----------------------------------------------------------------------
     # Save Reports (Confusion Matrix Plot + Metrics JSON)
@@ -494,8 +661,11 @@ def train_and_evaluate(
         "confusion_matrix": cm.tolist(),
         "classification_report": clf_report,
         "train_samples_count": len(X_train),
+        "train_primary_samples_count": len(X_train_primary),
         "test_samples_count": len(X_test),
+        "test_primary_samples_count": len(X_test_primary),
         "val_samples_count": len(X_val),
+        "val_primary_samples_count": len(X_val_primary),
         "feature_schema_version": FEATURE_SCHEMA_VERSION,
         "feature_count": len(FEATURE_SCHEMA),
         "model_comparison": comparison_results,
@@ -504,6 +674,8 @@ def train_and_evaluate(
             for f, imp in feat_imp
         ],
     }
+    if sensor_drift_eval is not None:
+        metrics_data["sensor_drift_evaluation"] = sensor_drift_eval
 
     metrics_json_path = report_path / "metrics.json"
     with open(metrics_json_path, "w") as f:
@@ -538,6 +710,8 @@ def train_and_evaluate(
             "subtype_accuracy": sub_acc,
         },
     }
+    if sensor_drift_eval is not None:
+        bundle["metrics_summary"]["sensor_drift_evaluation"] = sensor_drift_eval
 
     joblib.dump(bundle, model_file_path)
     print(f"[Trainer] Saved Model Bundle to {model_file_path}")
@@ -563,6 +737,12 @@ def leakage_smoke_test(
     print("\n[Smoke-Test] == Step 5: Leakage Smoke-Test ==")
     X_train, y_top_train, _ = load_dataset(train_csv)
     X_test, y_top_test, _ = load_dataset(test_csv)
+
+    # Filter out Sensor Malfunction so baseline strictly tests 3-class random chance
+    mask_train = y_top_train != SENSOR_MALFUNCTION_LABEL
+    mask_test = y_top_test != SENSOR_MALFUNCTION_LABEL
+    X_train, y_top_train = X_train[mask_train], y_top_train[mask_train]
+    X_test, y_top_test = X_test[mask_test], y_top_test[mask_test]
 
     rng = np.random.default_rng(seed=0)
     y_shuffled = pd.Series(
