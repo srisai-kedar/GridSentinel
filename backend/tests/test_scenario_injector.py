@@ -68,9 +68,11 @@ class TestScenarioInjector:
 
     async def test_command_injection_attack_logged(self):
         """
-        Verify Command Injection:
+        Verify Command Injection (RTU-side observer, no data-leakage):
           1. Sends an unauthorized Modbus TCP write command to target RTU.
-          2. MUST be recorded as an anomalous unexpected write in traffic logger.
+          2. The RTU-side trace_pdu observer (NOT the attacker client) MUST record
+             the write as is_unexpected_write=True with source="RTU_OBSERVED_WRITE".
+          3. The attacker's own client-side log entry must NOT set is_unexpected_write.
         """
         traffic_logger.clear()
         await rtu_pool.start_all()
@@ -83,17 +85,42 @@ class TestScenarioInjector:
                 value=12000,
             )
             assert res["status"] == "success"
-            assert res["flagged_in_traffic_log"] is True
 
-            # Verify the traffic logger has flagged this transaction
-            events = traffic_logger.get_recent_events(limit=5)
+            # Verify the traffic logger has an unexpected-write entry from the RTU observer
+            events = traffic_logger.get_recent_events(limit=10)
             unexpected = [e for e in events if e["is_unexpected_write"]]
 
-            assert len(unexpected) >= 1
-            unauth_event = unexpected[0]
-            assert unauth_event["function_code"] == 6  # Write Single Register
-            assert unauth_event["source"] == "ATTACKER_COMMAND_INJECTION"
-            assert "RTU-3" in unauth_event["target_rtu"]
+            assert len(unexpected) >= 1, (
+                "RTU-side observer must log at least one is_unexpected_write=True entry "
+                "when a Modbus write is received at the server."
+            )
+            rtu_event = unexpected[0]
+            # RTU observer uses FC 6 (Write Single Register) and its own source label
+            assert rtu_event["function_code"] == 6, (
+                f"Expected function_code=6 (FC06 WriteSingleRegister) but got {rtu_event['function_code']}"
+            )
+            assert rtu_event["source"] == "RTU_OBSERVED_WRITE", (
+                f"Expected source='RTU_OBSERVED_WRITE' from RTU-side observer "
+                f"but got source='{rtu_event['source']}'.  "
+                "Unexpected writes must be derived from observed Modbus traffic, "
+                "never from caller-supplied flags in the attacker client."
+            )
+            assert "RTU-3" in rtu_event["target_rtu"], (
+                f"Expected target_rtu to contain 'RTU-3', got '{rtu_event['target_rtu']}'"
+            )
+
+            # The attacker client must NOT log to the traffic buffer at all.
+            # Simulation-only source labels (ATTACKER_COMMAND_INJECTION) have no
+            # real-deployment equivalent and would cause a training/inference
+            # distribution mismatch in nbd_distinct_sources_count.
+            attacker_entries = [
+                e for e in events if e.get("source") == "ATTACKER_COMMAND_INJECTION"
+            ]
+            assert len(attacker_entries) == 0, (
+                f"Found {len(attacker_entries)} 'ATTACKER_COMMAND_INJECTION' entries in the "
+                "traffic log.  scenario_injector must NOT call traffic_logger.log_transaction();"
+                " the RTU-side observer is the sole traffic-log writer for write events."
+            )
 
         finally:
             await rtu_pool.stop_all()

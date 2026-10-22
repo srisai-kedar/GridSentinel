@@ -622,7 +622,8 @@ def get_classifier_verdict(req: Optional[VerdictRequest] = None):
     if req and req.traffic_window is not None:
         traffic_events = req.traffic_window
     else:
-        traffic_events = traffic_logger.get_recent_events(limit=200)
+        # Traffic window matches dataset_generator: 6 ticks x 5 RTU polls = 30 events.
+        traffic_events = traffic_logger.get_recent_events(limit=30)
 
     # ── Resolve state estimation result ──────────────────────────────────────
     if req and req.state_estimation_result is not None:

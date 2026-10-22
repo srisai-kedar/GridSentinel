@@ -360,7 +360,8 @@ class SimulationLoop:
         # The live tick owns the inference call so every telemetry frame gets a
         # fresh verdict without requiring a separate manual API request.
         classifier_verdicts = classifier_service.evaluate_all_rtus(
-            traffic_events=traffic_logger.get_recent_events(limit=200),
+            # Traffic window: 6 ticks x 5 RTU polls = 30 events -- matches dataset_generator semantics.
+            traffic_events=traffic_logger.get_recent_events(limit=30),
             state_estimation_result={
                 "success": se_result.get("success", False),
                 "estimated_voltages": se_result.get("estimated_voltages", []),

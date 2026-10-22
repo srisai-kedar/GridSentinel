@@ -28,6 +28,15 @@ from app.ml.dpn_features import (
 )
 
 # ---------------------------------------------------------------------------
+# The sole authoritative source tag for RTU-server-observed write events.
+# Only traffic-logger entries with this exact source string AND
+# is_unexpected_write=True may contribute to nbd_unexpected_write_count.
+# Caller-supplied flags on any other source are explicitly ignored so that
+# attacker clients, test stubs and forensics logs cannot inflate the feature.
+# ---------------------------------------------------------------------------
+RTU_OBSERVED_WRITE_SOURCE: str = "RTU_OBSERVED_WRITE"
+
+# ---------------------------------------------------------------------------
 # FIXED FEATURE SCHEMA (Exact Ordering for Training & Real-Time Inference)
 # ---------------------------------------------------------------------------
 # ---------------------------------------------------------------------------
@@ -156,7 +165,21 @@ def extract_features(
     sources = set()
 
     for e in rtu_events:
-        if e.get("is_unexpected_write", False):
+        # nbd_unexpected_write_count: only count entries that were explicitly
+        # identified as RTU-server-observed Modbus write requests.
+        # Strict conditions enforced:
+        #   1. Explicitly tagged as an RTU observer event (source == RTU_OBSERVED_WRITE_SOURCE)
+        #   2. Flagged with is_unexpected_write is True
+        #   3. Function code is an actual Modbus write operation (FC 5, 6, 15, 16)
+        # Untagged events, caller-supplied flags (from scenario injectors or clients),
+        # and manipulated sources are completely ignored.
+        is_rtu_observed_write = (
+            e.get("source") == RTU_OBSERVED_WRITE_SOURCE
+            and e.get("is_unexpected_write") is True
+            and e.get("observer_verified") is True
+            and int(e.get("function_code", 0)) in (5, 6, 15, 16)
+        )
+        if is_rtu_observed_write:
             unexpected_writes += 1.0
 
         fc = int(e.get("function_code", 0))
@@ -173,12 +196,17 @@ def extract_features(
         rt = float(e.get("response_time_ms", 0.0))
         response_times.append(rt)
 
+        # Communication source tracking:
+        # RTU_OBSERVED_WRITE is an internal RTU-side observer log entry, NOT a distinct
+        # remote client / network endpoint. It must not be added to distinct sources.
+        # Unknown/empty sources are also excluded.
         src = str(e.get("source", "UNKNOWN"))
-        sources.add(src)
+        if src != RTU_OBSERVED_WRITE_SOURCE and src != "UNKNOWN" and src:
+            sources.add(src)
 
     mean_rt = float(np.mean(response_times)) if response_times else 0.0
     std_rt = float(np.std(response_times)) if len(response_times) > 1 else 0.0
-    distinct_sources = float(len(sources))
+    distinct_sources = float(len(sources)) if sources else (1.0 if traffic_volume > 0.0 else 0.0)
 
     # Candidate Feature: Modbus Anomaly Rate
     if traffic_volume > 0.0:
