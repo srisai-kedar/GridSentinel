@@ -13,6 +13,7 @@ import {
   TopologyResponse,
   TrafficLogResponse,
   VerdictResponse,
+  MLBenchmarkResponse,
 } from "./types";
 import { getMitreIcsTag } from "./alertText";
 
@@ -214,4 +215,10 @@ export async function getClassifierVerdict(): Promise<VerdictResponse> {
   return fetchJson<VerdictResponse>("/classifier/verdict", {
     method: "POST",
   });
+}
+
+
+/** Fetch the committed benchmark for the feature schema active on the backend. */
+export async function getClassifierBenchmark(): Promise<MLBenchmarkResponse> {
+  return fetchJson<MLBenchmarkResponse>("/classifier/benchmark");
 }

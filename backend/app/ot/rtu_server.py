@@ -30,6 +30,8 @@ from pymodbus.datastore import (
 )
 from pymodbus.server import ModbusTcpServer
 
+from app.ot.traffic_logger import traffic_logger
+
 logger = logging.getLogger("GridSentinel.RTU")
 
 
@@ -223,19 +225,79 @@ class SimulatedRTU:
             "status_flag": 1,
         }
 
+    # ------------------------------------------------------------------
+    # Passive tap: observations come from the wire, never from the sender.
+    # ------------------------------------------------------------------
+    def _trace_pdu(self, sending: bool, pdu: Any) -> Any:
+        """pymodbus hook: called for every PDU the server receives/sends.
+        Only inbound requests are logged. Returns the PDU unchanged."""
+        if not sending:
+            try:
+                fc = int(getattr(pdu, "function_code", 0))
+                address = getattr(pdu, "address", None)
+                address = int(address) if address is not None else None
+                regs = getattr(pdu, "registers", None)
+                count = getattr(pdu, "count", None)
+                if regs:
+                    detail = f"Observed FC{fc:02d} request addr={address} values={list(regs)}"
+                elif count is not None:
+                    detail = f"Observed FC{fc:02d} request addr={address} count={count}"
+                else:
+                    detail = f"Observed FC{fc:02d} request addr={address}"
+                traffic_logger.log_tap_pdu(
+                    rtu_id=self.rtu_id,
+                    rtu_name=self.name,
+                    port=self.port,
+                    function_code=fc,
+                    address=address,
+                    details=detail,
+                )
+            except Exception:  # a tap must never break the data path
+                logger.exception(f"[{self.name}] tap failed to record PDU")
+        return pdu
+
+    def _trace_connect(self, connect: bool) -> None:
+        """pymodbus hook: called on TCP connect (True) / disconnect (False)."""
+        if connect:
+            try:
+                traffic_logger.log_tap_connection(self.rtu_id, self.name, self.port)
+            except Exception:
+                logger.exception(f"[{self.name}] tap failed to record connection")
+
     async def start(self) -> None:
-        """Start the Modbus TCP server in the background."""
+        """
+        Start the Modbus TCP server and return only once it is LISTENING.
+
+        ``serve_forever(background=True)`` awaits the listen step and raises if
+        the socket cannot be bound, so callers get a deterministic readiness
+        guarantee and bind errors propagate instead of being swallowed in a
+        background task.
+        """
         if self.is_running:
             return
 
+        server = ModbusTcpServer(
+            context=self._context,
+            address=(self.host, self.port),
+            trace_pdu=self._trace_pdu,
+            trace_connect=self._trace_connect,
+        )
         try:
-            self._server = ModbusTcpServer(context=self._context, address=(self.host, self.port))
-            self._server_task = asyncio.create_task(self._server.serve_forever())
-            self.is_running = True
-            logger.info(f"[{self.name}] Started Modbus TCP server on {self.host}:{self.port}")
+            await server.serve_forever(background=True)
         except Exception as exc:
             logger.error(f"[{self.name}] Failed to start on port {self.port}: {exc}")
-            raise
+            try:
+                await server.shutdown()
+            except Exception:
+                pass
+            raise RuntimeError(
+                f"[{self.name}] could not listen on {self.host}:{self.port}: {exc}"
+            ) from exc
+
+        self._server = server
+        self._server_task = None
+        self.is_running = True
+        logger.info(f"[{self.name}] Listening on {self.host}:{self.port}")
 
     async def stop(self) -> None:
         """Stop the Modbus TCP server."""
@@ -319,8 +381,12 @@ class RTUPool:
         }
 
     async def start_all(self) -> None:
-        """Start all 5 RTU servers concurrently."""
-        await asyncio.gather(*(rtu.start() for rtu in self.rtus.values()))
+        """Start all 5 RTU servers concurrently; all-or-nothing."""
+        try:
+            await asyncio.gather(*(rtu.start() for rtu in self.rtus.values()))
+        except Exception:
+            await self.stop_all()  # never leave a half-started pool behind
+            raise
 
     async def stop_all(self) -> None:
         """Stop all 5 RTU servers."""

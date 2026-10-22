@@ -32,6 +32,7 @@ from app.core.state_estimation import (
     run_state_estimation,
 )
 from app.ml.classifier_service import classifier_service
+from app.ml.feature_engineering import NBD_WINDOW_TICKS
 from app.ot.rtu_server import RTU_CONFIGS, rtu_pool
 from app.ot.scada_master import scada_master
 from app.ot.scenario_injector import scenario_injector
@@ -117,8 +118,18 @@ class SimulationLoop:
         """Return fractional hour (e.g. 19.5 for 19:30)."""
         return (self.sim_time_total_minutes % (24 * 60)) / 60.0
 
-    async def start(self, net: Optional[pp.pandapowerNet] = None) -> None:
-        """Start the background simulation loop and RTUs."""
+    async def start(
+        self,
+        net: Optional[pp.pandapowerNet] = None,
+        run_background_loop: bool = True,
+    ) -> None:
+        """Start the background simulation loop and RTUs.
+
+        ``run_background_loop=False`` starts the RTUs and state but NOT the 1 Hz
+        ticker, so a caller (the dataset generator) can drive ``tick()`` itself
+        without a second concurrent ticker interleaving and corrupting the
+        tick-stamped NBD windows.
+        """
         if self.is_running:
             return
 
@@ -168,8 +179,9 @@ class SimulationLoop:
                     "last_error": None,
                 }
             )
-        self._task = asyncio.create_task(self._run_loop())
-        logger.info("SimulationLoop started.")
+        if run_background_loop:
+            self._task = asyncio.create_task(self._run_loop())
+        logger.info("SimulationLoop started%s.", "" if run_background_loop else " (externally driven)")
 
     async def stop(self) -> None:
         """Stop the background simulation loop and RTUs."""
@@ -249,7 +261,18 @@ class SimulationLoop:
     async def tick(self) -> Dict[str, Any]:
         """
         Execute one full simulation step.
+
+        Brackets the step with the traffic logger's tick clock so every
+        Modbus observation made during polling is stamped with this tick
+        (NBD features are windowed in ticks; see NBD_WINDOW_TICKS).
         """
+        traffic_logger.begin_tick()
+        try:
+            return await self._tick_impl()
+        finally:
+            traffic_logger.end_tick()
+
+    async def _tick_impl(self) -> Dict[str, Any]:
         self.tick_count += 1
         self.sim_time_total_minutes += self.sim_minutes_per_tick
 
@@ -360,7 +383,7 @@ class SimulationLoop:
         # The live tick owns the inference call so every telemetry frame gets a
         # fresh verdict without requiring a separate manual API request.
         classifier_verdicts = classifier_service.evaluate_all_rtus(
-            traffic_events=traffic_logger.get_recent_events(limit=200),
+            traffic_events=traffic_logger.get_window_events(NBD_WINDOW_TICKS),
             state_estimation_result={
                 "success": se_result.get("success", False),
                 "estimated_voltages": se_result.get("estimated_voltages", []),

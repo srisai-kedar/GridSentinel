@@ -19,6 +19,7 @@ decisions rest with qualified grid operators.
 from __future__ import annotations
 
 import logging
+import os
 import time
 from collections import deque
 from pathlib import Path
@@ -28,7 +29,7 @@ import joblib
 import numpy as np
 
 from app.mitre_ics import get_mitre_mapping
-from app.ml.feature_engineering import FEATURE_SCHEMA, extract_features
+from app.ml.feature_engineering import FEATURE_SCHEMA, FEATURE_SCHEMA_VERSION, extract_features
 from app.replay_capture import replay_capture_store
 
 logger = logging.getLogger("GridSentinel.ClassifierService")
@@ -362,6 +363,7 @@ class ClassifierService:
         self.top_model: Any = None
         self.subtype_model: Any = None
         self.is_loaded: bool = False
+        self.schema_compat: str = "none"  # none | exact | legacy
         self.classes: List[str] = ["Normal", "Natural Fault", "Sensor Malfunction", "Cyber Intrusion"]
         self.subtype_classes: List[str] = [
             "data_injection",
@@ -421,8 +423,25 @@ class ClassifierService:
         try:
             bundle = joblib.load(target_path)
             schema_ver = str(bundle.get("feature_schema_version", "2.0.0"))
-            if schema_ver not in ("2.0.0", "2.1.0"):
-                raise ValueError(f"Unsupported feature schema version: {schema_ver}")
+            bundle_major = schema_ver.split(".")[0]
+            extractor_major = FEATURE_SCHEMA_VERSION.split(".")[0]
+            if bundle_major == extractor_major:
+                self.schema_compat = "exact"
+            elif bundle_major == "2" and os.environ.get("GRIDSENTINEL_ALLOW_LEGACY_SCHEMA") == "1":
+                # Explicit opt-in only. A 2.x model was trained on features whose
+                # NBD semantics/window differ from this extractor (3.x).
+                self.schema_compat = "legacy"
+                logger.warning(
+                    f"[ClassifierService] Serving LEGACY schema {schema_ver} model against "
+                    f"extractor {FEATURE_SCHEMA_VERSION} (GRIDSENTINEL_ALLOW_LEGACY_SCHEMA=1). "
+                    "NBD semantics differ from training; retrain before relying on its output."
+                )
+            else:
+                raise ValueError(
+                    f"Feature schema mismatch: model={schema_ver}, extractor={FEATURE_SCHEMA_VERSION}. "
+                    "Retrain on schema-3 data (or set GRIDSENTINEL_ALLOW_LEGACY_SCHEMA=1 to "
+                    "knowingly serve a legacy model)."
+                )
             self.bundle = bundle
             self.top_model = bundle.get("top_level_model")
             self.subtype_model = bundle.get("subtype_model")

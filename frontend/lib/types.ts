@@ -281,3 +281,29 @@ export interface IncidentReplayResponse {
 export type ConnectionStatus = "connecting" | "connected" | "disconnected";
 
 export type StreamStatus = "connecting" | "waiting" | "streaming" | "stale" | "stopped" | "error";
+
+
+/** Offline held-out ML benchmark for the feature schema active on the backend. */
+export interface MLBenchmarkResponse {
+  available: boolean;
+  status: "current" | "stale" | "missing" | "error";
+  message?: string;
+  model_name?: string | null;
+  evaluated_at?: string | null;
+  feature_schema_version: string;
+  report_schema_version?: string | null;
+  feature_count?: number | null;
+  n_test_samples?: number | null;
+  decision_threshold?: number | null;
+  overall_accuracy?: number | null;
+  cyber_precision?: number | null;
+  cyber_recall?: number | null;
+  cyber_fnr?: number | null;
+  cyber_fpr?: number | null;
+  cyber_f1?: number | null;
+  cyber_f2?: number | null;
+  latency_ms_per_verdict?: number | null;
+  subtype_accuracy?: number | null;
+  dataset_kind?: string;
+  source_note?: string;
+}

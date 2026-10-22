@@ -15,8 +15,11 @@ Only operational signals available to a real-time SCADA security detector.
 from __future__ import annotations
 
 import math
+import re
 from typing import Any, Dict, List, Optional
 import numpy as np
+
+from app.ot import nbd_policy
 
 from app.ml.dpn_features import (
     compute_dpn_legacy,
@@ -30,33 +33,47 @@ from app.ml.dpn_features import (
 # ---------------------------------------------------------------------------
 # FIXED FEATURE SCHEMA (Exact Ordering for Training & Real-Time Inference)
 # ---------------------------------------------------------------------------
-# ---------------------------------------------------------------------------
-# FIXED FEATURE SCHEMA (Exact Ordering for Training & Real-Time Inference)
-# ---------------------------------------------------------------------------
-FEATURE_SCHEMA_VERSION: str = "2.1.0"
+# 3.0.0 (NBD observed-traffic fix)
+#   * NBD features are derived ONLY from traffic observed by the RTU tap
+#     (function codes, addresses, TCP connects) plus the master's own poll
+#     latency/success. "Unexpected write" comes from app.ot.nbd_policy applied to
+#     the observed function code - never from a flag set by the traffic's author.
+#   * nbd_distinct_sources_count (counted free-text source labels) was REPLACED by
+#     nbd_connection_count (observed TCP connects). Same column slot (index 3).
+#   * NBD features are computed over NBD_WINDOW_TICKS ticks everywhere.
+#   * The 9 Change-5 physics-structure signals (NO-PROMOTE) are AUXILIARY: they are
+#     still extracted for rule-based consumers (sensor-drift triage) but are NOT
+#     model inputs. The model-input schema is exactly 28 features.
+FEATURE_SCHEMA_VERSION: str = "3.0.0"
 
-FEATURE_SCHEMA: List[str] = [
-    # --- NBD: Network Behavioral Features (Traffic Logger) ---
-    "nbd_unexpected_write_count",       # Count of unauthorized write transactions (FC 06/16)
-    "nbd_mean_response_time_ms",        # Mean latency of Modbus transactions
-    "nbd_std_response_time_ms",         # Standard deviation of Modbus latency
-    "nbd_distinct_sources_count",       # Unique IPs/sources communicating with target RTU
-    "nbd_fc3_read_count",               # Function Code 03 (Read Holding Registers) count
-    "nbd_fc6_write_count",              # Function Code 06 (Write Single Register) count
-    "nbd_fc16_write_count",             # Function Code 16 (Write Multiple Registers) count
-    "nbd_error_count",                  # Failed/timeout Modbus transaction count
-    "nbd_traffic_volume",               # Total transaction count for target RTU in window
-    "nbd_modbus_anomaly_rate",          # Rate of unexpected writes, anomalous FCs, and transaction errors
+# NBD feature window, in simulation ticks. Verified equal to the training-time
+# semantics of the committed v2.0.0 datasets: their nbd_traffic_volume averaged
+# 5.99 per-RTU events (30-event window / 5 RTUs = ~6 polls per RTU = 6 ticks).
+# ONE constant used by dataset generation, live inference and the REST API.
+NBD_WINDOW_TICKS: int = 6
+
+MODEL_FEATURE_SCHEMA: List[str] = [
+    # --- NBD: Network Behavioral Features (observed traffic) ---
+    "nbd_unexpected_write_count",       # Observed write-class requests (policy applied to observed function code)
+    "nbd_mean_response_time_ms",        # Mean master poll latency (master's own measurement)
+    "nbd_std_response_time_ms",         # Std-dev of master poll latency
+    "nbd_connection_count",             # TCP connections the RTU observed in the window (baseline: 1 per poll)
+    "nbd_fc3_read_count",               # Observed FC03 requests
+    "nbd_fc6_write_count",              # Observed FC06 requests
+    "nbd_fc16_write_count",             # Observed FC15/FC16 requests
+    "nbd_error_count",                  # Failed/timeout master polls
+    "nbd_traffic_volume",               # Observed requests for target RTU in window
+    "nbd_modbus_anomaly_rate",          # Rate of unexpected writes, write FCs, and poll errors
 
     # --- PCD: Physics Consistency Features (State Estimation & Power Flow) ---
     "pcd_max_lnr",                      # Global Largest Normalized Residual (LNR) across all measurements
-    "pcd_is_target_rtu_max_lnr",        # 1.0 if target RTU owns the system's max residual, else 0.0
+    "pcd_is_target_rtu_max_lnr",        # 1.0 if this row's RTU owns the system's max residual, else 0.0
     "pcd_chi2_statistic",               # Global Chi-square (χ²) test statistic
     "pcd_chi2_ratio",                   # Ratio χ² / χ²_threshold (>1.0 indicates hypothesis rejection)
     "pcd_chi2_failed",                  # 1.0 if global χ² test failed, 0.0 if passed
-    "pcd_target_rtu_v_residual",        # Normalized residual of target RTU voltage measurement
-    "pcd_target_rtu_p_residual",        # Normalized residual of target RTU active power measurement
-    "pcd_target_rtu_is_flagged",        # 1.0 if target RTU measurement exceeds 3.0σ threshold
+    "pcd_target_rtu_v_residual",        # Normalized residual of this RTU's voltage measurement
+    "pcd_target_rtu_p_residual",        # Normalized residual of this RTU's active power measurement
+    "pcd_target_rtu_is_flagged",        # 1.0 if this RTU's measurement exceeds 3.0σ threshold
     "pcd_global_bad_data_flag",         # 1.0 if global bad data detector triggered
     "pcd_voltage_pu_reported",          # Reported voltage magnitude in per-unit
     "pcd_voltage_dev_nominal",          # Absolute deviation of voltage from nominal (|V - 1.0|)
@@ -66,9 +83,11 @@ FEATURE_SCHEMA: List[str] = [
     "pcd_temporal_dv_dt_3tick",         # Rolling 3-tick window rate-of-change dV/dt
     "pcd_temporal_dp_dt_3tick",         # Rolling 3-tick window rate-of-change dP/dt
     "pcd_temporal_dq_dt_3tick",         # Rolling 3-tick window rate-of-change dQ/dt
-    "pcd_cross_rtu_voltage_divergence", # Voltage difference between target RTU and electrical neighbors
+    "pcd_cross_rtu_voltage_divergence", # Voltage difference between this RTU and electrical neighbors
+]
 
-    # --- CHANGE 5: Physics-Residual Structure & Disagreement Family ---
+# Auxiliary signals: extracted for rule-based consumers; NOT model inputs.
+AUX_FEATURE_SCHEMA: List[str] = [
     "pcd_resid_jump",                   # F1: max over RTU's measurements of |d_i(t) - d_i(t-1)|
     "pcd_resid_persist",                # F2: consecutive ticks capped at W=5 where max RTU |d_i| > tau_low
     "pcd_resid_concentration",          # F3: max_i |d_i| / sqrt(sum_j d_j^2) over all measurements
@@ -79,6 +98,12 @@ FEATURE_SCHEMA: List[str] = [
     "dpn_ing_delta",                    # Control: |delta reported active power| / sigma_P
     "dpn_ing_resid",                    # Control: 1 + r_max / chi2_threshold
 ]
+
+# Model-input schema (kept under its historical name for trainers/serializers).
+FEATURE_SCHEMA: List[str] = MODEL_FEATURE_SCHEMA
+
+# Everything extract_features() returns (model inputs + auxiliary signals).
+EXTRACTED_FEATURE_KEYS: List[str] = MODEL_FEATURE_SCHEMA + AUX_FEATURE_SCHEMA
 
 # Mapping of RTU IDs to their pandapower element bindings
 # RTU 1 -> Bus 1, Trafo 0
@@ -101,6 +126,24 @@ ELECTRICAL_NEIGHBORS = {
     4: [1],
     5: [2],
 }
+
+
+def _event_rtu_id(e: Dict[str, Any]) -> Optional[int]:
+    """RTU an observation belongs to: explicit ``rtu_id`` if present, else parsed
+    from the target string (``RTU_3``/``RTU-3``/``Port 5023``). This is
+    identification of the observed endpoint, not a label."""
+    rid = e.get("rtu_id")
+    if rid is not None:
+        return int(rid)
+    target = str(e.get("target_rtu", ""))
+    m = re.search(r"RTU[_-](\d+)", target)
+    if m:
+        return int(m.group(1))
+    m = re.search(r"Port (\d+)", target)
+    if m:
+        port = int(m.group(1))
+        return port - 5020 if port > 1000 else port
+    return None
 
 
 def extract_features(
@@ -130,36 +173,37 @@ def extract_features(
     Returns
     -------
     dict
-        Feature dictionary guaranteed to contain exactly the keys in FEATURE_SCHEMA.
+        Feature dictionary containing exactly EXTRACTED_FEATURE_KEYS
+            (MODEL_FEATURE_SCHEMA model inputs + AUX_FEATURE_SCHEMA rule signals).
     """
     target_bus = RTU_BUS_MAPPING.get(target_rtu_id, target_rtu_id)
-    target_rtu_str = f"RTU_{target_rtu_id}"
-    target_rtu_dash = f"RTU-{target_rtu_id}"
 
     # -----------------------------------------------------------------------
-    # 1. NBD: Network Behavioral Features
+    # 1. NBD: Network Behavioral Features  (OBSERVED TRAFFIC ONLY)
     # -----------------------------------------------------------------------
-    rtu_events = [
-        e for e in traffic_events
-        if (target_rtu_str in e.get("target_rtu", "") or
-            target_rtu_dash in e.get("target_rtu", "") or
-            f"Port {5020 + target_rtu_id}" in e.get("target_rtu", ""))
-    ]
+    # Inputs are wire observations (RTU tap) and the master's own poll
+    # measurements. This block never reads `is_unexpected_write`, `source`,
+    # scenario names, attack types or any ground truth that an event's author
+    # could have declared: "unexpected" is nbd_policy(observed function code).
+    rtu_events = [e for e in traffic_events if _event_rtu_id(e) == target_rtu_id]
 
-    traffic_volume = float(len(rtu_events))
+    # Events without an `observer` tag (externally supplied windows, legacy
+    # callers) are treated as wire observations and poll records alike.
+    wire_events = [e for e in rtu_events if e.get("observer") in (None, "rtu_tap")]
+    conn_events = [e for e in rtu_events if e.get("observer") == "rtu_tap_conn"]
+    poll_events = [e for e in rtu_events if e.get("observer") in (None, "scada_master")]
+
+    traffic_volume = float(len(wire_events))
     unexpected_writes = 0.0
     fc3_count = 0.0
     fc6_count = 0.0
     fc16_count = 0.0
-    error_count = 0.0
-    response_times = []
-    sources = set()
 
-    for e in rtu_events:
-        if e.get("is_unexpected_write", False):
-            unexpected_writes += 1.0
-
+    for e in wire_events:
         fc = int(e.get("function_code", 0))
+        addr = e.get("address")
+        if nbd_policy.is_unexpected_write(fc, int(addr) if addr is not None else None):
+            unexpected_writes += 1.0
         if fc == 3:
             fc3_count += 1.0
         elif fc == 6:
@@ -167,22 +211,17 @@ def extract_features(
         elif fc in (15, 16):
             fc16_count += 1.0
 
-        if not e.get("success", True):
-            error_count += 1.0
-
-        rt = float(e.get("response_time_ms", 0.0))
-        response_times.append(rt)
-
-        src = str(e.get("source", "UNKNOWN"))
-        sources.add(src)
+    error_count = float(sum(1 for e in poll_events if not e.get("success", True)))
+    response_times = [float(e.get("response_time_ms", 0.0)) for e in poll_events]
 
     mean_rt = float(np.mean(response_times)) if response_times else 0.0
     std_rt = float(np.std(response_times)) if len(response_times) > 1 else 0.0
-    distinct_sources = float(len(sources))
+    connection_count = float(len(conn_events))
 
-    # Candidate Feature: Modbus Anomaly Rate
-    if traffic_volume > 0.0:
-        modbus_anomaly_rate = (unexpected_writes * 2.0 + fc6_count + fc16_count + error_count) / traffic_volume
+    # Modbus anomaly rate: unexpected writes, write FCs and poll errors per request.
+    denom = max(traffic_volume, float(len(poll_events)))
+    if denom > 0.0:
+        modbus_anomaly_rate = (unexpected_writes * 2.0 + fc6_count + fc16_count + error_count) / denom
     else:
         modbus_anomaly_rate = 0.0
     modbus_anomaly_rate = min(10.0, float(modbus_anomaly_rate))
@@ -349,7 +388,7 @@ def extract_features(
         "nbd_unexpected_write_count": unexpected_writes,
         "nbd_mean_response_time_ms": round(mean_rt, 3),
         "nbd_std_response_time_ms": round(std_rt, 3),
-        "nbd_distinct_sources_count": distinct_sources,
+        "nbd_connection_count": connection_count,
         "nbd_fc3_read_count": fc3_count,
         "nbd_fc6_write_count": fc6_count,
         "nbd_fc16_write_count": fc16_count,
@@ -386,7 +425,10 @@ def extract_features(
     }
 
     # Verify all schema keys are present
-    assert set(features.keys()) == set(FEATURE_SCHEMA), f"Extracted features mismatch FEATURE_SCHEMA: missing {set(FEATURE_SCHEMA) - set(features.keys())}"
+    assert set(features.keys()) == set(EXTRACTED_FEATURE_KEYS), (
+        f"Extracted features mismatch schema: missing {set(EXTRACTED_FEATURE_KEYS) - set(features.keys())}, "
+        f"unexpected {set(features.keys()) - set(EXTRACTED_FEATURE_KEYS)}"
+    )
 
     return features
 

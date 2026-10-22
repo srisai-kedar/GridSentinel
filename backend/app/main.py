@@ -85,7 +85,7 @@ from app.models.schemas import (
     VersionResponse,
 )
 from app.ml.classifier_service import classifier_service
-from app.ml.feature_engineering import FEATURE_SCHEMA_VERSION
+from app.ml.feature_engineering import FEATURE_SCHEMA_VERSION, NBD_WINDOW_TICKS
 from app.ot.rtu_server import rtu_pool
 from app.ot.scada_master import scada_master
 from app.ot.scenario_injector import scenario_injector
@@ -622,7 +622,7 @@ def get_classifier_verdict(req: Optional[VerdictRequest] = None):
     if req and req.traffic_window is not None:
         traffic_events = req.traffic_window
     else:
-        traffic_events = traffic_logger.get_recent_events(limit=200)
+        traffic_events = traffic_logger.get_window_events(NBD_WINDOW_TICKS)
 
     # ── Resolve state estimation result ──────────────────────────────────────
     if req and req.state_estimation_result is not None:

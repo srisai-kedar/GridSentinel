@@ -90,6 +90,15 @@ def load_dataset(csv_path: str) -> Tuple[pd.DataFrame, pd.Series, pd.Series]:
     if missing:
         raise ValueError(f"CSV {csv_path} is missing required feature columns: {missing}")
 
+    allowed = {"Normal", "Natural Fault", "Cyber Intrusion"}
+    extra = sorted(set(df["top_level_label"].unique()) - allowed)
+    if extra:
+        raise ValueError(
+            f"CSV {csv_path} contains labels outside the primary 3-class taxonomy: {extra}. "
+            "Generate datasets with split_sensor=True (sensor-drift ticks go to a separate "
+            "*_sensor_eval.csv) - the primary classifier is 3-class by design."
+        )
+
     X = df[FEATURE_SCHEMA].copy()
     y_top = df["top_level_label"].copy()
     y_sub = df["subtype_label"].copy()
@@ -696,7 +705,7 @@ def train_and_evaluate(
         "subtype_classes": list(subtype_model.classes_),
         "decision_threshold": best_threshold,
         "model_name": best_model_name,
-        "version": "2.0.0",
+        "version": FEATURE_SCHEMA_VERSION,
         "feature_schema_version": FEATURE_SCHEMA_VERSION,
         "trained_timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "metrics_summary": {

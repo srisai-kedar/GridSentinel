@@ -19,7 +19,6 @@ Maintains a clear distinction:
 from __future__ import annotations
 
 import logging
-import time
 from typing import Any, Dict, List, Optional, Tuple
 import pandapower as pp
 from pymodbus.client import AsyncModbusTcpClient
@@ -102,8 +101,9 @@ class ScenarioInjector:
     ) -> Dict[str, Any]:
         """
         Simulate an unauthorized cyber attack by sending an actual Modbus TCP
-        Write Single Register command (FC 06) from an external attacker IP.
-        This MUST be flagged as an unexpected write in the traffic logger.
+        Write Single Register command (FC 06) to the RTU.
+        The write is classified as unexpected ONLY by the NBD policy, from the
+        function code the RTU tap observed. This method never logs or labels it.
         """
         # Find target port
         target_cfg = next((cfg for cfg in RTU_CONFIGS if cfg["rtu_id"] == rtu_id), None)
@@ -111,43 +111,32 @@ class ScenarioInjector:
             raise ValueError(f"RTU ID {rtu_id} not found in configuration")
 
         port = target_cfg["port"]
-        target_name = f"{target_cfg['name']} (Port {port})"
 
         client = AsyncModbusTcpClient(host, port=port, timeout=2.0)
-        start_time = time.perf_counter()
 
+        # ANTI-LEAKAGE: the attacker does not write to the traffic log and does
+        # not label its own traffic. The write below is a real Modbus FC06 on
+        # the wire; the only record of it is what the RTU's passive tap sees.
         try:
             connected = await client.connect()
             if not connected:
-                elapsed_ms = (time.perf_counter() - start_time) * 1000.0
-                traffic_logger.log_transaction(
-                    source="ATTACKER_COMMAND_INJECTION",
-                    target_rtu=target_name,
-                    function_code=6,
-                    response_time_ms=elapsed_ms,
-                    is_unexpected_write=True,
-                    details=f"Connection failed when attempting unauthorized write to reg {register_address}",
-                    success=False,
-                )
                 return {"status": "error", "message": "Failed to connect to target RTU"}
 
             # Send unauthorized Modbus FC 06 (Write Single Register)
             wr = await client.write_register(address=register_address, value=int(value), device_id=1)
-            elapsed_ms = (time.perf_counter() - start_time) * 1000.0
-
             success = not wr.isError()
-            traffic_logger.log_transaction(
-                source="ATTACKER_COMMAND_INJECTION",
-                target_rtu=target_name,
-                function_code=6,
-                response_time_ms=elapsed_ms,
-                is_unexpected_write=True,
-                details=f"UNAUTHORIZED WRITE: Register {register_address} = {value} (Hex: 0x{value:04X})",
-                success=success,
-            )
 
             self.active_scenario_summary = (
                 f"ATTACK: Unauthorized Modbus Command Write on RTU-{rtu_id} Reg {register_address}={value}"
+            )
+
+            # Truthful report: did the RTU tap actually observe a write-class
+            # request for this RTU? (Computed from observations, not asserted.)
+            observed = any(
+                e.get("observer") == "rtu_tap"
+                and e.get("rtu_id") == rtu_id
+                and e.get("is_unexpected_write")
+                for e in traffic_logger.get_window_events(1)
             )
 
             return {
@@ -156,7 +145,7 @@ class ScenarioInjector:
                 "rtu_id": rtu_id,
                 "register": register_address,
                 "value": value,
-                "flagged_in_traffic_log": True,
+                "flagged_in_traffic_log": bool(observed),
             }
         finally:
             client.close()

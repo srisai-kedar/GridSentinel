@@ -54,7 +54,7 @@ class SCADAMaster:
                     target_rtu=target_name,
                     function_code=3,
                     response_time_ms=elapsed_ms,
-                    is_unexpected_write=False,
+                    rtu_id=rtu_id,
                     details="Connection failed / timeout",
                     success=False,
                 )
@@ -70,7 +70,7 @@ class SCADAMaster:
                     target_rtu=target_name,
                     function_code=3,
                     response_time_ms=elapsed_ms,
-                    is_unexpected_write=False,
+                    rtu_id=rtu_id,
                     details=f"Modbus Error: {rr}",
                     success=False,
                 )
@@ -89,7 +89,7 @@ class SCADAMaster:
                 target_rtu=target_name,
                 function_code=3,
                 response_time_ms=elapsed_ms,
-                is_unexpected_write=False,
+                rtu_id=rtu_id,
                 details=f"Read registers: {registers} -> V={telemetry['voltage_pu']} pu, P={telemetry['p_mw']} MW",
                 success=True,
             )
@@ -103,7 +103,7 @@ class SCADAMaster:
                 target_rtu=target_name,
                 function_code=3,
                 response_time_ms=elapsed_ms,
-                is_unexpected_write=False,
+                rtu_id=rtu_id,
                 details=f"Exception: {str(exc)}",
                 success=False,
             )

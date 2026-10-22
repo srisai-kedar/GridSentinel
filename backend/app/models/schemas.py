@@ -177,6 +177,11 @@ class TrafficEvent(BaseModel):
     is_unexpected_write: bool
     success: bool
     details: str
+    # Additive, optional: where the observation was made and when (sim tick).
+    observer: Optional[str] = None
+    tick: Optional[int] = None
+    rtu_id: Optional[int] = None
+    address: Optional[int] = None
 
 
 class TrafficLogResponse(BaseModel):
