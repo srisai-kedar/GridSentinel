@@ -22,7 +22,7 @@ import numpy as np
 import pandas as pd
 
 from app.core.feeder import build_feeder
-from app.ml.feature_engineering import FEATURE_SCHEMA, extract_features
+from app.ml.feature_engineering import FEATURE_SCHEMA, NBD_WINDOW_TICKS, extract_features
 from app.ot.rtu_server import rtu_pool
 from app.ot.scenario_injector import scenario_injector
 from app.ot.simulation_loop import sim_loop
@@ -33,6 +33,7 @@ async def generate_dataset(
     seed: int = 42,
     total_ticks: int = 2000,
     out_csv: Optional[str] = None,
+    split_sensor: bool = True,
 ) -> pd.DataFrame:
     """
     Run automated simulation loop for `total_ticks` and record labeled dataset.
@@ -58,7 +59,7 @@ async def generate_dataset(
     # Ensure clean logger and network
     traffic_logger.clear()
     net = build_feeder()
-    await sim_loop.start(net=net)
+    await sim_loop.start(net=net, run_background_loop=False)
 
     records: List[Dict[str, Any]] = []
 
@@ -146,7 +147,7 @@ async def generate_dataset(
             scenario_remaining_ticks -= 1
 
             # Extract features for each of the 5 monitored RTUs
-            recent_traffic = traffic_logger.get_recent_events(limit=30)
+            recent_traffic = traffic_logger.get_window_events(NBD_WINDOW_TICKS)
             se_res = snap.get("state_estimation", {})
             polled_t = snap.get("polled_modbus_telemetry", {})
             telemetry_history.append(polled_t)
@@ -220,6 +221,17 @@ async def generate_dataset(
     print("Top-level counts:\n", df["top_level_label"].value_counts())
     print("\nSubtype counts:\n", df["subtype_label"].value_counts())
 
+    primary_df, sensor_df = split_sensor_ticks(df)
+    if split_sensor and out_csv:
+        out_path = Path(out_csv)
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        primary_df.to_csv(out_path, index=False)
+        print(f"[DatasetGenerator] Saved PRIMARY 3-class dataset to {out_path} ({len(primary_df)} rows)")
+        if len(sensor_df):
+            sensor_path = out_path.with_name(out_path.stem + "_sensor_eval.csv")
+            sensor_df.to_csv(sensor_path, index=False)
+            print(f"[DatasetGenerator] Saved separate sensor-drift eval set to {sensor_path} ({len(sensor_df)} rows)")
+        return primary_df
     if out_csv:
         out_path = Path(out_csv)
         out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -227,6 +239,25 @@ async def generate_dataset(
         print(f"[DatasetGenerator] Saved dataset to {out_path} ({len(df)} rows)")
 
     return df
+
+
+SENSOR_LABEL = "Sensor Malfunction"
+
+
+def split_sensor_ticks(df: pd.DataFrame) -> "tuple[pd.DataFrame, pd.DataFrame]":
+    """
+    Split a generated dataset into (primary 3-class rows, sensor-drift rows).
+
+    A tick belongs to the sensor set if ANY of its RTU rows carries the
+    sensor label; ALL rows of that tick move together, so the primary set
+    contains no smeared-residual rows from sensor scenarios and the separate
+    sensor evaluation keeps the full per-tick context.
+    """
+    if df.empty or SENSOR_LABEL not in set(df["top_level_label"]):
+        return df, df.iloc[0:0]
+    sensor_ticks = set(df.loc[df["top_level_label"] == SENSOR_LABEL, "tick"])
+    mask = df["tick"].isin(sensor_ticks)
+    return df.loc[~mask].reset_index(drop=True), df.loc[mask].reset_index(drop=True)
 
 
 def main_cli():

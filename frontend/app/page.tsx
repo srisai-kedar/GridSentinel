@@ -21,6 +21,7 @@ import { ComplianceMap } from "@/components/ComplianceMap";
 import { DemoControls } from "@/components/DemoControls";
 import { DemoDirector } from "@/components/DemoDirector";
 import { EvidencePanel } from "@/components/EvidencePanel";
+import { MLBenchmarkPanel } from "@/components/MLBenchmarkPanel";
 import { FeederMap } from "@/components/FeederMap";
 import { StatusBar } from "@/components/StatusBar";
 import { useLiveSocket } from "@/lib/useLiveSocket";
@@ -225,6 +226,8 @@ export default function SCADACommandCenter() {
             <div><span>Power flow</span><strong className={activePayload?.power_flow_converged ? "text-normal" : "text-fault"}>{activePayload ? (activePayload.power_flow_converged ? "Converged" : "Not converged") : "Standby"}</strong><small>pandapower solution</small></div>
             <div><span>State estimation</span><strong className={estimationState?.success ? "text-normal" : "text-fault"}>{estimationState ? (estimationState.success ? "WLS converged" : "Standby") : "Standby"}</strong><small>{estimationState?.bad_data_detected ? "bad data flagged" : "χ² residual check"}</small></div>
           </div>
+
+          <MLBenchmarkPanel />
 
           <section className="scada-surface scada-topology-panel">
             <div className="scada-section-header">

@@ -303,3 +303,33 @@ button, a, input, select { transition: color .15s ease, background-color .15s ea
 
 /* Mapbox markers remain quiet and readable in the live map variant. */
 .scada-bus-marker { cursor: pointer; user-select: none; }
+
+
+/* Offline benchmark panel, visually separate from live feeder telemetry. */
+.scada-ml-benchmark { margin-top: 1rem; padding: 1rem; min-width: 0; }
+.scada-ml-benchmark-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 0.75rem; margin-bottom: 0.8rem;
+}
+.scada-ml-benchmark-header h2 { margin-top: 0.2rem; font-size: 1rem; line-height: 1.3; font-weight: 650; }
+.scada-ml-benchmark-status {
+  flex: 0 0 auto; border: 1px solid rgba(255,255,255,0.15); border-radius: 999px;
+  padding: 0.2rem 0.5rem; font-size: 0.62rem; letter-spacing: 0.08em; font-weight: 700;
+}
+.scada-ml-benchmark-status.is-current { color: #9ce4c3; border-color: rgba(95,205,157,0.35); }
+.scada-ml-benchmark-status.is-stale { color: #f0c58a; border-color: rgba(240,197,138,0.35); }
+.scada-ml-benchmark-meta {
+  display: flex; flex-wrap: wrap; gap: 0.45rem 0.85rem; font-size: 0.7rem;
+  color: var(--muted, #9ca3af); margin-bottom: 0.7rem;
+}
+.scada-ml-benchmark-meta strong { color: var(--foreground, #e5e7eb); }
+.scada-ml-benchmark-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.5rem; }
+.scada-ml-benchmark-cell {
+  min-width: 0; padding: 0.65rem; border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 0.5rem; background: rgba(255,255,255,0.025);
+  display: flex; flex-direction: column; gap: 0.4rem;
+}
+.scada-ml-benchmark-cell span { font-size: 0.65rem; line-height: 1.35; color: var(--muted, #9ca3af); }
+.scada-ml-benchmark-cell strong { font-size: 1rem; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.scada-ml-benchmark-note { margin-top: 0.75rem; font-size: 0.68rem; line-height: 1.5; color: var(--muted, #9ca3af); }
+@media (max-width: 900px) { .scada-ml-benchmark-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

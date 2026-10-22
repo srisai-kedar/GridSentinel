@@ -75,7 +75,7 @@ Phase 3 adds a trained **Random Forest Fusion Classifier** that fuses both detec
 | `nbd_unexpected_write_count` | Unauthorized write transactions (FC06/FC16) in window |
 | `nbd_mean_response_time_ms` | Mean Modbus round-trip latency |
 | `nbd_std_response_time_ms` | Latency standard deviation |
-| `nbd_distinct_sources_count` | Number of unique source IPs communicating with RTU |
+| `nbd_connection_count` | TCP connections the RTU server observed in the 6-tick window (baseline 1 per poll) |
 | `nbd_fc3_read_count` | FC03 (Read Holding Registers) count |
 | `nbd_fc6_write_count` | FC06 (Write Single Register) count |
 | `nbd_fc16_write_count` | FC16 (Write Multiple Registers) count |

@@ -1,0 +1,181 @@
+name: GridSentinel clean-data ML benchmark
+
+on:
+  push:
+    branches:
+      - fix-nbd-observed-traffic-ml-benchmark
+
+permissions:
+  contents: write
+
+jobs:
+  validate-and-benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout candidate branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: Run backend regression tests
+        working-directory: backend
+        env:
+          GRIDSENTINEL_ALLOW_LEGACY_SCHEMA: "1"
+        run: pytest -q
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Run frontend tests
+        working-directory: frontend
+        run: npm test
+
+      - name: Build frontend
+        working-directory: frontend
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
+        run: npm run build
+
+      - name: Generate independent train, validation, and held-out test runs
+        working-directory: backend
+        run: |
+          mkdir -p /tmp/gridsentinel-ml-benchmark/data /tmp/gridsentinel-ml-benchmark/models /tmp/gridsentinel-ml-benchmark/reports
+          python -m app.ml.dataset_generator --seed 42 --ticks 1500 --out /tmp/gridsentinel-ml-benchmark/data/train_seed42.csv
+          python -m app.ml.dataset_generator --seed 999 --ticks 700 --out /tmp/gridsentinel-ml-benchmark/data/val_seed999.csv
+          python -m app.ml.dataset_generator --seed 1337 --ticks 700 --out /tmp/gridsentinel-ml-benchmark/data/test_seed1337.csv
+
+      - name: Train and compare Random Forest, LightGBM, XGBoost
+        id: benchmark
+        working-directory: backend
+        run: |
+          python -m app.ml.train_classifier \
+            --train /tmp/gridsentinel-ml-benchmark/data/train_seed42.csv \
+            --val /tmp/gridsentinel-ml-benchmark/data/val_seed999.csv \
+            --test /tmp/gridsentinel-ml-benchmark/data/test_seed1337.csv \
+            --out /tmp/gridsentinel-ml-benchmark/models/candidate.joblib \
+            --report /tmp/gridsentinel-ml-benchmark/reports \
+            --smoke-test
+
+      - name: Apply pre-registered promotion gate
+        id: gate
+        if: steps.benchmark.outcome == 'success'
+        working-directory: backend
+        run: |
+          python -m app.ml.promotion_gate \
+            --metrics /tmp/gridsentinel-ml-benchmark/reports/metrics.json \
+            --json-out /tmp/gridsentinel-ml-benchmark/reports/promotion_gate.json
+
+      - name: Add benchmark provenance and Markdown summary
+        if: always() && steps.benchmark.outcome == 'success'
+        env:
+          BASE_COMMIT: ${{ github.sha }}
+        run: |
+          python - <<'PY'
+          import hashlib, json, os, platform, sys
+          from datetime import datetime, timezone
+          from pathlib import Path
+          root = Path("/tmp/gridsentinel-ml-benchmark")
+          files = {
+              "train": root / "data/train_seed42.csv",
+              "validation": root / "data/val_seed999.csv",
+              "test": root / "data/test_seed1337.csv",
+              "candidate_model": root / "models/candidate.joblib",
+          }
+          sha = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
+          metrics = json.loads((root / "reports/metrics.json").read_text(encoding="utf-8"))
+          gate_path = root / "reports/promotion_gate.json"
+          gate = json.loads(gate_path.read_text(encoding="utf-8")) if gate_path.exists() else None
+          manifest = {
+              "created_at_utc": datetime.now(timezone.utc).isoformat(),
+              "source_commit": os.environ.get("BASE_COMMIT"),
+              "feature_schema_version": metrics.get("feature_schema_version"),
+              "feature_count": metrics.get("feature_count"),
+              "selected_model": metrics.get("model_selected"),
+              "decision_threshold": metrics.get("decision_threshold"),
+              "model_sha256": sha(files["candidate_model"]),
+              "datasets": {
+                  key: {"path": str(path.relative_to(root)), "sha256": sha(path), "bytes": path.stat().st_size}
+                  for key, path in files.items() if key != "candidate_model"
+              },
+              "random_seeds": {"train": 42, "validation": 999, "held_out_test": 1337},
+              "ticks": {"train": 1500, "validation": 700, "held_out_test": 700},
+              "runtime": {"python": sys.version, "platform": platform.platform()},
+              "promotion_gate": gate,
+              "data_scope": "Synthetic pandapower feeder and simulated Modbus TCP only; not field validation.",
+          }
+          (root / "reports/ML_BENCHMARK_PROVENANCE.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+          cyber = (metrics.get("classification_report") or {}).get("Cyber Intrusion") or {}
+          md = [
+              "# GridSentinel ML benchmark", "",
+              f"- **Generated:** {manifest['created_at_utc']}",
+              f"- **Selected model:** {metrics.get('model_selected')}",
+              f"- **Feature schema:** {metrics.get('feature_schema_version')} ({metrics.get('feature_count')} inputs)",
+              f"- **Threshold:** {metrics.get('decision_threshold')}",
+              f"- **Held-out primary samples:** {metrics.get('test_primary_samples_count', metrics.get('test_samples_count'))}", "",
+              "## Held-out test metrics", "", "| Metric | Result |", "|---|---:|",
+              f"| Overall accuracy | {metrics.get('overall_accuracy', 0)*100:.2f}% |",
+              f"| Cyber precision | {cyber.get('precision', 0)*100:.2f}% |",
+              f"| Cyber recall | {metrics.get('cyber_intrusion_recall', 0)*100:.2f}% |",
+              f"| Cyber false-negative rate | {(1-metrics.get('cyber_intrusion_recall', 0))*100:.2f}% |",
+              f"| Cyber false-positive rate | {metrics.get('cyber_intrusion_fpr', 0)*100:.2f}% |",
+              f"| Cyber F1 | {cyber.get('f1-score', 0)*100:.2f}% |",
+              f"| Cyber F2 | {metrics.get('cyber_f2_score', 0):.4f} |",
+              f"| Cyber subtype accuracy | {metrics.get('cyber_subtype_accuracy', 0)*100:.2f}% |",
+              f"| Inference latency | {metrics.get('latency_ms_per_verdict', 0):.3f} ms/verdict |", "",
+              "## Candidate comparison", "", "| Model | Validation Cyber F2 | Test accuracy (argmax) | Latency |", "|---|---:|---:|---:|",
+          ]
+          for name, value in (metrics.get("model_comparison") or {}).items():
+              md.append(f"| {name} | {value.get('val_cyber_f2', 0):.4f} | {value.get('test_accuracy_default', 0)*100:.2f}% | {value.get('latency_ms', 0):.3f} ms |")
+          md.extend(["", "## Promotion gate", "", f"**Eligible:** {str(bool((gate or {}).get('eligible', False))).upper()}", "", "## Limitations", "", "All metrics are held-out synthetic simulation results, not field-validated performance.", ""])
+          (root / "reports/ML_BENCHMARK.md").write_text("\n".join(md), encoding="utf-8")
+          PY
+
+      - name: Upload candidate, datasets, metrics, and provenance
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gridsentinel-ml-benchmark
+          path: /tmp/gridsentinel-ml-benchmark
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Propose replacement only if the gate passes
+        if: steps.gate.outputs.eligible == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cp /tmp/gridsentinel-ml-benchmark/models/candidate.joblib backend/models/fusion_classifier.joblib
+          cp /tmp/gridsentinel-ml-benchmark/reports/metrics.json backend/reports/metrics.json
+          cp /tmp/gridsentinel-ml-benchmark/reports/ML_BENCHMARK_PROVENANCE.json backend/reports/ML_BENCHMARK_PROVENANCE.json
+          cp /tmp/gridsentinel-ml-benchmark/reports/ML_BENCHMARK.md docs/ML_BENCHMARK.md
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add backend/models/fusion_classifier.joblib backend/reports/metrics.json backend/reports/ML_BENCHMARK_PROVENANCE.json docs/ML_BENCHMARK.md
+          if git diff --cached --quiet; then
+            echo "Candidate artifacts already match the branch; no promotion commit needed."
+            exit 0
+          fi
+          git commit -m "Add validated schema 3 ML candidate and benchmark results"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

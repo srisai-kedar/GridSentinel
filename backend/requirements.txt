@@ -13,7 +13,7 @@ websockets>=13.0
 pydantic==2.10.4
 
 # Industrial OT protocol simulation (Modbus TCP)
-pymodbus>=3.6.0,<4.0.0
+pymodbus==3.16.1
 
 # Machine Learning & Analytics (Phase 3)
 scikit-learn>=1.5.0

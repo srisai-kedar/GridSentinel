@@ -58,13 +58,18 @@ class TestSCADAMasterPolling:
                 assert t["status_flag"] == 1
 
             # Verify traffic logger captured all 5 read transactions
-            events = traffic_logger.get_recent_events(limit=10)
-            assert len(events) >= 5
-            for ev in events[:5]:
+            events = traffic_logger.get_recent_events(limit=20)
+            master = [e for e in events if e["observer"] == "scada_master"]
+            tap = [e for e in events if e["observer"] == "rtu_tap"]
+            assert len(master) == 5
+            for ev in master:
                 assert ev["function_code"] == 3  # Read Holding Registers
                 assert ev["source"] == "SCADA_MASTER"
                 assert ev["is_unexpected_write"] is False
                 assert ev["success"] is True
+            # The RTU taps independently observed the same 5 reads on the wire.
+            assert len(tap) == 5
+            assert all(e["function_code"] == 3 and e["is_unexpected_write"] is False for e in tap)
 
         finally:
             await rtu_pool.stop_all()

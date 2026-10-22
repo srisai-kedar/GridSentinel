@@ -246,11 +246,19 @@ def test_features_invariant_to_evaluation_metadata():
 # ===========================================================================
 
 def test_feature_schema_additive_version_bump():
-    """Verify FEATURE_SCHEMA v2.1.0 preserves base 28 columns at the exact start."""
-    assert FEATURE_SCHEMA_VERSION == "2.1.0"
-    assert len(FEATURE_SCHEMA) == 37
-    assert FEATURE_SCHEMA[:28] == BASE_FEATURES
-    assert FEATURE_SCHEMA[28:] == NEW_DPN_FEATURES
+    """Schema 3.0.0: 28 model inputs; the 9 Change-5 signals are auxiliary only.
+
+    The model schema differs from the historical (locked) 2.0.0 BASE_FEATURES in
+    exactly one place: nbd_distinct_sources_count -> nbd_connection_count.
+    """
+    from app.ml.feature_engineering import AUX_FEATURE_SCHEMA, EXTRACTED_FEATURE_KEYS
+
+    assert FEATURE_SCHEMA_VERSION == "3.0.0"
+    assert len(FEATURE_SCHEMA) == 28
+    diff = [(a, b) for a, b in zip(BASE_FEATURES, FEATURE_SCHEMA) if a != b]
+    assert diff == [("nbd_distinct_sources_count", "nbd_connection_count")]
+    assert AUX_FEATURE_SCHEMA == NEW_DPN_FEATURES
+    assert EXTRACTED_FEATURE_KEYS == FEATURE_SCHEMA + NEW_DPN_FEATURES
 
 
 def test_classifier_service_schema_acceptance_and_rejection(tmp_path):

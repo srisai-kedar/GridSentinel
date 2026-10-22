@@ -92,7 +92,8 @@ class TestScenarioInjector:
             assert len(unexpected) >= 1
             unauth_event = unexpected[0]
             assert unauth_event["function_code"] == 6  # Write Single Register
-            assert unauth_event["source"] == "ATTACKER_COMMAND_INJECTION"
+            # Observed by the RTU's passive tap, not self-reported by the attacker.
+            assert unauth_event["observer"] == "rtu_tap"
             assert "RTU-3" in unauth_event["target_rtu"]
 
         finally:
