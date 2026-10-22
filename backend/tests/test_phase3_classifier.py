@@ -78,12 +78,13 @@ def _make_traffic_events(n_writes: int = 0) -> List[Dict[str, Any]]:
         events.append({
             "event_id": 100 + j,
             "timestamp": "2025-01-01T00:00:01Z",
-            "source": "ATTACKER",
+            "source": "RTU_OBSERVED_WRITE",
             "target_rtu": "RTU_1 (Port 5021)",
             "function_code": 6,
             "function_name": "WRITE_SINGLE_REGISTER",
-            "response_time_ms": 9.1,
+            "response_time_ms": 0.0,
             "is_unexpected_write": True,
+            "observer_verified": True,
             "success": True,
             "details": "register=0, value=11500",
         })

@@ -25,7 +25,6 @@ import pandapower as pp
 from pymodbus.client import AsyncModbusTcpClient
 
 from app.ot.rtu_server import RTU_CONFIGS, rtu_pool
-from app.ot.traffic_logger import traffic_logger
 
 logger = logging.getLogger("GridSentinel.ScenarioInjector")
 
@@ -102,8 +101,19 @@ class ScenarioInjector:
     ) -> Dict[str, Any]:
         """
         Simulate an unauthorized cyber attack by sending an actual Modbus TCP
-        Write Single Register command (FC 06) from an external attacker IP.
-        This MUST be flagged as an unexpected write in the traffic logger.
+        Write Single Register command (FC 06) from an external attacker client.
+
+        The RTU server's trace_pdu callback (rtu_server._make_write_observer)
+        is the SOLE authoritative observer of this event.  When the write PDU
+        arrives at the RTU, trace_pdu logs it to traffic_logger with
+        ``source="RTU_OBSERVED_WRITE", is_unexpected_write=True``.
+
+        This method intentionally does NOT call traffic_logger.log_transaction().
+        Doing so would inject a simulation-only source label
+        ("ATTACKER_COMMAND_INJECTION") into the traffic buffer.  That label can
+        never appear during real deployment and would cause a
+        training-vs-inference distribution mismatch in nbd_distinct_sources_count
+        and any future source-derived features.
         """
         # Find target port
         target_cfg = next((cfg for cfg in RTU_CONFIGS if cfg["rtu_id"] == rtu_id), None)
@@ -119,16 +129,8 @@ class ScenarioInjector:
         try:
             connected = await client.connect()
             if not connected:
-                elapsed_ms = (time.perf_counter() - start_time) * 1000.0
-                traffic_logger.log_transaction(
-                    source="ATTACKER_COMMAND_INJECTION",
-                    target_rtu=target_name,
-                    function_code=6,
-                    response_time_ms=elapsed_ms,
-                    is_unexpected_write=True,
-                    details=f"Connection failed when attempting unauthorized write to reg {register_address}",
-                    success=False,
-                )
+                # RTU was unreachable: the write never arrived, so the RTU
+                # observer never fired.  Do NOT log to traffic_logger here.
                 return {"status": "error", "message": "Failed to connect to target RTU"}
 
             # Send unauthorized Modbus FC 06 (Write Single Register)
@@ -136,15 +138,12 @@ class ScenarioInjector:
             elapsed_ms = (time.perf_counter() - start_time) * 1000.0
 
             success = not wr.isError()
-            traffic_logger.log_transaction(
-                source="ATTACKER_COMMAND_INJECTION",
-                target_rtu=target_name,
-                function_code=6,
-                response_time_ms=elapsed_ms,
-                is_unexpected_write=True,
-                details=f"UNAUTHORIZED WRITE: Register {register_address} = {value} (Hex: 0x{value:04X})",
-                success=success,
-            )
+            # Do NOT call traffic_logger.log_transaction() here.
+            # The RTU server's trace_pdu callback already logged this write
+            # with source="RTU_OBSERVED_WRITE", is_unexpected_write=True.
+            # Adding a second entry with source="ATTACKER_COMMAND_INJECTION"
+            # would contaminate nbd_distinct_sources_count with a label that
+            # has no real-deployment equivalent.
 
             self.active_scenario_summary = (
                 f"ATTACK: Unauthorized Modbus Command Write on RTU-{rtu_id} Reg {register_address}={value}"

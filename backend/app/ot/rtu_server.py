@@ -20,7 +20,8 @@ from __future__ import annotations
 import asyncio
 import logging
 import math
-from typing import Any, Dict, List, Optional, Tuple
+import time as _perf_time
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import numpy as np
 from pymodbus.datastore import (
@@ -29,6 +30,8 @@ from pymodbus.datastore import (
     ModbusServerContext,
 )
 from pymodbus.server import ModbusTcpServer
+
+from app.ot.traffic_logger import traffic_logger as _traffic_logger
 
 logger = logging.getLogger("GridSentinel.RTU")
 
@@ -191,6 +194,10 @@ def decode_telemetry(registers: List[int]) -> Dict[str, Any]:
 # ---------------------------------------------------------------------------
 # Simulated RTU Class
 # ---------------------------------------------------------------------------
+# Modbus write function codes — any of these received at the RTU is unexpected
+_WRITE_FUNCTION_CODES = frozenset({5, 6, 15, 16})
+
+
 class SimulatedRTU:
     """
     Asynchronous Modbus TCP RTU Server.
@@ -214,6 +221,7 @@ class SimulatedRTU:
         self._server: Optional[ModbusTcpServer] = None
         self._server_task: Optional[asyncio.Task] = None
         self.is_running: bool = False
+        self._observer_token: Optional[Any] = None
 
         # In-memory mirror of last written engineering values
         self._current_values = {
@@ -223,17 +231,81 @@ class SimulatedRTU:
             "status_flag": 1,
         }
 
+    def _make_write_observer(self) -> Callable:
+        """
+        Build a ``trace_pdu`` callback (pymodbus 3.x API) that detects write
+        requests arriving at this RTU from *any* connected client.
+
+        Only incoming PDUs (``sending=False``) whose function code is a Modbus
+        write operation (FC 5, 6, 15, 16) are logged.  The write is recorded
+        via the dedicated trusted observer path (``record_rtu_observed_write``)
+        using the RTU's authenticated observer token.
+
+        This is the sole authoritative source of ``is_unexpected_write`` events
+        in the traffic log.  General callers cannot spoof this path.
+        """
+        rtu_target = f"{self.name} (Port {self.port})"
+        token = self._observer_token
+
+        def trace_pdu(sending: bool, pdu: Any) -> Any:
+            # Ignore outgoing (response) PDUs; only classify received requests.
+            if not sending and int(pdu.function_code) in _WRITE_FUNCTION_CODES:
+                fc = int(pdu.function_code)
+                fc_names = {5: "WRITE_SINGLE_COIL", 6: "WRITE_SINGLE_REGISTER",
+                            15: "WRITE_MULTIPLE_COILS", 16: "WRITE_MULTIPLE_REGISTERS"}
+                _traffic_logger.record_rtu_observed_write(
+                    token=token,
+                    target_rtu=rtu_target,
+                    function_code=fc,
+                    details=(
+                        f"RTU-side observer: received {fc_names.get(fc, f'FC_{fc}')} "
+                        f"(function_code={fc}) — unexpected write at RTU"
+                    ),
+                )
+            return pdu
+
+        return trace_pdu
+
     async def start(self) -> None:
-        """Start the Modbus TCP server in the background."""
+        """
+        Start the Modbus TCP server.
+
+        Race-condition fix: ``server.listen()`` is awaited *before* setting
+        ``is_running = True``, so the TCP socket is bound and accepting
+        connections by the time this coroutine returns.  Callers that connect
+        immediately after ``await rtu.start()`` are guaranteed not to see a
+        connection-refused error.
+        """
         if self.is_running:
             return
 
         try:
-            self._server = ModbusTcpServer(context=self._context, address=(self.host, self.port))
-            self._server_task = asyncio.create_task(self._server.serve_forever())
+            self._observer_token = _traffic_logger.register_rtu_server(self.rtu_id, self.port)
+            trace_pdu = self._make_write_observer()
+            self._server = ModbusTcpServer(
+                context=self._context,
+                address=(self.host, self.port),
+                trace_pdu=trace_pdu,
+            )
+
+            # Bind + listen synchronously so the socket is ready before we return.
+            ok = await self._server.listen()
+            if not ok:
+                raise RuntimeError(f"listen() failed — port {self.port} may be in use")
+
+            # Keep the serve loop alive in the background (waits on self._server.serving).
+            async def _serve_loop() -> None:
+                import contextlib
+                with contextlib.suppress(asyncio.CancelledError):
+                    await self._server.serving
+
+            self._server_task = asyncio.create_task(_serve_loop())
             self.is_running = True
             logger.info(f"[{self.name}] Started Modbus TCP server on {self.host}:{self.port}")
         except Exception as exc:
+            if self._observer_token is not None:
+                _traffic_logger.unregister_rtu_server(self._observer_token)
+                self._observer_token = None
             logger.error(f"[{self.name}] Failed to start on port {self.port}: {exc}")
             raise
 
@@ -243,6 +315,9 @@ class SimulatedRTU:
             return
 
         self.is_running = False
+        if self._observer_token is not None:
+            _traffic_logger.unregister_rtu_server(self._observer_token)
+            self._observer_token = None
         if self._server:
             try:
                 await self._server.shutdown()

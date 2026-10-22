@@ -423,6 +423,53 @@ class ClassifierService:
             schema_ver = str(bundle.get("feature_schema_version", "2.0.0"))
             if schema_ver not in ("2.0.0", "2.1.0"):
                 raise ValueError(f"Unsupported feature schema version: {schema_ver}")
+
+            # \u2500\u2500 Hard feature-schema compatibility guard (Task 7) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+            # Refuse to load a model whose stored feature list does not match
+            # the current FEATURE_SCHEMA.  Silently loading an incompatible
+            # model would produce wrong predictions without any error signal.
+            bundle_feature_schema: list = bundle.get("feature_schema", [])
+            if bundle_feature_schema:
+                extra_in_current = [f for f in FEATURE_SCHEMA if f not in bundle_feature_schema]
+                extra_in_bundle  = [f for f in bundle_feature_schema if f not in FEATURE_SCHEMA]
+                # Features the bundle requires but the code doesn't know about means
+                # the model will receive a wrong/missing input column -> hard refuse.
+                if extra_in_bundle:
+                    logger.error(
+                        "[ClassifierService] INCOMPATIBLE FEATURE SCHEMA "
+                        f"\u2014 refusing to load '{target_path}'.  "
+                        f"Bundle requires features unknown to current code: {extra_in_bundle}.  "
+                        "Roll back to a compatible bundle or update feature_engineering.py."
+                    )
+                    self.is_loaded = False
+                    return False
+                # New features added to code that the old bundle wasn't trained on are
+                # backward-compatible: the bundle's index-slicing in _predict_untimed
+                # already handles this (v2.0.0 model uses its own 28-col schema).
+                if extra_in_current:
+                    logger.warning(
+                        f"[ClassifierService] Bundle schema has {len(bundle_feature_schema)} features; "
+                        f"current code has {len(FEATURE_SCHEMA)}.  "
+                        f"New features not in bundle (will be unused): {extra_in_current}.  "
+                        "Consider re-training to leverage new features."
+                    )
+                elif bundle_feature_schema != FEATURE_SCHEMA:
+                    # Same features but different order \u2014 warn and continue.
+                    logger.warning(
+                        "[ClassifierService] Bundle feature order differs from current FEATURE_SCHEMA."
+                    )
+            else:
+                # Old bundle without stored schema \u2014 validate by column count only.
+                top_tmp = bundle.get("top_level_model")
+                if top_tmp is not None:
+                    n_feat = getattr(top_tmp, "n_features_in_", None)
+                    if n_feat is not None and n_feat != len(FEATURE_SCHEMA):
+                        logger.warning(
+                            f"[ClassifierService] Bundle model expects {n_feat} features but "
+                            f"current FEATURE_SCHEMA has {len(FEATURE_SCHEMA)}.  "
+                            "Predictions may be incorrect.  Consider re-training."
+                        )
+            # \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
             self.bundle = bundle
             self.top_model = bundle.get("top_level_model")
             self.subtype_model = bundle.get("subtype_model")
