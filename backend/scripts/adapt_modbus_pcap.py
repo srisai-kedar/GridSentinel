@@ -213,7 +213,7 @@ def _message_from_buffer(buffer: bytearray) -> Optional[Tuple[Dict[str, int], in
         return None
     pdu = bytes(buffer[8:total])
     del buffer[:total]
-    reference = 0
+    reference: Optional[int] = None
     if len(pdu) >= 3 and function_code in (1, 2, 3, 4, 5, 6, 15, 16):
         reference = struct.unpack("!H", pdu[0:2])[0]
     return {
@@ -317,7 +317,11 @@ def iter_modbus_events(path: Path, limit_packets: Optional[int] = None, include_
                             "unit_id": unit,
                             "modbus_length": int(message["modbus_length"]),
                             "function_code": int(message["function_code"]),
-                            "reference_number": int(message["reference_number"]),
+                            "reference_number": (
+                                int(message["reference_number"])
+                                if message["reference_number"] is not None
+                                else None
+                            ),
                             "response_matched": False,
                             "observer_verified": False,
                             "is_unexpected_write": False,

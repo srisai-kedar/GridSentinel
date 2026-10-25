@@ -14,6 +14,43 @@ from scripts.adapt_modbus_pcap import iter_modbus_events, iter_pcap_packets, _tc
 MAX_FILE_BYTES = 128 * 1024 * 1024
 MAX_PACKETS = 2_000_000
 MAX_PROCESSING_SECONDS = 30.0
+MAX_MESSAGE_DETAILS = 200
+
+_FUNCTION_NAMES = {
+    1: "Read Coils",
+    2: "Read Discrete Inputs",
+    3: "Read Holding Registers",
+    4: "Read Input Registers",
+    5: "Write Single Coil",
+    6: "Write Single Register",
+    15: "Write Multiple Coils",
+    16: "Write Multiple Registers",
+}
+
+
+def _message_detail(event: Dict[str, Any]) -> Dict[str, Any]:
+    """Return only genuinely decoded request fields for the UI."""
+    function_code = event.get("function_code")
+    detail = {
+        "timestamp_utc": event.get("timestamp_utc"),
+        "source_ip": event.get("source_ip"),
+        "source_port": event.get("source_port"),
+        "destination_ip": event.get("destination_ip"),
+        "destination_port": event.get("destination_port"),
+        "transaction_id": event.get("transaction_id"),
+        "unit_id": event.get("unit_id"),
+        "function_code": function_code,
+        "function_name": _FUNCTION_NAMES.get(function_code, "Unknown function"),
+        "reference_number": event.get("reference_number"),
+        "response_status": "matched" if event.get("response_matched") else "unmatched",
+        "response_matched": bool(event.get("response_matched", False)),
+        "response_time_ms": event.get("response_time_ms"),
+        "success": event.get("success"),
+        "exception_response": event.get("exception_response"),
+    }
+    if detail["response_matched"] and detail["exception_response"]:
+        detail["response_status"] = "matched_exception"
+    return detail
 
 
 def analyze_capture(path: Path, *, max_packets: int = MAX_PACKETS, max_seconds: float = MAX_PROCESSING_SECONDS) -> Dict[str, Any]:
@@ -47,8 +84,14 @@ def analyze_capture(path: Path, *, max_packets: int = MAX_PACKETS, max_seconds: 
     matched = 0
     errors = 0
     event_count = 0
+    message_details = []
+    message_details_truncated = False
     for event in events:
         event_count += 1
+        if len(message_details) < MAX_MESSAGE_DETAILS:
+            message_details.append(_message_detail(event))
+        else:
+            message_details_truncated = True
         function_codes[str(event.get("function_code", 0))] += 1
         if event.get("source_ip"):
             source_ips.add(str(event["source_ip"]))
@@ -90,6 +133,10 @@ def analyze_capture(path: Path, *, max_packets: int = MAX_PACKETS, max_seconds: 
             "error_responses": errors,
             "unmatched_requests": parser_summary.get("unmatched_requests", 0),
             "parser_errors": parser_summary.get("packet_parse_errors", 0),
+            "message_details": message_details,
+            "message_details_limit": MAX_MESSAGE_DETAILS,
+            "message_details_displayed": len(message_details),
+            "message_details_truncated": message_details_truncated,
         },
         "limitations": [
             "Network analysis only; this is not an attack detector.",
