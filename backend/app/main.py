@@ -41,7 +41,7 @@ import json
 from typing import Any, Dict, List, Optional
 
 import numpy as np
-from fastapi import FastAPI, HTTPException, Query, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, HTTPException, Query, Request, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.audit_routes import router as audit_router
@@ -91,6 +91,7 @@ from app.ot.scada_master import scada_master
 from app.ot.scenario_injector import scenario_injector
 from app.ot.simulation_loop import sim_loop
 from app.ot.traffic_logger import traffic_logger
+from app.pcap_analyzer import MAX_FILE_BYTES, MAX_PACKETS, MAX_PROCESSING_SECONDS, PcapFormatError, analyze_capture
 
 import hashlib
 import os
@@ -201,9 +202,52 @@ app.add_middleware(
     allow_origin_regex=r"^https://grid-sentinel-[a-z0-9]+-srisai-kedars-projects\.vercel\.app$",
     allow_credentials=False,
     allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["Content-Type"],
+    allow_headers=["Content-Type", "X-PCAP-Filename"],
 )
 app.include_router(audit_router)
+
+
+@app.post("/tools/pcap-analyzer", tags=["Experimental PCAP Analyzer"])
+async def analyze_uploaded_pcap(request: Request):
+    """Analyze one uploaded capture without persisting it or invoking ML inference.
+
+    The browser sends the file bytes as the request body and supplies the
+    original filename in X-PCAP-Filename. Raw-body upload avoids introducing a
+    multipart dependency into the existing deployment environment.
+    """
+    filename = request.headers.get("x-pcap-filename", "").strip()
+    suffix = Path(filename).suffix.lower()
+    if suffix not in {".pcap", ".pcapng", ".cap"}:
+        raise HTTPException(status_code=415, detail="Only .pcap, .pcapng, and .cap files are supported.")
+    content_length = request.headers.get("content-length")
+    if content_length and content_length.isdigit() and int(content_length) > MAX_FILE_BYTES:
+        raise HTTPException(status_code=413, detail=f"Capture exceeds the {MAX_FILE_BYTES // (1024 * 1024)} MiB upload limit.")
+
+    import tempfile
+    temp_path = None
+    received = 0
+    try:
+        with tempfile.NamedTemporaryFile(prefix="gridsentinel-pcap-", suffix=suffix, delete=False) as handle:
+            temp_path = Path(handle.name)
+            async for chunk in request.stream():
+                if not chunk:
+                    continue
+                received += len(chunk)
+                if received > MAX_FILE_BYTES:
+                    raise HTTPException(status_code=413, detail=f"Capture exceeds the {MAX_FILE_BYTES // (1024 * 1024)} MiB upload limit.")
+                handle.write(chunk)
+        try:
+            return analyze_capture(temp_path, max_packets=MAX_PACKETS, max_seconds=MAX_PROCESSING_SECONDS)
+        except (PcapFormatError, ValueError, TimeoutError) as exc:
+            raise HTTPException(status_code=422, detail=f"Capture could not be analyzed safely: {exc}") from exc
+        except OSError as exc:
+            raise HTTPException(status_code=400, detail=f"Capture could not be read: {exc}") from exc
+    finally:
+        if temp_path is not None:
+            try:
+                temp_path.unlink(missing_ok=True)
+            except OSError:
+                pass
 
 
 # ===========================================================================
