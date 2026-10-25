@@ -26,8 +26,20 @@ const API_BASE =
 export interface PcapAnalysis {
   analysis_type: string; production_inference_run: boolean; labels_assigned: boolean; physical_features_available: boolean;
   packet_summary: { total_packets: number; ipv4_tcp_packets: number; file_size_bytes: number; min_packet_bytes: number | null; max_packet_bytes: number | null; mean_packet_bytes: number | null; };
-  modbus_summary: { decoded_messages: number; request_events: number; function_code_distribution: Record<string, number>; source_cardinality: number; request_response_matched: number; matched_response_fraction: number; mean_latency_ms: number | null; min_latency_ms: number | null; max_latency_ms: number | null; error_responses: number; unmatched_requests: number; parser_errors: number; };
+  modbus_summary: { decoded_messages: number; request_events: number; function_code_distribution: Record<string, number>; source_cardinality: number; request_response_matched: number; matched_response_fraction: number; mean_latency_ms: number | null; min_latency_ms: number | null; max_latency_ms: number | null; error_responses: number; unmatched_requests: number; parser_errors: number; message_details: PcapMessageDetail[]; message_details_limit: number; message_details_displayed: number; message_details_truncated: boolean; };
   limitations: string[]; processing_seconds: number;
+}
+
+export interface PcapMessageDetail {
+  timestamp_utc: string | null;
+  source_ip: string | null; source_port: number | null;
+  destination_ip: string | null; destination_port: number | null;
+  transaction_id: number | null; unit_id: number | null;
+  function_code: number | null; function_name: string;
+  reference_number: number | null;
+  response_status: "matched" | "matched_exception" | "unmatched";
+  response_matched: boolean; response_time_ms: number | null;
+  success: boolean | null; exception_response: boolean | null;
 }
 
 export async function analyzePcap(file: File): Promise<PcapAnalysis> {

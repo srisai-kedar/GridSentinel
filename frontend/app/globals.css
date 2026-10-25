@@ -150,6 +150,19 @@ button, a, input, select { transition: color .15s ease, background-color .15s ea
 .pcap-code-list { display: flex; flex-wrap: wrap; gap: 6px; }
 .pcap-code-list span { padding: 5px 7px; color: #b9c7d8; background: #162436; font: 10px ui-monospace, monospace; }
 .pcap-limitations { padding: 8px; color: #93a3b7; background: #0d151f; font-size: 10px; line-height: 1.6; }
+.pcap-message-note { margin: 0; color: #91a0b3; font-size: 10px; line-height: 1.5; }
+.pcap-truncation, .pcap-empty-state { padding: 8px; color: #c7d3e1; background: #162436; font-size: 10px; line-height: 1.5; }
+.pcap-message-table-wrap { overflow-x: auto; border: 1px solid #29384b; background: #0d151f; }
+.pcap-message-table { width: 100%; min-width: 1060px; border-collapse: collapse; color: #c7d3e1; font: 10px ui-monospace, monospace; }
+.pcap-message-table th { padding: 8px; color: #7e91aa; background: #101b28; text-align: left; font-size: 9px; text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
+.pcap-message-table td { padding: 8px; border-top: 1px solid #1d2b3c; white-space: nowrap; vertical-align: top; }
+.pcap-message-table tr:hover td { background: #132235; }
+.pcap-function-code, .pcap-function-name { display: block; }
+.pcap-function-name { margin-top: 3px; color: #8296ad; font-family: ui-sans-serif, sans-serif; font-size: 9px; }
+.pcap-status { display: inline-block; padding: 3px 5px; border: 1px solid currentColor; font-family: ui-sans-serif, sans-serif; font-size: 9px; }
+.pcap-status-matched { color: #75c9a2; background: #102c27; }
+.pcap-status-unmatched { color: #e6bd72; background: #302719; }
+.pcap-status-error { color: #f19b9b; background: #29191d; }
 .pcap-spin { animation: pcap-spin 1s linear infinite; }
 @keyframes pcap-spin { to { transform: rotate(360deg); } }
 
