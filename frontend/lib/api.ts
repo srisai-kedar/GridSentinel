@@ -23,6 +23,23 @@ const API_BASE =
     ? "https://gridsentinel-72tf.onrender.com"
     : "http://localhost:8000");
 
+export interface PcapAnalysis {
+  analysis_type: string; production_inference_run: boolean; labels_assigned: boolean; physical_features_available: boolean;
+  packet_summary: { total_packets: number; ipv4_tcp_packets: number; file_size_bytes: number; min_packet_bytes: number | null; max_packet_bytes: number | null; mean_packet_bytes: number | null; };
+  modbus_summary: { decoded_messages: number; request_events: number; function_code_distribution: Record<string, number>; source_cardinality: number; request_response_matched: number; matched_response_fraction: number; mean_latency_ms: number | null; min_latency_ms: number | null; max_latency_ms: number | null; error_responses: number; unmatched_requests: number; parser_errors: number; };
+  limitations: string[]; processing_seconds: number;
+}
+
+export async function analyzePcap(file: File): Promise<PcapAnalysis> {
+  const response = await fetch(`${API_BASE}/tools/pcap-analyzer`, { method: "POST", headers: { "Content-Type": "application/octet-stream", "X-PCAP-Filename": file.name }, body: file });
+  if (!response.ok) {
+    let detail = `HTTP ${response.status} ${response.statusText}`;
+    try { const body = await response.json(); if (body?.detail) detail = body.detail; } catch { /* keep HTTP detail */ }
+    throw new Error(detail);
+  }
+  return response.json();
+}
+
 async function fetchJson<T>(
   endpoint: string,
   options: RequestInit = {}

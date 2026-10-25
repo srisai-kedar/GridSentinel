@@ -23,6 +23,7 @@ import { DemoDirector } from "@/components/DemoDirector";
 import { EvidencePanel } from "@/components/EvidencePanel";
 import { FeederMap } from "@/components/FeederMap";
 import { StatusBar } from "@/components/StatusBar";
+import { PcapAnalyzer } from "@/components/PcapAnalyzer";
 import { useLiveSocket } from "@/lib/useLiveSocket";
 import { useSessionRecorder } from "@/lib/sessionRecorder";
 import { useReplayEngine } from "@/lib/replayEngine";
@@ -34,7 +35,7 @@ import {
 } from "@/lib/alertText";
 import referenceSessionJson from "@/data/reference-session.json";
 
-type WorkspaceTab = "FEED" | "AUDIT" | "CONTROLS" | "DIRECTOR" | "COMPLIANCE";
+type WorkspaceTab = "FEED" | "AUDIT" | "CONTROLS" | "DIRECTOR" | "COMPLIANCE" | "PCAP";
 
 function formatNumber(value: number | undefined | null, digits = 2, suffix = "") {
   return typeof value === "number" ? `${value.toFixed(digits)}${suffix}` : "—";
@@ -262,6 +263,7 @@ export default function SCADACommandCenter() {
               ["CONTROLS", "Scenario"],
               ["DIRECTOR", "Demo"],
               ["COMPLIANCE", "CEA-2026"],
+              ["PCAP", "PCAP tool"],
             ] as [WorkspaceTab, string][]).map(([tab, label]) => (
               <button key={tab} className={activeTab === tab ? "is-active" : ""} onClick={() => setActiveTab(tab)} role="tab" aria-selected={activeTab === tab}>
                 {label}{tab === "AUDIT" && auditEntries.length > 0 ? ` · ${auditEntries.length}` : ""}
@@ -286,6 +288,7 @@ export default function SCADACommandCenter() {
             {activeTab === "CONTROLS" && <DemoControls latestState={activePayload} isReplayMode={appMode === "REPLAY"} />}
             {activeTab === "DIRECTOR" && <DemoDirector onNavigateTab={(tab) => setActiveTab(tab as WorkspaceTab)} isReplayMode={appMode === "REPLAY"} />}
             {activeTab === "COMPLIANCE" && <ComplianceMap />}
+            {activeTab === "PCAP" && <PcapAnalyzer />}
           </div>
         </aside>
       </main>
