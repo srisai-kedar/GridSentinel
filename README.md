@@ -4,7 +4,7 @@
 
 # GridSentinel - Physics-Aware Cyber-Physical Anomaly Detection for SCADA
 
-GridSentinel is an end-to-end cyber-physical intrusion detection and situational awareness platform for Indian 11kV/33kV power distribution networks.
+GridSentinel is an end-to-end cyber-physical intrusion detection & situational awareness platform for Indian 11kV/33kV power distribution networks.
 
 It fuses:
 
