@@ -310,3 +310,41 @@ The Random Forest subtype model uses the same 37 stored feature columns: the 10 
 ### Clean-run bound
 
 Skipped. `dataset_generator.py` has no clean-only mode; running it would mix scenarios. Adding a clean-only mode or approximating one would exceed this isolated follow-up. No clean-run false-alarm bound is claimed.
+
+## 2026-10-27 — Decoupled drift rule verification
+
+Commands run:
+
+```text
+backend\.venv\Scripts\python.exe backend\scripts\expo\t2_followup_drift_hysteresis.py --train backend\data\generated\nbd_fixed_train_seed42.csv --val backend\data\generated\nbd_fixed_val_seed999.csv --test backend\reports\expo\appendix_b_probe\nbd_fixed_test_seed1337.csv --candidate backend\models\experiments\expo_t1_corrected_candidate.joblib --production backend\models\fusion_classifier.joblib --out backend\reports\expo\t1_corrected_candidate\t2_decoupled_rule_20261027_v2.json
+backend\.venv\Scripts\python.exe -m pytest backend\tests\test_sensor_drift_taxonomy.py -q
+backend\.venv\Scripts\python.exe -m pytest backend -q
+```
+
+The live extractor computes all 37 fields in `feature_engineering.extract_features()`; the classifier now keeps that full dictionary for deterministic rules while restricting only `model_vector` to the loaded bundle schema. The frozen production classifier remains 28-feature and unchanged.
+
+| Service-path result on corrected test | Candidate | Production 28-feature model |
+|---|---:|---:|
+| Sensor rows: SENSOR_DRIFT | 119/191 | 119/191 |
+| Sensor rows: CYBER / NATURAL_FAULT / NORMAL | 10 / 25 / 37 | 3 / 34 / 35 |
+| Sensor episodes: SENSOR_DRIFT | 16/16 | 16/16 |
+| FDI drift-rule fires | 0/47 | 0/47 |
+| Replay drift-rule fires | 0/67 | 0/67 |
+| Command-injection drift-rule fires | 0/90 | 0/90 |
+| Natural-fault drift-rule fires | 0/495 | 0/495 |
+| Normal drift-rule fires | 0/2,610 | 0/2,610 |
+| Primary Cyber TP/FP/FN/TN | 112/1/92/3,104 | 108/3/96/3,102 |
+
+The decoupling fixes the production model's sensor-drift interception without changing its 28-feature classifier vector. Raw output: `backend/reports/expo/t1_corrected_candidate/t2_decoupled_rule_20261027_v2.json`.
+
+## 2026-10-27 — Local three-scenario demo
+
+The local backend was started with `backend\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000`; `/health`, `/version`, and `/classifier/status` succeeded. A 30-tick run was recorded for each scenario after reset. Results are target-RTU verdicts; exact per-tick rows are in `reports/expo/t2_decoupled_demo_20261027/demo_results.json`.
+
+| Scenario | Target RTU | Per-tick counts |
+|---|---:|---|
+| FDI, RTU-2, 0.72 pu | 2 | Cyber Intrusion 17; Normal 13 |
+| Line trip, line 0 | 2 | Natural Fault 29; Normal 1 |
+| Sensor drift, RTU-1, +8% | 1 | Sensor Malfunction 21; Normal 9 |
+
+Focused drift tests passed 24/24. The full suite passed 314 tests with only the known citation-lint baseline failure; the temporary local server was stopped after the demo. Production SHA remained `EE5211510E41EDDAC32ED1EED405AF982A0A550BD0B75E8867253135B812CCAE`, and both stashes were preserved.

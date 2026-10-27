@@ -1,0 +1,9 @@
+........................                                                 [100%]
+============================== warnings summary ===============================
+backend/tests/test_decoupled_drift_rule.py::test_28_feature_model_drift_rule_rejects_fdi_natural_fault_and_normal
+backend/tests/test_sensor_drift_taxonomy.py::TestClassifierServicePredictionWithDrift::test_predict_returns_sensor_malfunction_verdict
+  C:\Users\K Srisai Kedar\OneDrive\Documents\Projects\GridSentinel - SIH\gridsentinel\backend\.venv\Lib\site-packages\sklearn\utils\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+24 passed, 2 warnings in 6.85s

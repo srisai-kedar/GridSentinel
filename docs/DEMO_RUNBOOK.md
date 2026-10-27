@@ -305,6 +305,39 @@ against the SHA printed during training:
 python -c "import hashlib; h=hashlib.sha256(open('backend/models/fusion_classifier.joblib','rb').read()); print(h.hexdigest()[:8])"
 ```
 
+## 8. Corrected three-scenario verification script
+
+Run this sequence after Render warm-up and preflight. Each scenario is advisory telemetry analysis; none is an attack verdict by itself.
+
+```powershell
+$base = "https://gridsentinel-72tf.onrender.com"
+Invoke-RestMethod "$base/health"
+Invoke-RestMethod "$base/version" | ConvertTo-Json
+Invoke-RestMethod "$base/classifier/status" | ConvertTo-Json
+Invoke-RestMethod "$base/ot/start" -Method Post -Body '{}' -ContentType 'application/json'
+```
+
+Use one-minute spacing between scenarios so the dashboard and the presenter can identify the active condition. For each scenario, inject at `t=0`, collect verdicts at `t=1,2,...,30` seconds, then reset and wait 5 seconds before the next scenario.
+
+| Time | Request | Expected current display |
+|---|---|---|
+| 00:00 | `POST /ot/attack/data-injection` with `{"rtu_id":2,"voltage_pu":0.72,"duration_ticks":20}` | RTU-2 should show the existing physics/network anomaly response; verify the actual subtype rather than promising a fixed label. |
+| 01:00 | `POST /ot/fault/line-trip` with `{"line_index":0}` | The current classifier is expected to show `Natural Fault / physical_fault` when the line-trip residual is classified as a physical fault. |
+| 02:00 | `POST /ot/fault/sensor-drift` with `{"rtu_id":1,"drift_percent":0.08,"duration_ticks":25}` | With the decoupled live-feature rule deployed, RTU-1 should show `Sensor Malfunction / sensor_drift` when the live residual signature is present; record every tick and do not infer unobserved ticks. |
+
+After each 30-second observation:
+
+```powershell
+Invoke-RestMethod "$base/ot/reset" -Method Post -Body '{}' -ContentType 'application/json'
+Start-Sleep -Seconds 5
+```
+
+If a scenario produces a different verdict, record the exact `/version` SHA, `/classifier/status`, request body, tick timestamps, and returned RTU verdicts. Do not rewrite the result as a successful demo.
+
+## 9. Offline replay fallback
+
+If Render is cold, unavailable, or the browser cannot establish the live socket, switch the website to Replay Mode and use `frontend/data/reference-session.json`. Replay is a presentation fallback only; it does not verify the deployed backend, the current model hash, or the corrected drift rule. Keep the recorded live API responses separately when claiming a live demonstration.
+
 ---
 
 *GridSentinel is a Smart India Hackathon 2024 project. This runbook is for internal

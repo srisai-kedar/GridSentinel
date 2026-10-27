@@ -46,8 +46,10 @@ def service_rows(bundle_path: Path, frame: pd.DataFrame) -> tuple[list[str], lis
         else:
             masked = row_values.copy(); masked[cyber_idx] = 0.0
             verdict = classes[int(np.argmax(masked))]
-        feats = {k: float(row.get(k, 0.0)) for k in schema}
-        drift = bool(detect_sensor_drift_signature(feats))
+        # Preserve the complete live feature dictionary for deterministic rules;
+        # only the classifier vector is restricted to the loaded model schema.
+        live_features = {k: float(row.get(k, 0.0)) for k in frame.columns if k not in {"tick", "rtu_id", "top_level_label", "subtype_label"}}
+        drift = bool(detect_sensor_drift_signature(live_features))
         verdicts.append("Sensor Malfunction" if drift else str(verdict))
         drift_fires.append(drift)
     return verdicts, drift_fires
@@ -67,6 +69,19 @@ def grouped_episodes(frame: pd.DataFrame, label: str) -> list[tuple[int, int]]:
 def verdict_counts(frame: pd.DataFrame, verdicts: list[str]) -> dict:
     values = pd.Series(verdicts).replace({"Sensor Malfunction": "SENSOR_DRIFT", "Cyber Intrusion": "CYBER", "Natural Fault": "NATURAL_FAULT", "Normal": "NORMAL"})
     return {k: int((values == k).sum()) for k in ("SENSOR_DRIFT", "CYBER", "NATURAL_FAULT", "NORMAL")}
+
+
+def primary_confusion(frame: pd.DataFrame, verdicts: list[str]) -> dict:
+    """Compute the three-class Cyber confusion counts excluding sensor rows."""
+    actual_cyber = frame.top_level_label.eq("Cyber Intrusion").to_numpy()
+    primary = ~frame.top_level_label.isin(["Cyber Intrusion", "Sensor Malfunction"]).to_numpy()
+    predicted_cyber = np.asarray(verdicts) == "Cyber Intrusion"
+    return {
+        "tp": int((actual_cyber & predicted_cyber).sum()),
+        "fp": int((primary & predicted_cyber).sum()),
+        "fn": int((actual_cyber & ~predicted_cyber).sum()),
+        "tn": int((primary & ~predicted_cyber).sum()),
+    }
 
 
 def episode_verdicts(frame: pd.DataFrame, verdicts: list[str], label: str) -> dict:
@@ -163,7 +178,7 @@ def main(args: argparse.Namespace) -> None:
         prior = max([s for s in starts if s <= row.tick], default=row.tick); onset.append({"tick": int(row.tick), "ticks_since_onset": int(row.tick-prior), "aged_out_30_record_window": bool(row.tick-prior >= 30)})
     ramp_test = np.asarray(cand_rule) & (test.pcd_temporal_dv_dt_3tick.abs().to_numpy() <= selected_ramp["threshold"])
     ramp_fdi_wrong = int((ramp_test & test.subtype_label.eq("data_injection").to_numpy()).sum())
-    result = {"service_path": {"candidate_sensor_rows": verdict_counts(test[drift].reset_index(drop=True), np.asarray(cand_v)[drift.to_numpy()]), "production_sensor_rows": verdict_counts(test[drift].reset_index(drop=True), np.asarray(prod_v)[drift.to_numpy()]), "candidate_sensor_episodes": drift_ep["candidate"], "production_sensor_episodes": drift_ep["production"], "sensor_episode_total": drift_ep["total"], "drift_rule_by_label": rule_by_label}, "physics_signature": physics_summary(test), "improvement_a_ramp": {"validation_choices": ramp_choices, "selected_validation_choice": selected_ramp, "test_base_rule_fires_on_sensor": int(np.asarray(cand_rule)[drift.to_numpy()].sum()), "test_ramp_rule_sensor": int(ramp_test[drift.to_numpy()].sum()), "test_sensor_rows_called_cyber_before": int((np.asarray(cand_v)[drift.to_numpy()] == "Cyber Intrusion").sum()), "test_sensor_rows_called_cyber_after": int(((np.asarray(cand_v)[drift.to_numpy()] == "Cyber Intrusion") & (~ramp_test[drift.to_numpy()])).sum()), "test_fdi_wrongly_labelled_drift": ramp_fdi_wrong, "decision": "isolated diagnostic only; no production rule changed"}, "improvement_b_latch_hold": {"selection_rule": "validation only: maximize episode recall, then minimize sensor-inclusive false-alarm rate, then minimize median delay", "validation_selected": {"k": selected["k"], "n": selected["n"], "m": selected["m"]}, "test_selected": t2["test"], "all_configs": all_configs}, "subtype_episodes": {}, "command_visibility_56_zero_write": {"rows": len(onset), "aged_out_count": int(sum(x["aged_out_30_record_window"] for x in onset)), "not_aged_out_count": int(sum(not x["aged_out_30_record_window"] for x in onset)), "rows": onset}, "subtyper_features": list(joblib.load(args.candidate)["feature_schema"]), "clean_run": {"status": "skipped", "reason": "dataset_generator has no clean-only mode; running it would mix scenarios and require modifying or approximating the generator"}}
+    result = {"service_path": {"candidate_sensor_rows": verdict_counts(test[drift].reset_index(drop=True), np.asarray(cand_v)[drift.to_numpy()]), "production_sensor_rows": verdict_counts(test[drift].reset_index(drop=True), np.asarray(prod_v)[drift.to_numpy()]), "candidate_primary_confusion": primary_confusion(test, cand_v), "production_primary_confusion": primary_confusion(test, prod_v), "candidate_sensor_episodes": drift_ep["candidate"], "production_sensor_episodes": drift_ep["production"], "sensor_episode_total": drift_ep["total"], "drift_rule_by_label": rule_by_label}, "physics_signature": physics_summary(test), "improvement_a_ramp": {"validation_choices": ramp_choices, "selected_validation_choice": selected_ramp, "test_base_rule_fires_on_sensor": int(np.asarray(cand_rule)[drift.to_numpy()].sum()), "test_ramp_rule_sensor": int(ramp_test[drift.to_numpy()].sum()), "test_sensor_rows_called_cyber_before": int((np.asarray(cand_v)[drift.to_numpy()] == "Cyber Intrusion").sum()), "test_sensor_rows_called_cyber_after": int(((np.asarray(cand_v)[drift.to_numpy()] == "Cyber Intrusion") & (~ramp_test[drift.to_numpy()])).sum()), "test_fdi_wrongly_labelled_drift": ramp_fdi_wrong, "decision": "isolated diagnostic only; no production rule changed"}, "improvement_b_latch_hold": {"selection_rule": "validation only: maximize episode recall, then minimize sensor-inclusive false-alarm rate, then minimize median delay", "validation_selected": {"k": selected["k"], "n": selected["n"], "m": selected["m"]}, "test_selected": t2["test"], "all_configs": all_configs}, "subtype_episodes": {}, "command_visibility_56_zero_write": {"rows": len(onset), "aged_out_count": int(sum(x["aged_out_30_record_window"] for x in onset)), "not_aged_out_count": int(sum(not x["aged_out_30_record_window"] for x in onset)), "rows": onset}, "subtyper_features": list(joblib.load(args.candidate)["feature_schema"]), "clean_run": {"status": "skipped", "reason": "dataset_generator has no clean-only mode; running it would mix scenarios and require modifying or approximating the generator"}}
     for subtype in ("data_injection", "replay", "command_injection"):
         mask = test.subtype_label.eq(subtype); sub = test[mask].copy(); sub["alert"] = cand_base[mask.to_numpy()]; result["subtype_episodes"][subtype] = episode_metrics(sub.rename(columns={"top_level_label":"top_level_label"}), sub.alert.to_numpy())
     args.out.write_text(json.dumps(result, indent=2), encoding="utf-8"); print(json.dumps(result, indent=2))

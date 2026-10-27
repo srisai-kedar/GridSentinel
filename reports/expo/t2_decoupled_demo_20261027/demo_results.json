@@ -1,0 +1,895 @@
+[
+  {
+    "scenario": "FDI",
+    "injection": {
+      "status": "injected",
+      "message": "Silent data injection active on RTU-2.",
+      "details": {
+        "status": "injected",
+        "type": "SILENT_DATA_INJECTION",
+        "rtu_id": 2,
+        "overrides": {
+          "voltage_pu": 0.72
+        },
+        "duration_ticks": 20
+      }
+    },
+    "target_rtu": 2,
+    "rows": [
+      {
+        "tick": 1,
+        "timestamp": "2026-10-27T20:02:40.389065+05:30",
+        "rtu_id": 2,
+        "verdict": "Normal",
+        "subtype": "normal",
+        "confidence": 0.796,
+        "model_loaded": true
+      },
+      {
+        "tick": 2,
+        "timestamp": "2026-10-27T20:02:41.542163+05:30",
+        "rtu_id": 2,
+        "verdict": "Cyber Intrusion",
+        "subtype": "data_injection",
+        "confidence": 0.9907,
+        "model_loaded": true
+      },
+      {
+        "tick": 3,
+        "timestamp": "2026-10-27T20:02:42.638502+05:30",
+        "rtu_id": 2,
+        "verdict": "Cyber Intrusion",
+        "subtype": "data_injection",
+        "confidence": 0.9902,
+        "model_loaded": true
+      },
+      {
+        "tick": 4,
+        "timestamp": "2026-10-27T20:02:43.730571+05:30",
+        "rtu_id": 2,
+        "verdict": "Cyber Intrusion",
+        "subtype": "data_injection",
+        "confidence": 0.9906,
+        "model_loaded": true
+      },
+      {
+        "tick": 5,
+        "timestamp": "2026-10-27T20:02:44.830334+05:30",
+        "rtu_id": 2,
+        "verdict": "Cyber Intrusion",
+        "subtype": "data_injection",
+        "confidence": 0.9902,
+        "model_loaded": true
+      },
+      {
+        "tick": 6,
+        "timestamp": "2026-10-27T20:02:45.91467+05:30",
+        "rtu_id": 2,
+        "verdict": "Cyber Intrusion",
+        "subtype": "data_injection",
+        "confidence": 0.9907,
+        "model_loaded": true
+      },
+      {
+        "tick": 7,
+        "timestamp": "2026-10-27T20:02:47.0663+05:30",
+        "rtu_id": 2,
+        "verdict": "Cyber Intrusion",
+        "subtype": "data_injection",
+        "confidence": 0.9911,
+        "model_loaded": true
+      },
+      {
+        "tick": 8,
+        "timestamp": "2026-10-27T20:02:48.232808+05:30",
+        "rtu_id": 2,
+        "verdict": "Cyber Intrusion",
+        "subtype": "data_injection",
+        "confidence": 0.9909,
+        "model_loaded": true
+      },
+      {
+        "tick": 9,
+        "timestamp": "2026-10-27T20:02:49.541178+05:30",
+        "rtu_id": 2,
+        "verdict": "Cyber Intrusion",
+        "subtype": "data_injection",
+        "confidence": 0.9905,
+        "model_loaded": true
+      },
+      {
+        "tick": 10,
+        "timestamp": "2026-10-27T20:02:50.62369+05:30",
+        "rtu_id": 2,
+        "verdict": "Cyber Intrusion",
+        "subtype": "data_injection",
+        "confidence": 0.9907,
+        "model_loaded": true
+      },
+      {
+        "tick": 11,
+        "timestamp": "2026-10-27T20:02:51.707562+05:30",
+        "rtu_id": 2,
+        "verdict": "Cyber Intrusion",
+        "subtype": "data_injection",
+        "confidence": 0.9912,
+        "model_loaded": true
+      },
+      {
+        "tick": 12,
+        "timestamp": "2026-10-27T20:02:52.791825+05:30",
+        "rtu_id": 2,
+        "verdict": "Cyber Intrusion",
+        "subtype": "data_injection",
+        "confidence": 0.9909,
+        "model_loaded": true
+      },
+      {
+        "tick": 13,
+        "timestamp": "2026-10-27T20:02:53.893586+05:30",
+        "rtu_id": 2,
+        "verdict": "Cyber Intrusion",
+        "subtype": "data_injection",
+        "confidence": 0.9909,
+        "model_loaded": true
+      },
+      {
+        "tick": 14,
+        "timestamp": "2026-10-27T20:02:54.978427+05:30",
+        "rtu_id": 2,
+        "verdict": "Cyber Intrusion",
+        "subtype": "data_injection",
+        "confidence": 0.9907,
+        "model_loaded": true
+      },
+      {
+        "tick": 15,
+        "timestamp": "2026-10-27T20:02:56.074725+05:30",
+        "rtu_id": 2,
+        "verdict": "Cyber Intrusion",
+        "subtype": "data_injection",
+        "confidence": 0.9912,
+        "model_loaded": true
+      },
+      {
+        "tick": 16,
+        "timestamp": "2026-10-27T20:02:57.238071+05:30",
+        "rtu_id": 2,
+        "verdict": "Cyber Intrusion",
+        "subtype": "data_injection",
+        "confidence": 0.9912,
+        "model_loaded": true
+      },
+      {
+        "tick": 17,
+        "timestamp": "2026-10-27T20:02:58.305976+05:30",
+        "rtu_id": 2,
+        "verdict": "Cyber Intrusion",
+        "subtype": "data_injection",
+        "confidence": 0.9908,
+        "model_loaded": true
+      },
+      {
+        "tick": 18,
+        "timestamp": "2026-10-27T20:02:59.571562+05:30",
+        "rtu_id": 2,
+        "verdict": "Cyber Intrusion",
+        "subtype": "data_injection",
+        "confidence": 0.9908,
+        "model_loaded": true
+      },
+      {
+        "tick": 19,
+        "timestamp": "2026-10-27T20:03:00.588207+05:30",
+        "rtu_id": 2,
+        "verdict": "Normal",
+        "subtype": "normal",
+        "confidence": 0.7132,
+        "model_loaded": true
+      },
+      {
+        "tick": 20,
+        "timestamp": "2026-10-27T20:03:01.608244+05:30",
+        "rtu_id": 2,
+        "verdict": "Normal",
+        "subtype": "normal",
+        "confidence": 0.8519,
+        "model_loaded": true
+      },
+      {
+        "tick": 21,
+        "timestamp": "2026-10-27T20:03:02.676035+05:30",
+        "rtu_id": 2,
+        "verdict": "Normal",
+        "subtype": "normal",
+        "confidence": 0.8749,
+        "model_loaded": true
+      },
+      {
+        "tick": 22,
+        "timestamp": "2026-10-27T20:03:03.700798+05:30",
+        "rtu_id": 2,
+        "verdict": "Normal",
+        "subtype": "normal",
+        "confidence": 0.8101,
+        "model_loaded": true
+      },
+      {
+        "tick": 23,
+        "timestamp": "2026-10-27T20:03:04.718499+05:30",
+        "rtu_id": 2,
+        "verdict": "Normal",
+        "subtype": "normal",
+        "confidence": 0.9131,
+        "model_loaded": true
+      },
+      {
+        "tick": 24,
+        "timestamp": "2026-10-27T20:03:05.764721+05:30",
+        "rtu_id": 2,
+        "verdict": "Normal",
+        "subtype": "normal",
+        "confidence": 0.8956,
+        "model_loaded": true
+      },
+      {
+        "tick": 25,
+        "timestamp": "2026-10-27T20:03:06.795306+05:30",
+        "rtu_id": 2,
+        "verdict": "Normal",
+        "subtype": "normal",
+        "confidence": 0.9123,
+        "model_loaded": true
+      },
+      {
+        "tick": 26,
+        "timestamp": "2026-10-27T20:03:07.814016+05:30",
+        "rtu_id": 2,
+        "verdict": "Normal",
+        "subtype": "normal",
+        "confidence": 0.9066,
+        "model_loaded": true
+      },
+      {
+        "tick": 27,
+        "timestamp": "2026-10-27T20:03:08.847857+05:30",
+        "rtu_id": 2,
+        "verdict": "Normal",
+        "subtype": "normal",
+        "confidence": 0.9233,
+        "model_loaded": true
+      },
+      {
+        "tick": 28,
+        "timestamp": "2026-10-27T20:03:09.878268+05:30",
+        "rtu_id": 2,
+        "verdict": "Normal",
+        "subtype": "normal",
+        "confidence": 0.9192,
+        "model_loaded": true
+      },
+      {
+        "tick": 29,
+        "timestamp": "2026-10-27T20:03:10.904495+05:30",
+        "rtu_id": 2,
+        "verdict": "Normal",
+        "subtype": "normal",
+        "confidence": 0.9304,
+        "model_loaded": true
+      },
+      {
+        "tick": 30,
+        "timestamp": "2026-10-27T20:03:11.928856+05:30",
+        "rtu_id": 2,
+        "verdict": "Normal",
+        "subtype": "normal",
+        "confidence": 0.9215,
+        "model_loaded": true
+      }
+    ],
+    "counts": [
+      {
+        "verdict": "Cyber Intrusion",
+        "count": 17
+      },
+      {
+        "verdict": "Normal",
+        "count": 13
+      }
+    ]
+  },
+  {
+    "scenario": "LINE_TRIP",
+    "injection": {
+      "status": "triggered",
+      "message": "Physical Line Trip triggered on Line 0.",
+      "details": {
+        "status": "triggered",
+        "type": "LINE_TRIP",
+        "line_index": 0,
+        "line_name": "L0-Sub-A",
+        "in_service": false
+      }
+    },
+    "target_rtu": 2,
+    "rows": [
+      {
+        "tick": 1,
+        "timestamp": "2026-10-27T20:03:17.056212+05:30",
+        "rtu_id": 2,
+        "verdict": "Normal",
+        "subtype": "normal",
+        "confidence": 0.9398,
+        "model_loaded": true
+      },
+      {
+        "tick": 2,
+        "timestamp": "2026-10-27T20:03:18.079222+05:30",
+        "rtu_id": 2,
+        "verdict": "Natural Fault",
+        "subtype": "physical_fault",
+        "confidence": 0.9934,
+        "model_loaded": true
+      },
+      {
+        "tick": 3,
+        "timestamp": "2026-10-27T20:03:19.114821+05:30",
+        "rtu_id": 2,
+        "verdict": "Natural Fault",
+        "subtype": "physical_fault",
+        "confidence": 0.9949,
+        "model_loaded": true
+      },
+      {
+        "tick": 4,
+        "timestamp": "2026-10-27T20:03:20.140193+05:30",
+        "rtu_id": 2,
+        "verdict": "Natural Fault",
+        "subtype": "physical_fault",
+        "confidence": 0.9897,
+        "model_loaded": true
+      },
+      {
+        "tick": 5,
+        "timestamp": "2026-10-27T20:03:21.158745+05:30",
+        "rtu_id": 2,
+        "verdict": "Natural Fault",
+        "subtype": "physical_fault",
+        "confidence": 0.9949,
+        "model_loaded": true
+      },
+      {
+        "tick": 6,
+        "timestamp": "2026-10-27T20:03:22.191385+05:30",
+        "rtu_id": 2,
+        "verdict": "Natural Fault",
+        "subtype": "physical_fault",
+        "confidence": 0.9951,
+        "model_loaded": true
+      },
+      {
+        "tick": 7,
+        "timestamp": "2026-10-27T20:03:23.226544+05:30",
+        "rtu_id": 2,
+        "verdict": "Natural Fault",
+        "subtype": "physical_fault",
+        "confidence": 0.9991,
+        "model_loaded": true
+      },
+      {
+        "tick": 8,
+        "timestamp": "2026-10-27T20:03:24.258091+05:30",
+        "rtu_id": 2,
+        "verdict": "Natural Fault",
+        "subtype": "physical_fault",
+        "confidence": 0.9991,
+        "model_loaded": true
+      },
+      {
+        "tick": 9,
+        "timestamp": "2026-10-27T20:03:25.288402+05:30",
+        "rtu_id": 2,
+        "verdict": "Natural Fault",
+        "subtype": "physical_fault",
+        "confidence": 0.9986,
+        "model_loaded": true
+      },
+      {
+        "tick": 10,
+        "timestamp": "2026-10-27T20:03:26.32541+05:30",
+        "rtu_id": 2,
+        "verdict": "Natural Fault",
+        "subtype": "physical_fault",
+        "confidence": 0.9987,
+        "model_loaded": true
+      },
+      {
+        "tick": 11,
+        "timestamp": "2026-10-27T20:03:27.429479+05:30",
+        "rtu_id": 2,
+        "verdict": "Natural Fault",
+        "subtype": "physical_fault",
+        "confidence": 0.9985,
+        "model_loaded": true
+      },
+      {
+        "tick": 12,
+        "timestamp": "2026-10-27T20:03:28.454414+05:30",
+        "rtu_id": 2,
+        "verdict": "Natural Fault",
+        "subtype": "physical_fault",
+        "confidence": 0.9986,
+        "model_loaded": true
+      },
+      {
+        "tick": 13,
+        "timestamp": "2026-10-27T20:03:29.482336+05:30",
+        "rtu_id": 2,
+        "verdict": "Natural Fault",
+        "subtype": "physical_fault",
+        "confidence": 0.9984,
+        "model_loaded": true
+      },
+      {
+        "tick": 14,
+        "timestamp": "2026-10-27T20:03:30.50584+05:30",
+        "rtu_id": 2,
+        "verdict": "Natural Fault",
+        "subtype": "physical_fault",
+        "confidence": 0.9984,
+        "model_loaded": true
+      },
+      {
+        "tick": 15,
+        "timestamp": "2026-10-27T20:03:31.541259+05:30",
+        "rtu_id": 2,
+        "verdict": "Natural Fault",
+        "subtype": "physical_fault",
+        "confidence": 0.997,
+        "model_loaded": true
+      },
+      {
+        "tick": 16,
+        "timestamp": "2026-10-27T20:03:32.756328+05:30",
+        "rtu_id": 2,
+        "verdict": "Natural Fault",
+        "subtype": "physical_fault",
+        "confidence": 0.9942,
+        "model_loaded": true
+      },
+      {
+        "tick": 17,
+        "timestamp": "2026-10-27T20:03:33.777629+05:30",
+        "rtu_id": 2,
+        "verdict": "Natural Fault",
+        "subtype": "physical_fault",
+        "confidence": 0.9927,
+        "model_loaded": true
+      },
+      {
+        "tick": 18,
+        "timestamp": "2026-10-27T20:03:34.820744+05:30",
+        "rtu_id": 2,
+        "verdict": "Natural Fault",
+        "subtype": "physical_fault",
+        "confidence": 0.9943,
+        "model_loaded": true
+      },
+      {
+        "tick": 19,
+        "timestamp": "2026-10-27T20:03:35.843515+05:30",
+        "rtu_id": 2,
+        "verdict": "Natural Fault",
+        "subtype": "physical_fault",
+        "confidence": 0.9935,
+        "model_loaded": true
+      },
+      {
+        "tick": 20,
+        "timestamp": "2026-10-27T20:03:36.873414+05:30",
+        "rtu_id": 2,
+        "verdict": "Natural Fault",
+        "subtype": "physical_fault",
+        "confidence": 0.995,
+        "model_loaded": true
+      },
+      {
+        "tick": 21,
+        "timestamp": "2026-10-27T20:03:37.900259+05:30",
+        "rtu_id": 2,
+        "verdict": "Natural Fault",
+        "subtype": "physical_fault",
+        "confidence": 0.9933,
+        "model_loaded": true
+      },
+      {
+        "tick": 22,
+        "timestamp": "2026-10-27T20:03:38.917782+05:30",
+        "rtu_id": 2,
+        "verdict": "Natural Fault",
+        "subtype": "physical_fault",
+        "confidence": 0.9937,
+        "model_loaded": true
+      },
+      {
+        "tick": 23,
+        "timestamp": "2026-10-27T20:03:39.956337+05:30",
+        "rtu_id": 2,
+        "verdict": "Natural Fault",
+        "subtype": "physical_fault",
+        "confidence": 0.995,
+        "model_loaded": true
+      },
+      {
+        "tick": 24,
+        "timestamp": "2026-10-27T20:03:40.980062+05:30",
+        "rtu_id": 2,
+        "verdict": "Natural Fault",
+        "subtype": "physical_fault",
+        "confidence": 0.9951,
+        "model_loaded": true
+      },
+      {
+        "tick": 25,
+        "timestamp": "2026-10-27T20:03:41.998857+05:30",
+        "rtu_id": 2,
+        "verdict": "Natural Fault",
+        "subtype": "physical_fault",
+        "confidence": 0.9936,
+        "model_loaded": true
+      },
+      {
+        "tick": 26,
+        "timestamp": "2026-10-27T20:03:43.020774+05:30",
+        "rtu_id": 2,
+        "verdict": "Natural Fault",
+        "subtype": "physical_fault",
+        "confidence": 0.995,
+        "model_loaded": true
+      },
+      {
+        "tick": 27,
+        "timestamp": "2026-10-27T20:03:44.049735+05:30",
+        "rtu_id": 2,
+        "verdict": "Natural Fault",
+        "subtype": "physical_fault",
+        "confidence": 0.995,
+        "model_loaded": true
+      },
+      {
+        "tick": 28,
+        "timestamp": "2026-10-27T20:03:45.07728+05:30",
+        "rtu_id": 2,
+        "verdict": "Natural Fault",
+        "subtype": "physical_fault",
+        "confidence": 0.9983,
+        "model_loaded": true
+      },
+      {
+        "tick": 29,
+        "timestamp": "2026-10-27T20:03:46.096396+05:30",
+        "rtu_id": 2,
+        "verdict": "Natural Fault",
+        "subtype": "physical_fault",
+        "confidence": 0.9978,
+        "model_loaded": true
+      },
+      {
+        "tick": 30,
+        "timestamp": "2026-10-27T20:03:47.121498+05:30",
+        "rtu_id": 2,
+        "verdict": "Natural Fault",
+        "subtype": "physical_fault",
+        "confidence": 0.9943,
+        "model_loaded": true
+      }
+    ],
+    "counts": [
+      {
+        "verdict": "Natural Fault",
+        "count": 29
+      },
+      {
+        "verdict": "Normal",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "scenario": "SENSOR_DRIFT",
+    "injection": {
+      "status": "injected",
+      "message": "Sensor drift (+8.0%) injected on RTU-1 for 25 ticks.",
+      "details": {
+        "status": "injected",
+        "type": "SENSOR_DRIFT",
+        "rtu_id": 1,
+        "drift_percent": 0.08,
+        "duration_ticks": 25
+      }
+    },
+    "target_rtu": 1,
+    "rows": [
+      {
+        "tick": 1,
+        "timestamp": "2026-10-27T20:03:52.169323+05:30",
+        "rtu_id": 1,
+        "verdict": "Normal",
+        "subtype": "normal",
+        "confidence": 0.995,
+        "model_loaded": true
+      },
+      {
+        "tick": 2,
+        "timestamp": "2026-10-27T20:03:53.260386+05:30",
+        "rtu_id": 1,
+        "verdict": "Sensor Malfunction",
+        "subtype": "sensor_drift",
+        "confidence": 0.91,
+        "model_loaded": true
+      },
+      {
+        "tick": 3,
+        "timestamp": "2026-10-27T20:03:54.347225+05:30",
+        "rtu_id": 1,
+        "verdict": "Sensor Malfunction",
+        "subtype": "sensor_drift",
+        "confidence": 0.91,
+        "model_loaded": true
+      },
+      {
+        "tick": 4,
+        "timestamp": "2026-10-27T20:03:55.449652+05:30",
+        "rtu_id": 1,
+        "verdict": "Sensor Malfunction",
+        "subtype": "sensor_drift",
+        "confidence": 0.91,
+        "model_loaded": true
+      },
+      {
+        "tick": 5,
+        "timestamp": "2026-10-27T20:03:56.59256+05:30",
+        "rtu_id": 1,
+        "verdict": "Sensor Malfunction",
+        "subtype": "sensor_drift",
+        "confidence": 0.91,
+        "model_loaded": true
+      },
+      {
+        "tick": 6,
+        "timestamp": "2026-10-27T20:03:57.705789+05:30",
+        "rtu_id": 1,
+        "verdict": "Sensor Malfunction",
+        "subtype": "sensor_drift",
+        "confidence": 0.91,
+        "model_loaded": true
+      },
+      {
+        "tick": 7,
+        "timestamp": "2026-10-27T20:03:58.893271+05:30",
+        "rtu_id": 1,
+        "verdict": "Sensor Malfunction",
+        "subtype": "sensor_drift",
+        "confidence": 0.91,
+        "model_loaded": true
+      },
+      {
+        "tick": 8,
+        "timestamp": "2026-10-27T20:04:00.179027+05:30",
+        "rtu_id": 1,
+        "verdict": "Sensor Malfunction",
+        "subtype": "sensor_drift",
+        "confidence": 0.91,
+        "model_loaded": true
+      },
+      {
+        "tick": 9,
+        "timestamp": "2026-10-27T20:04:01.265649+05:30",
+        "rtu_id": 1,
+        "verdict": "Sensor Malfunction",
+        "subtype": "sensor_drift",
+        "confidence": 0.91,
+        "model_loaded": true
+      },
+      {
+        "tick": 10,
+        "timestamp": "2026-10-27T20:04:02.351351+05:30",
+        "rtu_id": 1,
+        "verdict": "Sensor Malfunction",
+        "subtype": "sensor_drift",
+        "confidence": 0.91,
+        "model_loaded": true
+      },
+      {
+        "tick": 11,
+        "timestamp": "2026-10-27T20:04:03.46629+05:30",
+        "rtu_id": 1,
+        "verdict": "Sensor Malfunction",
+        "subtype": "sensor_drift",
+        "confidence": 0.91,
+        "model_loaded": true
+      },
+      {
+        "tick": 12,
+        "timestamp": "2026-10-27T20:04:04.549614+05:30",
+        "rtu_id": 1,
+        "verdict": "Sensor Malfunction",
+        "subtype": "sensor_drift",
+        "confidence": 0.91,
+        "model_loaded": true
+      },
+      {
+        "tick": 13,
+        "timestamp": "2026-10-27T20:04:05.69926+05:30",
+        "rtu_id": 1,
+        "verdict": "Sensor Malfunction",
+        "subtype": "sensor_drift",
+        "confidence": 0.91,
+        "model_loaded": true
+      },
+      {
+        "tick": 14,
+        "timestamp": "2026-10-27T20:04:06.793861+05:30",
+        "rtu_id": 1,
+        "verdict": "Sensor Malfunction",
+        "subtype": "sensor_drift",
+        "confidence": 0.91,
+        "model_loaded": true
+      },
+      {
+        "tick": 15,
+        "timestamp": "2026-10-27T20:04:07.993928+05:30",
+        "rtu_id": 1,
+        "verdict": "Sensor Malfunction",
+        "subtype": "sensor_drift",
+        "confidence": 0.91,
+        "model_loaded": true
+      },
+      {
+        "tick": 16,
+        "timestamp": "2026-10-27T20:04:09.305125+05:30",
+        "rtu_id": 1,
+        "verdict": "Sensor Malfunction",
+        "subtype": "sensor_drift",
+        "confidence": 0.91,
+        "model_loaded": true
+      },
+      {
+        "tick": 17,
+        "timestamp": "2026-10-27T20:04:10.400559+05:30",
+        "rtu_id": 1,
+        "verdict": "Sensor Malfunction",
+        "subtype": "sensor_drift",
+        "confidence": 0.91,
+        "model_loaded": true
+      },
+      {
+        "tick": 18,
+        "timestamp": "2026-10-27T20:04:11.502278+05:30",
+        "rtu_id": 1,
+        "verdict": "Sensor Malfunction",
+        "subtype": "sensor_drift",
+        "confidence": 0.91,
+        "model_loaded": true
+      },
+      {
+        "tick": 19,
+        "timestamp": "2026-10-27T20:04:12.591372+05:30",
+        "rtu_id": 1,
+        "verdict": "Sensor Malfunction",
+        "subtype": "sensor_drift",
+        "confidence": 0.91,
+        "model_loaded": true
+      },
+      {
+        "tick": 20,
+        "timestamp": "2026-10-27T20:04:13.735464+05:30",
+        "rtu_id": 1,
+        "verdict": "Sensor Malfunction",
+        "subtype": "sensor_drift",
+        "confidence": 0.91,
+        "model_loaded": true
+      },
+      {
+        "tick": 21,
+        "timestamp": "2026-10-27T20:04:14.835515+05:30",
+        "rtu_id": 1,
+        "verdict": "Sensor Malfunction",
+        "subtype": "sensor_drift",
+        "confidence": 0.91,
+        "model_loaded": true
+      },
+      {
+        "tick": 22,
+        "timestamp": "2026-10-27T20:04:16.097471+05:30",
+        "rtu_id": 1,
+        "verdict": "Sensor Malfunction",
+        "subtype": "sensor_drift",
+        "confidence": 0.91,
+        "model_loaded": true
+      },
+      {
+        "tick": 23,
+        "timestamp": "2026-10-27T20:04:17.235618+05:30",
+        "rtu_id": 1,
+        "verdict": "Normal",
+        "subtype": "normal",
+        "confidence": 0.992,
+        "model_loaded": true
+      },
+      {
+        "tick": 24,
+        "timestamp": "2026-10-27T20:04:18.255104+05:30",
+        "rtu_id": 1,
+        "verdict": "Normal",
+        "subtype": "normal",
+        "confidence": 0.9851,
+        "model_loaded": true
+      },
+      {
+        "tick": 25,
+        "timestamp": "2026-10-27T20:04:19.274422+05:30",
+        "rtu_id": 1,
+        "verdict": "Normal",
+        "subtype": "normal",
+        "confidence": 0.9866,
+        "model_loaded": true
+      },
+      {
+        "tick": 26,
+        "timestamp": "2026-10-27T20:04:20.29346+05:30",
+        "rtu_id": 1,
+        "verdict": "Normal",
+        "subtype": "normal",
+        "confidence": 0.9826,
+        "model_loaded": true
+      },
+      {
+        "tick": 27,
+        "timestamp": "2026-10-27T20:04:21.321684+05:30",
+        "rtu_id": 1,
+        "verdict": "Normal",
+        "subtype": "normal",
+        "confidence": 0.9024,
+        "model_loaded": true
+      },
+      {
+        "tick": 28,
+        "timestamp": "2026-10-27T20:04:22.346184+05:30",
+        "rtu_id": 1,
+        "verdict": "Normal",
+        "subtype": "normal",
+        "confidence": 0.9808,
+        "model_loaded": true
+      },
+      {
+        "tick": 29,
+        "timestamp": "2026-10-27T20:04:23.376834+05:30",
+        "rtu_id": 1,
+        "verdict": "Normal",
+        "subtype": "normal",
+        "confidence": 0.991,
+        "model_loaded": true
+      },
+      {
+        "tick": 30,
+        "timestamp": "2026-10-27T20:04:24.402048+05:30",
+        "rtu_id": 1,
+        "verdict": "Normal",
+        "subtype": "normal",
+        "confidence": 0.9933,
+        "model_loaded": true
+      }
+    ],
+    "counts": [
+      {
+        "verdict": "Normal",
+        "count": 9
+      },
+      {
+        "verdict": "Sensor Malfunction",
+        "count": 21
+      }
+    ]
+  }
+]

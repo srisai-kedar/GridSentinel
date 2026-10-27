@@ -1,0 +1,105 @@
+TICKS=FDI
+
+tick verdict         subtype        confidence
+---- -------         -------        ----------
+   1 Normal          normal               0.80
+   2 Cyber Intrusion data_injection       0.99
+   3 Cyber Intrusion data_injection       0.99
+   4 Cyber Intrusion data_injection       0.99
+   5 Cyber Intrusion data_injection       0.99
+   6 Cyber Intrusion data_injection       0.99
+   7 Cyber Intrusion data_injection       0.99
+   8 Cyber Intrusion data_injection       0.99
+   9 Cyber Intrusion data_injection       0.99
+  10 Cyber Intrusion data_injection       0.99
+  11 Cyber Intrusion data_injection       0.99
+  12 Cyber Intrusion data_injection       0.99
+  13 Cyber Intrusion data_injection       0.99
+  14 Cyber Intrusion data_injection       0.99
+  15 Cyber Intrusion data_injection       0.99
+  16 Cyber Intrusion data_injection       0.99
+  17 Cyber Intrusion data_injection       0.99
+  18 Cyber Intrusion data_injection       0.99
+  19 Normal          normal               0.71
+  20 Normal          normal               0.85
+  21 Normal          normal               0.87
+  22 Normal          normal               0.81
+  23 Normal          normal               0.91
+  24 Normal          normal               0.90
+  25 Normal          normal               0.91
+  26 Normal          normal               0.91
+  27 Normal          normal               0.92
+  28 Normal          normal               0.92
+  29 Normal          normal               0.93
+  30 Normal          normal               0.92
+
+TICKS=LINE_TRIP
+
+tick verdict       subtype        confidence
+---- -------       -------        ----------
+   1 Normal        normal               0.94
+   2 Natural Fault physical_fault       0.99
+   3 Natural Fault physical_fault       0.99
+   4 Natural Fault physical_fault       0.99
+   5 Natural Fault physical_fault       0.99
+   6 Natural Fault physical_fault       1.00
+   7 Natural Fault physical_fault       1.00
+   8 Natural Fault physical_fault       1.00
+   9 Natural Fault physical_fault       1.00
+  10 Natural Fault physical_fault       1.00
+  11 Natural Fault physical_fault       1.00
+  12 Natural Fault physical_fault       1.00
+  13 Natural Fault physical_fault       1.00
+  14 Natural Fault physical_fault       1.00
+  15 Natural Fault physical_fault       1.00
+  16 Natural Fault physical_fault       0.99
+  17 Natural Fault physical_fault       0.99
+  18 Natural Fault physical_fault       0.99
+  19 Natural Fault physical_fault       0.99
+  20 Natural Fault physical_fault       0.99
+  21 Natural Fault physical_fault       0.99
+  22 Natural Fault physical_fault       0.99
+  23 Natural Fault physical_fault       0.99
+  24 Natural Fault physical_fault       1.00
+  25 Natural Fault physical_fault       0.99
+  26 Natural Fault physical_fault       0.99
+  27 Natural Fault physical_fault       0.99
+  28 Natural Fault physical_fault       1.00
+  29 Natural Fault physical_fault       1.00
+  30 Natural Fault physical_fault       0.99
+
+TICKS=SENSOR_DRIFT
+
+tick verdict            subtype      confidence
+---- -------            -------      ----------
+   1 Normal             normal             0.99
+   2 Sensor Malfunction sensor_drift       0.91
+   3 Sensor Malfunction sensor_drift       0.91
+   4 Sensor Malfunction sensor_drift       0.91
+   5 Sensor Malfunction sensor_drift       0.91
+   6 Sensor Malfunction sensor_drift       0.91
+   7 Sensor Malfunction sensor_drift       0.91
+   8 Sensor Malfunction sensor_drift       0.91
+   9 Sensor Malfunction sensor_drift       0.91
+  10 Sensor Malfunction sensor_drift       0.91
+  11 Sensor Malfunction sensor_drift       0.91
+  12 Sensor Malfunction sensor_drift       0.91
+  13 Sensor Malfunction sensor_drift       0.91
+  14 Sensor Malfunction sensor_drift       0.91
+  15 Sensor Malfunction sensor_drift       0.91
+  16 Sensor Malfunction sensor_drift       0.91
+  17 Sensor Malfunction sensor_drift       0.91
+  18 Sensor Malfunction sensor_drift       0.91
+  19 Sensor Malfunction sensor_drift       0.91
+  20 Sensor Malfunction sensor_drift       0.91
+  21 Sensor Malfunction sensor_drift       0.91
+  22 Sensor Malfunction sensor_drift       0.91
+  23 Normal             normal             0.99
+  24 Normal             normal             0.99
+  25 Normal             normal             0.99
+  26 Normal             normal             0.98
+  27 Normal             normal             0.90
+  28 Normal             normal             0.98
+  29 Normal             normal             0.99
+  30 Normal             normal             0.99
+
