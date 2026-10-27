@@ -1,0 +1,474 @@
+{
+  "timestamp": "2026-10-27T09:15:53.519310+00:00",
+  "model_selected": "RandomForest",
+  "decision_threshold": 0.25,
+  "selection_rule": "Gated on latency <= 50.0 ms, prioritized by validation Cyber F2 (beta=2), with tie-breakers on validation Cyber F1 and Cyber Recall. Validation data only.",
+  "selection_rationale": "Selected RandomForest with highest validation Cyber F2=0.5828 (F1=0.6635, latency=34.33ms) among 3 latency-eligible candidate(s).",
+  "validation_results": {
+    "selection_rule": "Gated on latency <= 50.0 ms, prioritized by validation Cyber F2 (beta=2), with tie-breakers on validation Cyber F1 and Cyber Recall. Validation data only.",
+    "selected_model": "RandomForest",
+    "selected_threshold": 0.25,
+    "selection_rationale": "Selected RandomForest with highest validation Cyber F2=0.5828 (F1=0.6635, latency=34.33ms) among 3 latency-eligible candidate(s).",
+    "latency_budget_ms": 50.0,
+    "candidates": {
+      "RandomForest": {
+        "fit_time_s": 0.73,
+        "latency": {
+          "median_ms": 34.327,
+          "p95_ms": 40.362,
+          "mean_ms": 35.026
+        },
+        "latency_ms": 34.327,
+        "latency_median_ms": 34.327,
+        "latency_p95_ms": 40.362,
+        "latency_within_50ms": true,
+        "best_threshold": 0.25,
+        "val_cyber_f2": 0.5828,
+        "val_cyber_f1": 0.6635,
+        "val_cyber_recall": 0.5391,
+        "val_cyber_precision": 0.8625,
+        "val_cyber_fpr": 0.0034,
+        "val_accuracy": 0.9157,
+        "val_cyber_tp": 69,
+        "val_cyber_fn": 59,
+        "val_cyber_fp": 11,
+        "val_cyber_tn": 3183
+      },
+      "LightGBM": {
+        "fit_time_s": 2.33,
+        "latency": {
+          "median_ms": 2.272,
+          "p95_ms": 2.644,
+          "mean_ms": 2.347
+        },
+        "latency_ms": 2.272,
+        "latency_median_ms": 2.272,
+        "latency_p95_ms": 2.644,
+        "latency_within_50ms": true,
+        "best_threshold": 0.66,
+        "val_cyber_f2": 0.5707,
+        "val_cyber_f1": 0.6601,
+        "val_cyber_recall": 0.5234,
+        "val_cyber_precision": 0.8933,
+        "val_cyber_fpr": 0.0025,
+        "val_accuracy": 0.9259,
+        "val_cyber_tp": 67,
+        "val_cyber_fn": 61,
+        "val_cyber_fp": 8,
+        "val_cyber_tn": 3186
+      },
+      "XGBoost": {
+        "fit_time_s": 1.31,
+        "latency": {
+          "median_ms": 2.5,
+          "p95_ms": 3.054,
+          "mean_ms": 2.531
+        },
+        "latency_ms": 2.5,
+        "latency_median_ms": 2.5,
+        "latency_p95_ms": 3.054,
+        "latency_within_50ms": true,
+        "best_threshold": 0.69,
+        "val_cyber_f2": 0.5746,
+        "val_cyber_f1": 0.6734,
+        "val_cyber_recall": 0.5234,
+        "val_cyber_precision": 0.9437,
+        "val_cyber_fpr": 0.0013,
+        "val_accuracy": 0.9202,
+        "val_cyber_tp": 67,
+        "val_cyber_fn": 61,
+        "val_cyber_fp": 4,
+        "val_cyber_tn": 3190
+      }
+    }
+  },
+  "held_out_test_results": {
+    "dataset_path": "reports/expo/appendix_b_probe/nbd_fixed_test_seed1337.csv",
+    "decision_threshold_frozen": 0.25,
+    "overall_accuracy": 0.9495,
+    "cyber_intrusion_recall": 0.549,
+    "cyber_intrusion_precision": 0.9912,
+    "cyber_intrusion_tp": 112,
+    "cyber_intrusion_fn": 92,
+    "cyber_intrusion_total": 204,
+    "cyber_intrusion_fpr": 0.0003,
+    "cyber_f1_score": 0.7066,
+    "cyber_f2_score": 0.6028,
+    "cyber_subtype_accuracy": 0.6765,
+    "latency": {
+      "median_ms": 32.696,
+      "p95_ms": 43.283,
+      "mean_ms": 34.232
+    },
+    "latency_ms_per_verdict": 32.696,
+    "latency_p95_ms": 43.283,
+    "latency_within_50ms": true,
+    "confusion_matrix": [
+      [
+        112,
+        2,
+        90
+      ],
+      [
+        0,
+        429,
+        66
+      ],
+      [
+        1,
+        8,
+        2601
+      ]
+    ],
+    "classification_report": {
+      "Cyber Intrusion": {
+        "precision": 0.9911504424778761,
+        "recall": 0.5490196078431373,
+        "f1-score": 0.7066246056782335,
+        "support": 204.0
+      },
+      "Natural Fault": {
+        "precision": 0.9772209567198178,
+        "recall": 0.8666666666666667,
+        "f1-score": 0.9186295503211992,
+        "support": 495.0
+      },
+      "Normal": {
+        "precision": 0.9434167573449401,
+        "recall": 0.996551724137931,
+        "f1-score": 0.9692565679150363,
+        "support": 2610.0
+      },
+      "accuracy": 0.9495315805379269,
+      "macro avg": {
+        "precision": 0.970596052180878,
+        "recall": 0.8040793328825783,
+        "f1-score": 0.8648369079714896,
+        "support": 3309.0
+      },
+      "weighted avg": {
+        "precision": 0.9514163797256242,
+        "recall": 0.9495315805379269,
+        "f1-score": 0.9454918976203076,
+        "support": 3309.0
+      }
+    },
+    "sensor_drift_evaluation": {
+      "n_samples": 191,
+      "primary_model_verdicts": {
+        "Cyber Intrusion": 129,
+        "Normal": 37,
+        "Natural Fault": 25
+      },
+      "primary_model_cyber_fp_count": 129,
+      "primary_model_cyber_fpr": 0.6754,
+      "dedicated_pathway_intercepted": 119,
+      "dedicated_pathway_recall": 0.623
+    }
+  },
+  "overall_accuracy": 0.9495,
+  "cyber_intrusion_recall": 0.549,
+  "cyber_intrusion_tp": 112,
+  "cyber_intrusion_total": 204,
+  "cyber_intrusion_fpr": 0.0003,
+  "cyber_f2_score": 0.6028,
+  "cyber_subtype_accuracy": 0.6765,
+  "latency_ms_per_verdict": 32.696,
+  "latency_within_50ms": true,
+  "classes": [
+    "Cyber Intrusion",
+    "Natural Fault",
+    "Normal"
+  ],
+  "confusion_matrix": [
+    [
+      112,
+      2,
+      90
+    ],
+    [
+      0,
+      429,
+      66
+    ],
+    [
+      1,
+      8,
+      2601
+    ]
+  ],
+  "classification_report": {
+    "Cyber Intrusion": {
+      "precision": 0.9911504424778761,
+      "recall": 0.5490196078431373,
+      "f1-score": 0.7066246056782335,
+      "support": 204.0
+    },
+    "Natural Fault": {
+      "precision": 0.9772209567198178,
+      "recall": 0.8666666666666667,
+      "f1-score": 0.9186295503211992,
+      "support": 495.0
+    },
+    "Normal": {
+      "precision": 0.9434167573449401,
+      "recall": 0.996551724137931,
+      "f1-score": 0.9692565679150363,
+      "support": 2610.0
+    },
+    "accuracy": 0.9495315805379269,
+    "macro avg": {
+      "precision": 0.970596052180878,
+      "recall": 0.8040793328825783,
+      "f1-score": 0.8648369079714896,
+      "support": 3309.0
+    },
+    "weighted avg": {
+      "precision": 0.9514163797256242,
+      "recall": 0.9495315805379269,
+      "f1-score": 0.9454918976203076,
+      "support": 3309.0
+    }
+  },
+  "train_samples_count": 7500,
+  "train_primary_samples_count": 7182,
+  "test_samples_count": 3500,
+  "test_primary_samples_count": 3309,
+  "val_samples_count": 3500,
+  "val_primary_samples_count": 3322,
+  "feature_schema_version": "2.1.0",
+  "feature_count": 37,
+  "model_comparison": {
+    "RandomForest": {
+      "fit_time_s": 0.73,
+      "latency": {
+        "median_ms": 34.327,
+        "p95_ms": 40.362,
+        "mean_ms": 35.026
+      },
+      "latency_ms": 34.327,
+      "latency_median_ms": 34.327,
+      "latency_p95_ms": 40.362,
+      "latency_within_50ms": true,
+      "best_threshold": 0.25,
+      "val_cyber_f2": 0.5828,
+      "val_cyber_f1": 0.6635,
+      "val_cyber_recall": 0.5391,
+      "val_cyber_precision": 0.8625,
+      "val_cyber_fpr": 0.0034,
+      "val_accuracy": 0.9157,
+      "val_cyber_tp": 69,
+      "val_cyber_fn": 59,
+      "val_cyber_fp": 11,
+      "val_cyber_tn": 3183
+    },
+    "LightGBM": {
+      "fit_time_s": 2.33,
+      "latency": {
+        "median_ms": 2.272,
+        "p95_ms": 2.644,
+        "mean_ms": 2.347
+      },
+      "latency_ms": 2.272,
+      "latency_median_ms": 2.272,
+      "latency_p95_ms": 2.644,
+      "latency_within_50ms": true,
+      "best_threshold": 0.66,
+      "val_cyber_f2": 0.5707,
+      "val_cyber_f1": 0.6601,
+      "val_cyber_recall": 0.5234,
+      "val_cyber_precision": 0.8933,
+      "val_cyber_fpr": 0.0025,
+      "val_accuracy": 0.9259,
+      "val_cyber_tp": 67,
+      "val_cyber_fn": 61,
+      "val_cyber_fp": 8,
+      "val_cyber_tn": 3186
+    },
+    "XGBoost": {
+      "fit_time_s": 1.31,
+      "latency": {
+        "median_ms": 2.5,
+        "p95_ms": 3.054,
+        "mean_ms": 2.531
+      },
+      "latency_ms": 2.5,
+      "latency_median_ms": 2.5,
+      "latency_p95_ms": 3.054,
+      "latency_within_50ms": true,
+      "best_threshold": 0.69,
+      "val_cyber_f2": 0.5746,
+      "val_cyber_f1": 0.6734,
+      "val_cyber_recall": 0.5234,
+      "val_cyber_precision": 0.9437,
+      "val_cyber_fpr": 0.0013,
+      "val_accuracy": 0.9202,
+      "val_cyber_tp": 67,
+      "val_cyber_fn": 61,
+      "val_cyber_fp": 4,
+      "val_cyber_tn": 3190
+    }
+  },
+  "feature_importances": [
+    {
+      "feature": "pcd_voltage_pu_reported",
+      "importance": 0.105922
+    },
+    {
+      "feature": "pcd_temporal_dv_dt_3tick",
+      "importance": 0.100886
+    },
+    {
+      "feature": "pcd_voltage_dev_nominal",
+      "importance": 0.09803
+    },
+    {
+      "feature": "pcd_cross_rtu_voltage_divergence",
+      "importance": 0.076321
+    },
+    {
+      "feature": "pcd_resid_rtu_share",
+      "importance": 0.049193
+    },
+    {
+      "feature": "pcd_chi2_statistic",
+      "importance": 0.048399
+    },
+    {
+      "feature": "pcd_p_mw_reported",
+      "importance": 0.047506
+    },
+    {
+      "feature": "pcd_chi2_ratio",
+      "importance": 0.046332
+    },
+    {
+      "feature": "pcd_temporal_dq_dt_3tick",
+      "importance": 0.041908
+    },
+    {
+      "feature": "pcd_resid_jump",
+      "importance": 0.041504
+    },
+    {
+      "feature": "pcd_temporal_dp_dt_3tick",
+      "importance": 0.040787
+    },
+    {
+      "feature": "nbd_std_response_time_ms",
+      "importance": 0.034484
+    },
+    {
+      "feature": "pcd_physics_network_disagreement_index",
+      "importance": 0.033886
+    },
+    {
+      "feature": "pcd_resid_concentration",
+      "importance": 0.03291
+    },
+    {
+      "feature": "nbd_mean_response_time_ms",
+      "importance": 0.030793
+    },
+    {
+      "feature": "dpn_legacy",
+      "importance": 0.029829
+    },
+    {
+      "feature": "dpn_ing_delta",
+      "importance": 0.027549
+    },
+    {
+      "feature": "pcd_is_target_rtu_max_lnr",
+      "importance": 0.024976
+    },
+    {
+      "feature": "pcd_target_rtu_v_residual",
+      "importance": 0.019703
+    },
+    {
+      "feature": "dpn_ing_resid",
+      "importance": 0.011486
+    },
+    {
+      "feature": "pcd_max_lnr",
+      "importance": 0.007409
+    },
+    {
+      "feature": "pcd_resid_breadth_frac",
+      "importance": 0.006668
+    },
+    {
+      "feature": "pcd_resid_breadth_count",
+      "importance": 0.006607
+    },
+    {
+      "feature": "pcd_status_code",
+      "importance": 0.005708
+    },
+    {
+      "feature": "nbd_unexpected_write_count",
+      "importance": 0.005099
+    },
+    {
+      "feature": "pcd_target_rtu_is_flagged",
+      "importance": 0.004804
+    },
+    {
+      "feature": "nbd_modbus_anomaly_rate",
+      "importance": 0.004705
+    },
+    {
+      "feature": "pcd_global_bad_data_flag",
+      "importance": 0.004099
+    },
+    {
+      "feature": "nbd_fc6_write_count",
+      "importance": 0.003845
+    },
+    {
+      "feature": "nbd_traffic_volume",
+      "importance": 0.003375
+    },
+    {
+      "feature": "pcd_resid_persist",
+      "importance": 0.00311
+    },
+    {
+      "feature": "pcd_chi2_failed",
+      "importance": 0.002102
+    },
+    {
+      "feature": "nbd_fc3_read_count",
+      "importance": 4.9e-05
+    },
+    {
+      "feature": "pcd_target_rtu_p_residual",
+      "importance": 1.5e-05
+    },
+    {
+      "feature": "nbd_distinct_sources_count",
+      "importance": 0.0
+    },
+    {
+      "feature": "nbd_fc16_write_count",
+      "importance": 0.0
+    },
+    {
+      "feature": "nbd_error_count",
+      "importance": 0.0
+    }
+  ],
+  "sensor_drift_evaluation": {
+    "n_samples": 191,
+    "primary_model_verdicts": {
+      "Cyber Intrusion": 129,
+      "Normal": 37,
+      "Natural Fault": 25
+    },
+    "primary_model_cyber_fp_count": 129,
+    "primary_model_cyber_fpr": 0.6754,
+    "dedicated_pathway_intercepted": 119,
+    "dedicated_pathway_recall": 0.623
+  }
+}

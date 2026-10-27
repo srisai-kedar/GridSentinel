@@ -554,12 +554,16 @@ class ClassifierService:
             return self._heuristic_fallback(features)
 
         try:
-            # Build strictly ordered feature vector matching bundle schema if present
+            # Keep the live feature dictionary separate from the classifier vector.
+            # The loaded model may intentionally use an older schema (for example,
+            # the frozen 28-feature production bundle), while deterministic rules
+            # must still see every feature computed by feature_engineering.py.
+            live_features = features
             feature_cols = self.bundle.get("feature_schema", FEATURE_SCHEMA) if self.bundle else FEATURE_SCHEMA
-            vector = np.array([[float(features.get(k, 0.0)) for k in feature_cols]])
+            model_vector = np.array([[float(live_features.get(k, 0.0)) for k in feature_cols]])
 
             # Stage 1: Primary Triage (with tuned threshold)
-            proba = self.top_model.predict_proba(vector)[0]
+            proba = self.top_model.predict_proba(model_vector)[0]
             raw_top_classes = list(self.top_model.classes_)
             # Ensure top_classes are string names
             label_map = {0: "Cyber Intrusion", 1: "Natural Fault", 2: "Normal", 3: "Sensor Malfunction"}
@@ -590,7 +594,7 @@ class ClassifierService:
             # Stage 2: Forensic Subtyping if Cyber Intrusion
             subtype: Optional[str] = None
             if verdict == "Cyber Intrusion" and self.subtype_model is not None:
-                sub_proba = self.subtype_model.predict_proba(vector)[0]
+                sub_proba = self.subtype_model.predict_proba(model_vector)[0]
                 sub_classes = list(self.subtype_model.classes_)
                 sub_idx = int(np.argmax(sub_proba))
                 subtype = sub_classes[sub_idx]
@@ -605,7 +609,7 @@ class ClassifierService:
             # Intercept for SENSOR MALFUNCTION / DRIFT when single-sensor drift telemetry
             # signatures are present (neutralizing the judge trap: "Is your system
             # confusing a broken sensor wire with an active cyber attack?"):
-            has_sensor_drift_sig = detect_sensor_drift_signature(features)
+            has_sensor_drift_sig = detect_sensor_drift_signature(live_features)
 
             if has_sensor_drift_sig:
                 verdict = VerdictLabel("Sensor Malfunction")

@@ -1,0 +1,1011 @@
+{
+  "service_path": {
+    "candidate_sensor_rows": {
+      "SENSOR_DRIFT": 119,
+      "CYBER": 10,
+      "NATURAL_FAULT": 25,
+      "NORMAL": 37
+    },
+    "production_sensor_rows": {
+      "SENSOR_DRIFT": 0,
+      "CYBER": 118,
+      "NATURAL_FAULT": 36,
+      "NORMAL": 37
+    },
+    "candidate_sensor_episodes": {
+      "SENSOR_DRIFT": 16,
+      "CYBER": 0,
+      "NATURAL_FAULT": 0,
+      "NORMAL": 0
+    },
+    "production_sensor_episodes": {
+      "SENSOR_DRIFT": 0,
+      "CYBER": 15,
+      "NATURAL_FAULT": 1,
+      "NORMAL": 0
+    },
+    "sensor_episode_total": 16,
+    "drift_rule_by_label": {
+      "sensor_drift": {
+        "fires": 119,
+        "total": 191,
+        "interval": {
+          "success": 119,
+          "total": 191,
+          "estimate": 0.6230366492146597,
+          "low": 0.552519908315135,
+          "high": 0.688701853646997
+        }
+      },
+      "fdi": {
+        "fires": 0,
+        "total": 47,
+        "interval": {
+          "success": 0,
+          "total": 47,
+          "estimate": 0.0,
+          "low": -6.938893903907228e-18,
+          "high": 0.07555760416399632
+        }
+      },
+      "replay": {
+        "fires": 0,
+        "total": 67,
+        "interval": {
+          "success": 0,
+          "total": 67,
+          "estimate": 0.0,
+          "low": 0.0,
+          "high": 0.05422613939130178
+        }
+      },
+      "command_injection": {
+        "fires": 0,
+        "total": 90,
+        "interval": {
+          "success": 0,
+          "total": 90,
+          "estimate": 0.0,
+          "low": 0.0,
+          "high": 0.04093562556432678
+        }
+      },
+      "natural_fault": {
+        "fires": 0,
+        "total": 495,
+        "interval": {
+          "success": 0,
+          "total": 495,
+          "estimate": 0.0,
+          "low": 0.0,
+          "high": 0.007700760938707215
+        }
+      },
+      "normal": {
+        "fires": 0,
+        "total": 2610,
+        "interval": {
+          "success": 0,
+          "total": 2610,
+          "estimate": 0.0,
+          "low": -1.0842021724855044e-19,
+          "high": 0.0014696602227846308
+        }
+      }
+    }
+  },
+  "physics_signature": {
+    "sensor_drift": {
+      "pcd_resid_concentration": {
+        "n": 191,
+        "median": 0.9105,
+        "p90": 0.9123,
+        "mean": 0.8379612565445026
+      },
+      "pcd_temporal_dv_dt_3tick": {
+        "n": 191,
+        "median": 0.0019,
+        "p90": 0.03905,
+        "mean": 0.018190575916230366
+      },
+      "pcd_voltage_dev_nominal": {
+        "n": 191,
+        "median": 0.0583,
+        "p90": 0.1081,
+        "mean": 0.0662738219895288
+      },
+      "pcd_max_lnr": {
+        "n": 191,
+        "median": 16.6877,
+        "p90": 21.9899,
+        "mean": 12.290175916230364
+      },
+      "nbd_traffic_volume": {
+        "n": 191,
+        "median": 6.0,
+        "p90": 6.0,
+        "mean": 5.958115183246074
+      },
+      "nbd_modbus_anomaly_rate": {
+        "n": 191,
+        "median": 0.0,
+        "p90": 0.0,
+        "mean": 0.0
+      }
+    },
+    "fdi": {
+      "pcd_resid_concentration": {
+        "n": 47,
+        "median": 0.9124,
+        "p90": 0.9136,
+        "mean": 0.82966170212766
+      },
+      "pcd_temporal_dv_dt_3tick": {
+        "n": 47,
+        "median": 0.0555,
+        "p90": 0.09242,
+        "mean": 0.04243404255319149
+      },
+      "pcd_voltage_dev_nominal": {
+        "n": 47,
+        "median": 0.1583,
+        "p90": 0.2463,
+        "mean": 0.12973617021276598
+      },
+      "pcd_max_lnr": {
+        "n": 47,
+        "median": 41.1767,
+        "p90": 57.76886,
+        "mean": 27.951565957446803
+      },
+      "nbd_traffic_volume": {
+        "n": 47,
+        "median": 6.0,
+        "p90": 6.0,
+        "mean": 6.0
+      },
+      "nbd_modbus_anomaly_rate": {
+        "n": 47,
+        "median": 0.0,
+        "p90": 0.0,
+        "mean": 0.0
+      }
+    }
+  },
+  "improvement_a_ramp": {
+    "validation_choices": [
+      {
+        "threshold": 5e-05,
+        "sensor_recall": 0.02247191011235955,
+        "fdi_wrong_drift": 0.0,
+        "fdi_detection_preserved": 1.0
+      },
+      {
+        "threshold": 0.00015,
+        "sensor_recall": 0.056179775280898875,
+        "fdi_wrong_drift": 0.0,
+        "fdi_detection_preserved": 1.0
+      },
+      {
+        "threshold": 0.0003,
+        "sensor_recall": 0.09550561797752809,
+        "fdi_wrong_drift": 0.0,
+        "fdi_detection_preserved": 1.0
+      },
+      {
+        "threshold": 0.0004,
+        "sensor_recall": 0.10674157303370786,
+        "fdi_wrong_drift": 0.0,
+        "fdi_detection_preserved": 1.0
+      },
+      {
+        "threshold": 0.00055,
+        "sensor_recall": 0.12359550561797752,
+        "fdi_wrong_drift": 0.0,
+        "fdi_detection_preserved": 1.0
+      },
+      {
+        "threshold": 0.0007,
+        "sensor_recall": 0.1348314606741573,
+        "fdi_wrong_drift": 0.0,
+        "fdi_detection_preserved": 1.0
+      },
+      {
+        "threshold": 0.00085,
+        "sensor_recall": 0.1348314606741573,
+        "fdi_wrong_drift": 0.0,
+        "fdi_detection_preserved": 1.0
+      },
+      {
+        "threshold": 0.00095,
+        "sensor_recall": 0.1797752808988764,
+        "fdi_wrong_drift": 0.0,
+        "fdi_detection_preserved": 1.0
+      },
+      {
+        "threshold": 0.0011,
+        "sensor_recall": 0.19101123595505617,
+        "fdi_wrong_drift": 0.0,
+        "fdi_detection_preserved": 1.0
+      },
+      {
+        "threshold": 0.00125,
+        "sensor_recall": 0.2247191011235955,
+        "fdi_wrong_drift": 0.0,
+        "fdi_detection_preserved": 1.0
+      },
+      {
+        "threshold": 0.0014,
+        "sensor_recall": 0.24719101123595505,
+        "fdi_wrong_drift": 0.0,
+        "fdi_detection_preserved": 1.0
+      },
+      {
+        "threshold": 0.0016,
+        "sensor_recall": 0.2696629213483146,
+        "fdi_wrong_drift": 0.0,
+        "fdi_detection_preserved": 1.0
+      },
+      {
+        "threshold": 0.0018,
+        "sensor_recall": 0.2696629213483146,
+        "fdi_wrong_drift": 0.0,
+        "fdi_detection_preserved": 1.0
+      },
+      {
+        "threshold": 0.00205,
+        "sensor_recall": 0.2696629213483146,
+        "fdi_wrong_drift": 0.0,
+        "fdi_detection_preserved": 1.0
+      },
+      {
+        "threshold": 0.0023,
+        "sensor_recall": 0.29775280898876405,
+        "fdi_wrong_drift": 0.0,
+        "fdi_detection_preserved": 1.0
+      },
+      {
+        "threshold": 0.00275,
+        "sensor_recall": 0.30337078651685395,
+        "fdi_wrong_drift": 0.0,
+        "fdi_detection_preserved": 1.0
+      },
+      {
+        "threshold": 0.0034,
+        "sensor_recall": 0.3146067415730337,
+        "fdi_wrong_drift": 0.0,
+        "fdi_detection_preserved": 1.0
+      },
+      {
+        "threshold": 0.0286,
+        "sensor_recall": 0.34269662921348315,
+        "fdi_wrong_drift": 0.0,
+        "fdi_detection_preserved": 1.0
+      },
+      {
+        "threshold": 0.0432,
+        "sensor_recall": 0.47191011235955055,
+        "fdi_wrong_drift": 0.0,
+        "fdi_detection_preserved": 1.0
+      }
+    ],
+    "selected_validation_choice": {
+      "threshold": 0.0432,
+      "sensor_recall": 0.47191011235955055,
+      "fdi_wrong_drift": 0.0,
+      "fdi_detection_preserved": 1.0
+    },
+    "test_base_rule_fires_on_sensor": 119,
+    "test_ramp_rule_sensor": 113,
+    "test_sensor_rows_called_cyber_before": 10,
+    "test_sensor_rows_called_cyber_after": 10,
+    "test_fdi_wrongly_labelled_drift": 0,
+    "decision": "isolated diagnostic only; no production rule changed"
+  },
+  "improvement_b_latch_hold": {
+    "selection_rule": "validation only: maximize episode recall, then minimize sensor-inclusive false-alarm rate, then minimize median delay",
+    "validation_selected": {
+      "k": 2,
+      "n": 3,
+      "m": 4
+    },
+    "test_selected": {
+      "detected": 17,
+      "total": 17,
+      "episode_recall": 1.0,
+      "delays": [
+        1,
+        2,
+        1,
+        1,
+        0,
+        2,
+        1,
+        2,
+        1,
+        0,
+        1,
+        0,
+        2,
+        2,
+        1,
+        0,
+        1
+      ],
+      "median_delay": 1.0,
+      "p90_delay": 2.0,
+      "per_reading": {
+        "tp": 152,
+        "fp": 41,
+        "fn": 52,
+        "tn": 3064,
+        "recall": 0.7450980392156863,
+        "fpr": 0.01320450885668277
+      },
+      "fa_primary": {
+        "count": 23,
+        "exposure_hours": 0.19444444444444445,
+        "rate_per_hour": 118.28571428571428,
+        "poisson_95_low_per_hour": 74.98299619051548,
+        "poisson_95_high_per_hour": 177.48664917342703
+      },
+      "fa_including_sensor": {
+        "count": 25,
+        "exposure_hours": 0.19444444444444445,
+        "rate_per_hour": 128.57142857142856,
+        "poisson_95_low_per_hour": 83.20464950312225,
+        "poisson_95_high_per_hour": 189.79679158729903
+      }
+    },
+    "all_configs": {
+      "1-of-1": {
+        "validation_selected_m": 4,
+        "test": {
+          "detected": 17,
+          "total": 17,
+          "episode_recall": 1.0,
+          "delays": [
+            0,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            0
+          ],
+          "median_delay": 0.0,
+          "p90_delay": 1.0,
+          "per_reading": {
+            "tp": 175,
+            "fp": 46,
+            "fn": 29,
+            "tn": 3059,
+            "recall": 0.8578431372549019,
+            "fpr": 0.014814814814814815
+          },
+          "fa_primary": {
+            "count": 24,
+            "exposure_hours": 0.19444444444444445,
+            "rate_per_hour": 123.42857142857143,
+            "poisson_95_low_per_hour": 79.08301468124466,
+            "poisson_95_high_per_hour": 183.65193048215937
+          },
+          "fa_including_sensor": {
+            "count": 25,
+            "exposure_hours": 0.19444444444444445,
+            "rate_per_hour": 128.57142857142856,
+            "poisson_95_low_per_hour": 83.20464950312225,
+            "poisson_95_high_per_hour": 189.79679158729903
+          }
+        }
+      },
+      "2-of-3": {
+        "validation_selected_m": 4,
+        "test": {
+          "detected": 17,
+          "total": 17,
+          "episode_recall": 1.0,
+          "delays": [
+            1,
+            2,
+            1,
+            1,
+            0,
+            2,
+            1,
+            2,
+            1,
+            0,
+            1,
+            0,
+            2,
+            2,
+            1,
+            0,
+            1
+          ],
+          "median_delay": 1.0,
+          "p90_delay": 2.0,
+          "per_reading": {
+            "tp": 152,
+            "fp": 41,
+            "fn": 52,
+            "tn": 3064,
+            "recall": 0.7450980392156863,
+            "fpr": 0.01320450885668277
+          },
+          "fa_primary": {
+            "count": 23,
+            "exposure_hours": 0.19444444444444445,
+            "rate_per_hour": 118.28571428571428,
+            "poisson_95_low_per_hour": 74.98299619051548,
+            "poisson_95_high_per_hour": 177.48664917342703
+          },
+          "fa_including_sensor": {
+            "count": 25,
+            "exposure_hours": 0.19444444444444445,
+            "rate_per_hour": 128.57142857142856,
+            "poisson_95_low_per_hour": 83.20464950312225,
+            "poisson_95_high_per_hour": 189.79679158729903
+          }
+        }
+      },
+      "2-of-4": {
+        "validation_selected_m": 4,
+        "test": {
+          "detected": 17,
+          "total": 17,
+          "episode_recall": 1.0,
+          "delays": [
+            1,
+            2,
+            1,
+            1,
+            0,
+            2,
+            1,
+            2,
+            1,
+            0,
+            1,
+            0,
+            2,
+            2,
+            1,
+            0,
+            1
+          ],
+          "median_delay": 1.0,
+          "p90_delay": 2.0,
+          "per_reading": {
+            "tp": 152,
+            "fp": 41,
+            "fn": 52,
+            "tn": 3064,
+            "recall": 0.7450980392156863,
+            "fpr": 0.01320450885668277
+          },
+          "fa_primary": {
+            "count": 23,
+            "exposure_hours": 0.19444444444444445,
+            "rate_per_hour": 118.28571428571428,
+            "poisson_95_low_per_hour": 74.98299619051548,
+            "poisson_95_high_per_hour": 177.48664917342703
+          },
+          "fa_including_sensor": {
+            "count": 25,
+            "exposure_hours": 0.19444444444444445,
+            "rate_per_hour": 128.57142857142856,
+            "poisson_95_low_per_hour": 83.20464950312225,
+            "poisson_95_high_per_hour": 189.79679158729903
+          }
+        }
+      },
+      "3-of-5": {
+        "validation_selected_m": 1,
+        "test": {
+          "detected": 16,
+          "total": 17,
+          "episode_recall": 0.9411764705882353,
+          "delays": [
+            2,
+            3,
+            2,
+            2,
+            3,
+            3,
+            2,
+            2,
+            2,
+            2,
+            3,
+            3,
+            3,
+            2,
+            0,
+            2
+          ],
+          "median_delay": 2.0,
+          "p90_delay": 3.0,
+          "per_reading": {
+            "tp": 104,
+            "fp": 6,
+            "fn": 100,
+            "tn": 3099,
+            "recall": 0.5098039215686274,
+            "fpr": 0.001932367149758454
+          },
+          "fa_primary": {
+            "count": 6,
+            "exposure_hours": 0.19444444444444445,
+            "rate_per_hour": 30.857142857142858,
+            "poisson_95_low_per_hour": 11.324027589381519,
+            "poisson_95_high_per_hour": 67.16300925866753
+          },
+          "fa_including_sensor": {
+            "count": 22,
+            "exposure_hours": 0.19444444444444445,
+            "rate_per_hour": 113.14285714285714,
+            "poisson_95_low_per_hour": 70.906026200038,
+            "poisson_95_high_per_hour": 171.2996454195012
+          }
+        }
+      }
+    }
+  },
+  "subtype_episodes": {
+    "data_injection": {
+      "detected": 6,
+      "total": 6,
+      "episode_recall": 1.0,
+      "delays": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "median_delay": 0.0,
+      "p90_delay": 0.0,
+      "per_reading": {
+        "tp": 40,
+        "fp": 0,
+        "fn": 7,
+        "tn": 0,
+        "recall": 0.851063829787234,
+        "fpr": null
+      },
+      "fa_primary": {
+        "count": 0,
+        "exposure_hours": 0.0,
+        "rate_per_hour": null,
+        "poisson_95_low_per_hour": null,
+        "poisson_95_high_per_hour": null
+      },
+      "fa_including_sensor": {
+        "count": 0,
+        "exposure_hours": 0.0,
+        "rate_per_hour": null,
+        "poisson_95_low_per_hour": null,
+        "poisson_95_high_per_hour": null
+      }
+    },
+    "replay": {
+      "detected": 7,
+      "total": 7,
+      "episode_recall": 1.0,
+      "delays": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "median_delay": 1.0,
+      "p90_delay": 1.0,
+      "per_reading": {
+        "tp": 39,
+        "fp": 0,
+        "fn": 28,
+        "tn": 0,
+        "recall": 0.582089552238806,
+        "fpr": null
+      },
+      "fa_primary": {
+        "count": 0,
+        "exposure_hours": 0.0,
+        "rate_per_hour": null,
+        "poisson_95_low_per_hour": null,
+        "poisson_95_high_per_hour": null
+      },
+      "fa_including_sensor": {
+        "count": 0,
+        "exposure_hours": 0.0,
+        "rate_per_hour": null,
+        "poisson_95_low_per_hour": null,
+        "poisson_95_high_per_hour": null
+      }
+    },
+    "command_injection": {
+      "detected": 8,
+      "total": 8,
+      "episode_recall": 1.0,
+      "delays": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "median_delay": 0.0,
+      "p90_delay": 0.0,
+      "per_reading": {
+        "tp": 33,
+        "fp": 0,
+        "fn": 57,
+        "tn": 0,
+        "recall": 0.36666666666666664,
+        "fpr": null
+      },
+      "fa_primary": {
+        "count": 0,
+        "exposure_hours": 0.0,
+        "rate_per_hour": null,
+        "poisson_95_low_per_hour": null,
+        "poisson_95_high_per_hour": null
+      },
+      "fa_including_sensor": {
+        "count": 0,
+        "exposure_hours": 0.0,
+        "rate_per_hour": null,
+        "poisson_95_low_per_hour": null,
+        "poisson_95_high_per_hour": null
+      }
+    }
+  },
+  "command_visibility_56_zero_write": {
+    "rows": [
+      {
+        "tick": 15,
+        "ticks_since_onset": 4,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 16,
+        "ticks_since_onset": 5,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 17,
+        "ticks_since_onset": 6,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 18,
+        "ticks_since_onset": 7,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 19,
+        "ticks_since_onset": 8,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 24,
+        "ticks_since_onset": 13,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 25,
+        "ticks_since_onset": 14,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 26,
+        "ticks_since_onset": 15,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 27,
+        "ticks_since_onset": 16,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 28,
+        "ticks_since_onset": 17,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 73,
+        "ticks_since_onset": 4,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 74,
+        "ticks_since_onset": 5,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 75,
+        "ticks_since_onset": 6,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 76,
+        "ticks_since_onset": 7,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 77,
+        "ticks_since_onset": 8,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 78,
+        "ticks_since_onset": 9,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 79,
+        "ticks_since_onset": 10,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 216,
+        "ticks_since_onset": 3,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 217,
+        "ticks_since_onset": 4,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 218,
+        "ticks_since_onset": 5,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 219,
+        "ticks_since_onset": 6,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 220,
+        "ticks_since_onset": 7,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 221,
+        "ticks_since_onset": 8,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 222,
+        "ticks_since_onset": 9,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 223,
+        "ticks_since_onset": 10,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 224,
+        "ticks_since_onset": 11,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 278,
+        "ticks_since_onset": 4,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 279,
+        "ticks_since_onset": 5,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 280,
+        "ticks_since_onset": 6,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 331,
+        "ticks_since_onset": 4,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 332,
+        "ticks_since_onset": 5,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 333,
+        "ticks_since_onset": 6,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 334,
+        "ticks_since_onset": 7,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 352,
+        "ticks_since_onset": 8,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 353,
+        "ticks_since_onset": 9,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 354,
+        "ticks_since_onset": 10,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 355,
+        "ticks_since_onset": 11,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 356,
+        "ticks_since_onset": 12,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 357,
+        "ticks_since_onset": 13,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 358,
+        "ticks_since_onset": 14,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 359,
+        "ticks_since_onset": 15,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 360,
+        "ticks_since_onset": 16,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 606,
+        "ticks_since_onset": 4,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 607,
+        "ticks_since_onset": 5,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 608,
+        "ticks_since_onset": 6,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 609,
+        "ticks_since_onset": 7,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 610,
+        "ticks_since_onset": 8,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 611,
+        "ticks_since_onset": 9,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 612,
+        "ticks_since_onset": 10,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 613,
+        "ticks_since_onset": 11,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 665,
+        "ticks_since_onset": 4,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 666,
+        "ticks_since_onset": 5,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 667,
+        "ticks_since_onset": 6,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 668,
+        "ticks_since_onset": 7,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 669,
+        "ticks_since_onset": 8,
+        "aged_out_30_record_window": false
+      },
+      {
+        "tick": 670,
+        "ticks_since_onset": 9,
+        "aged_out_30_record_window": false
+      }
+    ],
+    "aged_out_count": 0,
+    "not_aged_out_count": 56
+  },
+  "subtyper_features": [
+    "nbd_unexpected_write_count",
+    "nbd_mean_response_time_ms",
+    "nbd_std_response_time_ms",
+    "nbd_distinct_sources_count",
+    "nbd_fc3_read_count",
+    "nbd_fc6_write_count",
+    "nbd_fc16_write_count",
+    "nbd_error_count",
+    "nbd_traffic_volume",
+    "nbd_modbus_anomaly_rate",
+    "pcd_max_lnr",
+    "pcd_is_target_rtu_max_lnr",
+    "pcd_chi2_statistic",
+    "pcd_chi2_ratio",
+    "pcd_chi2_failed",
+    "pcd_target_rtu_v_residual",
+    "pcd_target_rtu_p_residual",
+    "pcd_target_rtu_is_flagged",
+    "pcd_global_bad_data_flag",
+    "pcd_voltage_pu_reported",
+    "pcd_voltage_dev_nominal",
+    "pcd_p_mw_reported",
+    "pcd_status_code",
+    "pcd_physics_network_disagreement_index",
+    "pcd_temporal_dv_dt_3tick",
+    "pcd_temporal_dp_dt_3tick",
+    "pcd_temporal_dq_dt_3tick",
+    "pcd_cross_rtu_voltage_divergence",
+    "pcd_resid_jump",
+    "pcd_resid_persist",
+    "pcd_resid_concentration",
+    "pcd_resid_rtu_share",
+    "pcd_resid_breadth_count",
+    "pcd_resid_breadth_frac",
+    "dpn_legacy",
+    "dpn_ing_delta",
+    "dpn_ing_resid"
+  ],
+  "clean_run": {
+    "status": "skipped",
+    "reason": "dataset_generator has no clean-only mode; running it would mix scenarios and require modifying or approximating the generator"
+  }
+}
