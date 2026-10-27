@@ -97,3 +97,58 @@ The candidate cyber threshold is **0.25**, selected on validation only by the ex
 | Corrected `nbd_fixed_test_seed1337.csv` used here | 1337 / 700 | Normal 2,610; Natural Fault 495; Sensor Malfunction 191; Cyber 204 | 17 |
 
 The corrected generator uses the current scenario schedule: 25% each Normal, Natural Fault, Sensor Malfunction, and Cyber Intrusion, with seeded random episode durations and targets. The older file has no Sensor Malfunction class and different class/subtype counts, so the two files are not like-for-like despite sharing seed and tick count. The corrected safe probe also differs from the historical checksum recorded in the project document.
+
+## 2026-10-27 — T1 reconciliation and T2 persistence
+
+Command: `backend\\.venv\\Scripts\\python.exe backend\\scripts\\expo\\t1_reconcile_t2_persistence.py --train backend\\data\\generated\\nbd_fixed_train_seed42.csv --val backend\\data\\generated\\nbd_fixed_val_seed999.csv --test backend\\reports\\expo\\appendix_b_probe\\nbd_fixed_test_seed1337.csv --candidate backend\\models\\experiments\\expo_t1_corrected_candidate.joblib --production backend\\models\\fusion_classifier.joblib --out backend\\reports\\expo\\t1_corrected_candidate\\reconciliation_t2.json`.
+
+All numbers below are **Measured** or directly **Computed** from that command. Wilson intervals are two-sided 95% intervals. The production model was read-only.
+
+### Reconciliation A.1 — excluded Sensor Malfunction rows
+
+The three-class confusion matrix intentionally uses the primary triage set: all `Sensor Malfunction` rows are excluded before confusion-matrix construction. The test has 3,500 rows; 191 sensor rows are excluded, leaving 3,309 primary rows.
+
+| Model prediction on the 191 excluded sensor rows | Cyber | Natural Fault | Normal | Total |
+|---|---:|---:|---:|---:|
+| Corrected candidate | 129 | 25 | 37 | 191 |
+| Old production model | 118 | 36 | 37 | 191 |
+
+### Reconciliation A.2 — detection versus subtype classification
+
+The earlier `34 + 41 + 63 = 138` table meant subtype-classifier correctness among all cyber rows: the secondary subtype model predicted the true subtype for 34/90 command-injection, 41/47 data-injection, and 63/67 replay rows. It did not mean that 138 rows were flagged as Cyber by the top-level detector.
+
+| Subtype | Candidate flagged Cyber / total | Candidate detection Wilson interval | Old flagged Cyber / total | Old detection Wilson interval |
+|---|---:|---:|---:|---:|
+| Command injection | 33 / 90 | 27.45%–46.98% | 34 / 90 | 28.46%–48.10% |
+| Data injection / FDI | 40 / 47 | 72.31%–92.59% | 36 / 47 | 62.78%–86.40% |
+| Replay | 39 / 67 | 46.27%–69.26% | 38 / 67 | 44.81%–67.90% |
+
+Among readings that were detected as Cyber, the subtype classifier was 100% correct for each listed subtype for both candidate and old model. This conditional result is separate from detection recall and is affected by the small detected subsets.
+
+### Reconciliation A.3 — false-alarm episode definitions
+
+An episode is one contiguous run of tick seconds with at least one alert in the selected row subset; the test contains 700 unique tick seconds. The primary subset has 3,105 non-attack rows (`Cyber Intrusion` and `Sensor Malfunction` excluded from the negative denominator). The inclusive subset has 3,296 non-attack rows (only `Cyber Intrusion` excluded). Both subsets touch all 700 seconds because other RTUs remain present during attack ticks.
+
+| Candidate definition | False-alarm episodes | Non-attack seconds | Episodes/hour |
+|---|---:|---:|---:|
+| Primary 3,105-row subset | 1 | 700 | 5.14 |
+| Including 191 sensor rows | 19 | 700 | 97.71 |
+
+The earlier 18 figure used a different alert grouping implementation and was not reconciled with the one-reading confusion-matrix count. It should not be used; this command's explicit row-subset calculation supersedes it.
+
+### Reconciliation A.4 — write visibility
+
+`nbd_unexpected_write_count > 0` is the available observer-verified write-count field in this corrected feature table. It was positive in 34/90 command-injection rows (37.78%; Wilson 28.46%–48.10%) and in 0/3,296 non-attack rows. The candidate flagged 33 of those 34 visible-write rows and missed 1. Thus a visible write can be missed; the feature is not always populated, and its low global importance (rank 25/37, 0.5099%) does not prove that writes are irrelevant.
+
+### T2 persistence selection
+
+Persistence was implemented as a per-RTU rolling k-of-n count over current and preceding ticks. A cooldown suppresses a new alert for the specified number of subsequent seconds after an alert. For each k/n, cooldown was selected on validation only by: maximize attack-episode recall, then minimize primary false-alarm episodes/hour, then minimize median delay. The global validation-selected setting was **2-of-3 with a 1-second cooldown**. No test result was used for selection.
+
+| Setting | Validation-selected cooldown | Test per-reading recall | Test episode recall | Median / p90 delay | Primary FA episodes/hour | Inclusive-sensor FA episodes/hour |
+|---|---:|---:|---:|---:|---:|---:|
+| 1-of-1 | 0 s | 54.90% | 17/17 (100%) | 0 / 1 s | 5.14 | 97.71 |
+| **2-of-3 (selected)** | **1 s** | **28.43%** | **17/17 (100%)** | **1 / 2 s** | **0.00** | **360.00** |
+| 2-of-4 | 5 s | 14.22% | 17/17 (100%) | 1 / 2 s | 15.43 | 169.71 |
+| 3-of-5 | 5 s | 12.25% | 16/17 (94.12%) | 2 / 3 s | 0.00 | 144.00 |
+
+T2 is an isolated post-processing experiment; no model, threshold, production schema, or production artifact was changed.

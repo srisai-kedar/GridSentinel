@@ -1,0 +1,651 @@
+{
+  "part_a": {
+    "test_rows": 3500,
+    "primary_rows": 3309,
+    "excluded_sensor_rows": 191,
+    "candidate_sensor_predictions": {
+      "Cyber Intrusion": 129,
+      "Natural Fault": 25,
+      "Normal": 37
+    },
+    "old_production_sensor_predictions": {
+      "Cyber Intrusion": 118,
+      "Natural Fault": 36,
+      "Normal": 37
+    },
+    "candidate_subtypes": {
+      "command_injection": {
+        "candidate_detection": {
+          "success": 33,
+          "total": 90,
+          "estimate": 0.36666666666666664,
+          "wilson_95_low": 0.27447254779029884,
+          "wilson_95_high": 0.46977695236018824
+        },
+        "old_production_detection": {
+          "success": 34,
+          "total": 90,
+          "estimate": 0.37777777777777777,
+          "wilson_95_low": 0.2845596823864481,
+          "wilson_95_high": 0.4810023594181651
+        },
+        "candidate_subtype_accuracy_all_attack_readings": {
+          "success": 34,
+          "total": 90,
+          "estimate": 0.37777777777777777,
+          "wilson_95_low": 0.2845596823864481,
+          "wilson_95_high": 0.4810023594181651
+        },
+        "old_subtype_accuracy_all_attack_readings": {
+          "success": 55,
+          "total": 90,
+          "estimate": 0.6111111111111112,
+          "wilson_95_low": 0.5078245886506263,
+          "wilson_95_high": 0.7053008278906345
+        },
+        "candidate_subtype_accuracy_among_detected": {
+          "success": 33,
+          "total": 33,
+          "estimate": 1.0,
+          "wilson_95_low": 0.895730002457548,
+          "wilson_95_high": 1.0
+        },
+        "old_subtype_accuracy_among_detected": {
+          "success": 34,
+          "total": 34,
+          "estimate": 1.0,
+          "wilson_95_low": 0.8984854458466761,
+          "wilson_95_high": 0.9999999999999999
+        }
+      },
+      "data_injection": {
+        "candidate_detection": {
+          "success": 40,
+          "total": 47,
+          "estimate": 0.851063829787234,
+          "wilson_95_low": 0.7231437757640644,
+          "wilson_95_high": 0.9259328000356828
+        },
+        "old_production_detection": {
+          "success": 36,
+          "total": 47,
+          "estimate": 0.7659574468085106,
+          "wilson_95_low": 0.6277574244984441,
+          "wilson_95_high": 0.8639672541377281
+        },
+        "candidate_subtype_accuracy_all_attack_readings": {
+          "success": 41,
+          "total": 47,
+          "estimate": 0.8723404255319149,
+          "wilson_95_low": 0.748260592072075,
+          "wilson_95_high": 0.9401539580185662
+        },
+        "old_subtype_accuracy_all_attack_readings": {
+          "success": 40,
+          "total": 47,
+          "estimate": 0.851063829787234,
+          "wilson_95_low": 0.7231437757640644,
+          "wilson_95_high": 0.9259328000356828
+        },
+        "candidate_subtype_accuracy_among_detected": {
+          "success": 40,
+          "total": 40,
+          "estimate": 1.0,
+          "wilson_95_low": 0.9123783988027135,
+          "wilson_95_high": 1.0000000000000002
+        },
+        "old_subtype_accuracy_among_detected": {
+          "success": 36,
+          "total": 36,
+          "estimate": 1.0,
+          "wilson_95_low": 0.9035813714055363,
+          "wilson_95_high": 1.0
+        }
+      },
+      "replay": {
+        "candidate_detection": {
+          "success": 39,
+          "total": 67,
+          "estimate": 0.582089552238806,
+          "wilson_95_low": 0.4626993150297929,
+          "wilson_95_high": 0.692576990443277
+        },
+        "old_production_detection": {
+          "success": 38,
+          "total": 67,
+          "estimate": 0.5671641791044776,
+          "wilson_95_low": 0.44808736490792916,
+          "wilson_95_high": 0.6789568850245825
+        },
+        "candidate_subtype_accuracy_all_attack_readings": {
+          "success": 63,
+          "total": 67,
+          "estimate": 0.9402985074626866,
+          "wilson_95_low": 0.8563049895862846,
+          "wilson_95_high": 0.9765406488601809
+        },
+        "old_subtype_accuracy_all_attack_readings": {
+          "success": 63,
+          "total": 67,
+          "estimate": 0.9402985074626866,
+          "wilson_95_low": 0.8563049895862846,
+          "wilson_95_high": 0.9765406488601809
+        },
+        "candidate_subtype_accuracy_among_detected": {
+          "success": 39,
+          "total": 39,
+          "estimate": 1.0,
+          "wilson_95_low": 0.9103331462924287,
+          "wilson_95_high": 1.0
+        },
+        "old_subtype_accuracy_among_detected": {
+          "success": 38,
+          "total": 38,
+          "estimate": 1.0,
+          "wilson_95_low": 0.908190131774416,
+          "wilson_95_high": 0.9999999999999999
+        }
+      }
+    },
+    "write_visibility": {
+      "command_injection_rows": 90,
+      "command_write_gt0": 34,
+      "command_write_gt0_fraction": {
+        "success": 34,
+        "total": 90,
+        "estimate": 0.37777777777777777,
+        "wilson_95_low": 0.2845596823864481,
+        "wilson_95_high": 0.4810023594181651
+      },
+      "non_attack_rows": 3296,
+      "non_attack_write_gt0": 0,
+      "candidate_flagged_command_write_gt0": 33,
+      "candidate_missed_command_write_gt0": 1
+    }
+  },
+  "part_b": {
+    "selection_rule": "For each k/n, cooldown selected on validation only: maximize episode recall, then minimize primary false-alarm episodes/hour, then minimize median delay.",
+    "validation_by_config": {
+      "1-of-1": {
+        "k": 1,
+        "n": 1,
+        "cooldown_seconds": 0,
+        "per_reading": {
+          "tp": 69,
+          "fp": 11,
+          "fn": 59,
+          "tn": 3183,
+          "recall": {
+            "success": 69,
+            "total": 128,
+            "estimate": 0.5390625,
+            "wilson_95_low": 0.4528298312720518,
+            "wilson_95_high": 0.6230188440190805
+          },
+          "fpr": {
+            "success": 11,
+            "total": 3194,
+            "estimate": 0.0034439574201628053,
+            "wilson_95_low": 0.0019241667905069565,
+            "wilson_95_high": 0.006156740019120805
+          }
+        },
+        "episodes": {
+          "attack_episodes": 15,
+          "detected": 15,
+          "episode_recall": 1.0,
+          "delays_seconds": [
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0
+          ],
+          "median_delay_seconds": 0.0,
+          "p90_delay_seconds": 1.0,
+          "false_alarm_primary": {
+            "episodes": 7,
+            "non_attack_seconds": 700,
+            "episodes_per_hour": 36.0
+          },
+          "false_alarm_including_sensor": {
+            "episodes": 26,
+            "non_attack_seconds": 700,
+            "episodes_per_hour": 133.71428571428572
+          }
+        }
+      },
+      "2-of-3": {
+        "k": 2,
+        "n": 3,
+        "cooldown_seconds": 1,
+        "per_reading": {
+          "tp": 39,
+          "fp": 2,
+          "fn": 89,
+          "tn": 3192,
+          "recall": {
+            "success": 39,
+            "total": 128,
+            "estimate": 0.3046875,
+            "wilson_95_low": 0.2316056151523922,
+            "wilson_95_high": 0.38915100839194705
+          },
+          "fpr": {
+            "success": 2,
+            "total": 3194,
+            "estimate": 0.0006261740763932373,
+            "wilson_95_low": 0.0001717363159057213,
+            "wilson_95_high": 0.0022803736218977343
+          }
+        },
+        "episodes": {
+          "attack_episodes": 15,
+          "detected": 15,
+          "episode_recall": 1.0,
+          "delays_seconds": [
+            1,
+            2,
+            1,
+            1,
+            1,
+            1,
+            2,
+            1,
+            1,
+            1,
+            1,
+            2,
+            1,
+            2,
+            1
+          ],
+          "median_delay_seconds": 1.0,
+          "p90_delay_seconds": 2.0,
+          "false_alarm_primary": {
+            "episodes": 2,
+            "non_attack_seconds": 700,
+            "episodes_per_hour": 10.285714285714285
+          },
+          "false_alarm_including_sensor": {
+            "episodes": 59,
+            "non_attack_seconds": 700,
+            "episodes_per_hour": 303.42857142857144
+          }
+        }
+      },
+      "2-of-4": {
+        "k": 2,
+        "n": 4,
+        "cooldown_seconds": 5,
+        "per_reading": {
+          "tp": 20,
+          "fp": 2,
+          "fn": 108,
+          "tn": 3192,
+          "recall": {
+            "success": 20,
+            "total": 128,
+            "estimate": 0.15625,
+            "wilson_95_low": 0.10348354800906658,
+            "wilson_95_high": 0.22904810942897047
+          },
+          "fpr": {
+            "success": 2,
+            "total": 3194,
+            "estimate": 0.0006261740763932373,
+            "wilson_95_low": 0.0001717363159057213,
+            "wilson_95_high": 0.0022803736218977343
+          }
+        },
+        "episodes": {
+          "attack_episodes": 15,
+          "detected": 15,
+          "episode_recall": 1.0,
+          "delays_seconds": [
+            1,
+            2,
+            1,
+            1,
+            1,
+            1,
+            2,
+            1,
+            2,
+            1,
+            1,
+            1,
+            1,
+            2,
+            1
+          ],
+          "median_delay_seconds": 1.0,
+          "p90_delay_seconds": 2.0,
+          "false_alarm_primary": {
+            "episodes": 2,
+            "non_attack_seconds": 700,
+            "episodes_per_hour": 10.285714285714285
+          },
+          "false_alarm_including_sensor": {
+            "episodes": 31,
+            "non_attack_seconds": 700,
+            "episodes_per_hour": 159.42857142857142
+          }
+        }
+      },
+      "3-of-5": {
+        "k": 3,
+        "n": 5,
+        "cooldown_seconds": 5,
+        "per_reading": {
+          "tp": 17,
+          "fp": 0,
+          "fn": 111,
+          "tn": 3194,
+          "recall": {
+            "success": 17,
+            "total": 128,
+            "estimate": 0.1328125,
+            "wilson_95_low": 0.08460228531840389,
+            "wilson_95_high": 0.20242016694495388
+          },
+          "fpr": {
+            "success": 0,
+            "total": 3194,
+            "estimate": 0.0,
+            "wilson_95_low": 0.0,
+            "wilson_95_high": 0.0012012661885091656
+          }
+        },
+        "episodes": {
+          "attack_episodes": 15,
+          "detected": 13,
+          "episode_recall": 0.8666666666666667,
+          "delays_seconds": [
+            2,
+            2,
+            2,
+            2,
+            3,
+            2,
+            3,
+            2,
+            2,
+            2,
+            2,
+            3,
+            2
+          ],
+          "median_delay_seconds": 2.0,
+          "p90_delay_seconds": 3.0,
+          "false_alarm_primary": {
+            "episodes": 0,
+            "non_attack_seconds": 700,
+            "episodes_per_hour": 0.0
+          },
+          "false_alarm_including_sensor": {
+            "episodes": 25,
+            "non_attack_seconds": 700,
+            "episodes_per_hour": 128.57142857142856
+          }
+        }
+      }
+    },
+    "test_by_config": {
+      "1-of-1": {
+        "k": 1,
+        "n": 1,
+        "cooldown_seconds": 0,
+        "per_reading": {
+          "tp": 112,
+          "fp": 1,
+          "fn": 92,
+          "tn": 3104,
+          "recall": {
+            "success": 112,
+            "total": 204,
+            "estimate": 0.5490196078431373,
+            "wilson_95_low": 0.4804595609640706,
+            "wilson_95_high": 0.6157676312115489
+          },
+          "fpr": {
+            "success": 1,
+            "total": 3105,
+            "estimate": 0.00032206119162640903,
+            "wilson_95_low": 5.6853970926384586e-05,
+            "wilson_95_high": 0.0018221285690549307
+          }
+        },
+        "episodes": {
+          "attack_episodes": 17,
+          "detected": 17,
+          "episode_recall": 1.0,
+          "delays_seconds": [
+            0,
+            1,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            0,
+            0,
+            0
+          ],
+          "median_delay_seconds": 0.0,
+          "p90_delay_seconds": 1.0,
+          "false_alarm_primary": {
+            "episodes": 1,
+            "non_attack_seconds": 700,
+            "episodes_per_hour": 5.142857142857142
+          },
+          "false_alarm_including_sensor": {
+            "episodes": 19,
+            "non_attack_seconds": 700,
+            "episodes_per_hour": 97.71428571428571
+          }
+        }
+      },
+      "2-of-3": {
+        "k": 2,
+        "n": 3,
+        "cooldown_seconds": 1,
+        "per_reading": {
+          "tp": 58,
+          "fp": 0,
+          "fn": 146,
+          "tn": 3105,
+          "recall": {
+            "success": 58,
+            "total": 204,
+            "estimate": 0.28431372549019607,
+            "wilson_95_low": 0.22684508117781782,
+            "wilson_95_high": 0.34975527324945727
+          },
+          "fpr": {
+            "success": 0,
+            "total": 3105,
+            "estimate": 0.0,
+            "wilson_95_low": 0.0,
+            "wilson_95_high": 0.0012356560704614838
+          }
+        },
+        "episodes": {
+          "attack_episodes": 17,
+          "detected": 17,
+          "episode_recall": 1.0,
+          "delays_seconds": [
+            1,
+            2,
+            1,
+            1,
+            2,
+            2,
+            1,
+            2,
+            1,
+            1,
+            1,
+            2,
+            2,
+            2,
+            1,
+            1,
+            1
+          ],
+          "median_delay_seconds": 1.0,
+          "p90_delay_seconds": 2.0,
+          "false_alarm_primary": {
+            "episodes": 0,
+            "non_attack_seconds": 700,
+            "episodes_per_hour": 0.0
+          },
+          "false_alarm_including_sensor": {
+            "episodes": 70,
+            "non_attack_seconds": 700,
+            "episodes_per_hour": 360.0
+          }
+        }
+      },
+      "2-of-4": {
+        "k": 2,
+        "n": 4,
+        "cooldown_seconds": 5,
+        "per_reading": {
+          "tp": 29,
+          "fp": 3,
+          "fn": 175,
+          "tn": 3102,
+          "recall": {
+            "success": 29,
+            "total": 204,
+            "estimate": 0.14215686274509803,
+            "wilson_95_low": 0.10083673361509671,
+            "wilson_95_high": 0.19670476350288235
+          },
+          "fpr": {
+            "success": 3,
+            "total": 3105,
+            "estimate": 0.000966183574879227,
+            "wilson_95_low": 0.0003286427938563989,
+            "wilson_95_high": 0.0028369926851645796
+          }
+        },
+        "episodes": {
+          "attack_episodes": 17,
+          "detected": 17,
+          "episode_recall": 1.0,
+          "delays_seconds": [
+            1,
+            2,
+            1,
+            1,
+            2,
+            2,
+            1,
+            2,
+            1,
+            1,
+            1,
+            2,
+            2,
+            2,
+            1,
+            1,
+            1
+          ],
+          "median_delay_seconds": 1.0,
+          "p90_delay_seconds": 2.0,
+          "false_alarm_primary": {
+            "episodes": 3,
+            "non_attack_seconds": 700,
+            "episodes_per_hour": 15.428571428571429
+          },
+          "false_alarm_including_sensor": {
+            "episodes": 33,
+            "non_attack_seconds": 700,
+            "episodes_per_hour": 169.71428571428572
+          }
+        }
+      },
+      "3-of-5": {
+        "k": 3,
+        "n": 5,
+        "cooldown_seconds": 5,
+        "per_reading": {
+          "tp": 25,
+          "fp": 0,
+          "fn": 179,
+          "tn": 3105,
+          "recall": {
+            "success": 25,
+            "total": 204,
+            "estimate": 0.12254901960784313,
+            "wilson_95_low": 0.08440191390016036,
+            "wilson_95_high": 0.174648706347571
+          },
+          "fpr": {
+            "success": 0,
+            "total": 3105,
+            "estimate": 0.0,
+            "wilson_95_low": 0.0,
+            "wilson_95_high": 0.0012356560704614838
+          }
+        },
+        "episodes": {
+          "attack_episodes": 17,
+          "detected": 16,
+          "episode_recall": 0.9411764705882353,
+          "delays_seconds": [
+            2,
+            3,
+            2,
+            2,
+            3,
+            3,
+            2,
+            2,
+            2,
+            2,
+            3,
+            3,
+            3,
+            2,
+            2,
+            2
+          ],
+          "median_delay_seconds": 2.0,
+          "p90_delay_seconds": 3.0,
+          "false_alarm_primary": {
+            "episodes": 0,
+            "non_attack_seconds": 700,
+            "episodes_per_hour": 0.0
+          },
+          "false_alarm_including_sensor": {
+            "episodes": 28,
+            "non_attack_seconds": 700,
+            "episodes_per_hour": 144.0
+          }
+        }
+      }
+    },
+    "validation_selected_config": "2-of-3"
+  }
+}
