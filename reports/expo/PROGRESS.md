@@ -152,3 +152,91 @@ Persistence was implemented as a per-RTU rolling k-of-n count over current and p
 | 3-of-5 | 5 s | 12.25% | 16/17 (94.12%) | 2 / 3 s | 0.00 | 144.00 |
 
 T2 is an isolated post-processing experiment; no model, threshold, production schema, or production artifact was changed.
+
+## 2026-10-27 — T2 follow-up: end-to-end drift and latch/hold
+
+Command (run from repository root): `backend\\.venv\\Scripts\\python.exe backend\\scripts\\expo\\t2_followup_drift_hysteresis.py --train backend\\data\\generated\\nbd_fixed_train_seed42.csv --val backend\\data\\generated\\nbd_fixed_val_seed999.csv --test backend\\reports\\expo\\appendix_b_probe\\nbd_fixed_test_seed1337.csv --candidate backend\\models\\experiments\\expo_t1_corrected_candidate.joblib --production backend\\models\\fusion_classifier.joblib --out backend\\reports\\expo\\t1_corrected_candidate\\t2_followup.json`.
+
+### End-to-end drift path
+
+The evaluation used the same ClassifierService threshold logic and deterministic `detect_sensor_drift_signature` interception semantics, evaluated in batches to avoid per-row sklearn warning overhead. The production bundle has 28 features; the candidate has 37. Values below are **Measured/Computed** from the command.
+
+| Final verdict on 191 sensor rows | Candidate | Old production |
+|---|---:|---:|
+| SENSOR_DRIFT | 119 | 0 |
+| CYBER | 10 | 118 |
+| NATURAL_FAULT | 25 | 36 |
+| NORMAL | 37 | 37 |
+
+| Final verdict by 16 drift episodes (majority of rows in each episode) | Candidate | Old production |
+|---|---:|---:|
+| SENSOR_DRIFT | 16 | 0 |
+| CYBER | 0 | 15 |
+| NATURAL_FAULT | 0 | 1 |
+| NORMAL | 0 | 0 |
+
+Candidate episode-level drift detection was 16/16, Wilson 95% interval 80.64%–100.00%. Old production was 0/16, Wilson 95% interval 0.00%–19.36%. Candidate per-reading drift recall was 119/191 = 62.30%, Wilson 55.25%–68.87%; old production was 0/191, Wilson 0.00%–1.96%.
+
+| Drift-rule firing target | Fires / total | Wilson 95% interval |
+|---|---:|---:|
+| Sensor drift | 119 / 191 | 55.25%–68.87% |
+| FDI/data injection | 0 / 47 | 0.00%–7.56% |
+| Replay | 0 / 67 | 0.00%–5.42% |
+| Command injection | 0 / 90 | 0.00%–4.09% |
+| Natural fault | 0 / 495 | 0.00%–0.77% |
+| Normal | 0 / 2,610 | 0.00%–0.15% |
+
+Physics signatures were partially distinguishable: sensor drift versus FDI medians were residual concentration 0.9105 vs 0.9124, `dv/dt` 0.0019 vs 0.0555, voltage deviation 0.0583 vs 0.1583, max LNR 16.69 vs 41.18, and traffic volume 6 vs 6 with anomaly rate 0 vs 0. This supports a possible ramp/step distinction in this synthetic data, but does not establish complete separation: 72/191 sensor readings still did not receive the drift verdict. The existing rule produced zero FDI-as-drift errors, so FDI separation is good on this sample while drift coverage remains incomplete.
+
+### Improvement A — ramp discriminator
+
+Validation-only selection chose `abs(pcd_temporal_dv_dt_3tick) <= 0.0432`, with validation sensor recall 47.19%, zero FDI wrongly labelled drift, and 100% FDI detection preserved. On test it labelled 113/191 sensor rows as drift, zero FDI rows as drift, and reduced sensor rows called CYBER from 10 to 10. Because it did not reduce CYBER calls and reduced drift coverage from 119 to 113, the discriminator was rejected as an improvement. No fallback verdict was added; the honest unresolved state remains “single-measurement residual anomaly, cause undetermined—quarantine and inspect.”
+
+### Improvement B — latch/hold hysteresis
+
+The latch raises on k-of-n raw Cyber readings per RTU and remains active until M consecutive clear readings. `k`, `n`, and `M` were selected on validation only by episode recall, then sensor-inclusive false-alarm rate, then delay. The selected configuration was 2-of-3 with M=4.
+
+| Configuration | Validation-selected M | Test episode recall | Median / P90 delay | Primary FA/h (Poisson 95%) | Including sensor FA/h (Poisson 95%) |
+|---|---:|---:|---:|---:|---:|
+| 1-of-1 | 4 | 17/17 | 0 / 1 s | 123.43 (79.08–183.65) | 128.57 (83.20–189.80) |
+| **2-of-3 selected** | **4** | **17/17** | **1 / 2 s** | **118.29 (74.98–177.49)** | **128.57 (83.20–189.80)** |
+| 2-of-4 | 4 | 17/17 | 1 / 2 s | 118.29 (74.98–177.49) | 128.57 (83.20–189.80) |
+| 3-of-5 | 1 | 16/17 | 2 / 3 s | 30.86 (11.32–67.16) | 113.14 (70.91–171.30) |
+
+The latch did not improve the sensor-inclusive false-alarm rate on this corrected test; it remained 25 episodes in 700 seconds. It is not retained as a production recommendation.
+
+Selected 2-of-3/M=4 per-reading test counts were TP/FP/FN/TN = 152/41/52/3,064, giving recall 74.51% and primary Cyber FPR 1.32%. It called 25 of the 191 sensor rows CYBER after holding alerts, versus 10 raw candidate sensor rows called CYBER; this is additional evidence against promotion.
+
+### T2 before/after summary
+
+| Measure | Frozen candidate, 1-of-1 | Selected latch/hold, 2-of-3/M=4 |
+|---|---:|---:|
+| Cyber recall | 54.90% | 74.51% |
+| Cyber FPR, primary | 0.0322% | 1.32% |
+| Sensor rows called CYBER | 10 / 191 | 25 / 191 |
+| Primary false-alarm episodes/hour | 5.14 | 118.29 |
+| Sensor-inclusive false-alarm episodes/hour | 97.71 | 128.57 |
+| Episode recall | 17/17 | 17/17 |
+| Median / P90 delay | 0 / 1 s | 1 / 2 s |
+
+The latch gains per-reading recall only by materially increasing false alarms and sensor rows called CYBER; it is rejected.
+
+### Episode results by subtype using the selected latch
+
+| Subtype | Episodes detected / total | Median / P90 delay |
+|---|---:|---:|
+| FDI/data injection | 6/6 | 0 / 0 s |
+| Replay | 7/7 | 1 / 1 s |
+| Command injection | 8/8 | 0 / 0 s |
+
+### Command-injection visibility
+
+The 56 command-injection rows with zero observed writes occurred 3–17 ticks after their episode onset; 0/56 were at least 30 ticks old. None had aged out of the 30-record window. This rejects “all 56 are simply aged-out writes” as the explanation; it is a label/observation-timing or feature-population limitation, not proven to be a pure window-age artefact.
+
+### Subtype features
+
+The Random Forest subtype model uses the same 37 stored feature columns: the 10 `nbd_*` features, the 18 core `pcd_*`/`dpn_*` features through `pcd_cross_rtu_voltage_divergence`, and the nine corrected residual/DPN features (`pcd_resid_jump`, `pcd_resid_persist`, `pcd_resid_concentration`, `pcd_resid_rtu_share`, `pcd_resid_breadth_count`, `pcd_resid_breadth_frac`, `dpn_legacy`, `dpn_ing_delta`, `dpn_ing_resid`). None is a label column or an explicit label-derived field; they are measured/generated telemetry and network features. Their synthetic provenance and leakage risk still require broader validation.
+
+### Clean-run bound
+
+Skipped. `dataset_generator.py` has no clean-only mode; running it would mix scenarios. Adding a clean-only mode or approximating one would exceed this isolated follow-up. No clean-run false-alarm bound is claimed.
