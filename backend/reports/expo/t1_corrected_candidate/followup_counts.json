@@ -1,0 +1,361 @@
+{
+  "inputs": {
+    "train": "backend\\data\\generated\\nbd_fixed_train_seed42.csv",
+    "validation": "backend\\data\\generated\\nbd_fixed_val_seed999.csv",
+    "test": "backend\\reports\\expo\\appendix_b_probe\\nbd_fixed_test_seed1337.csv"
+  },
+  "candidate_threshold": {
+    "value": 0.25,
+    "source": "candidate bundle; validation-only selection recorded by trainer"
+  },
+  "test_row_count": 3500,
+  "attack_readings": 204,
+  "attack_prevalence": 0.05828571428571429,
+  "candidate_primary_confusion_matrix": {
+    "labels": [
+      "Cyber Intrusion",
+      "Natural Fault",
+      "Normal"
+    ],
+    "matrix": [
+      [
+        112,
+        2,
+        90
+      ],
+      [
+        0,
+        429,
+        66
+      ],
+      [
+        1,
+        8,
+        2601
+      ]
+    ]
+  },
+  "candidate_primary_binary": {
+    "tp": 112,
+    "fp": 1,
+    "fn": 92,
+    "tn": 3104,
+    "recall": {
+      "success": 112,
+      "total": 204,
+      "estimate": 0.5490196078431373,
+      "wilson_95_low": 0.4804595609640706,
+      "wilson_95_high": 0.6157676312115489
+    },
+    "precision": {
+      "success": 112,
+      "total": 113,
+      "estimate": 0.9911504424778761,
+      "wilson_95_low": 0.9515691320824156,
+      "wilson_95_high": 0.9984361239315607
+    },
+    "fpr": {
+      "success": 1,
+      "total": 3105,
+      "estimate": 0.00032206119162640903,
+      "wilson_95_low": 5.6853970926384586e-05,
+      "wilson_95_high": 0.0018221285690549307
+    }
+  },
+  "candidate_subtype_recall": {
+    "command_injection": {
+      "counts": {
+        "success": 34,
+        "total": 90,
+        "estimate": 0.37777777777777777,
+        "wilson_95_low": 0.2845596823864481,
+        "wilson_95_high": 0.4810023594181651
+      }
+    },
+    "data_injection": {
+      "counts": {
+        "success": 41,
+        "total": 47,
+        "estimate": 0.8723404255319149,
+        "wilson_95_low": 0.748260592072075,
+        "wilson_95_high": 0.9401539580185662
+      }
+    },
+    "replay": {
+      "counts": {
+        "success": 63,
+        "total": 67,
+        "estimate": 0.9402985074626866,
+        "wilson_95_low": 0.8563049895862846,
+        "wilson_95_high": 0.9765406488601809
+      }
+    }
+  },
+  "production_model": {
+    "schema_count": 28,
+    "schema": [
+      "nbd_unexpected_write_count",
+      "nbd_mean_response_time_ms",
+      "nbd_std_response_time_ms",
+      "nbd_distinct_sources_count",
+      "nbd_fc3_read_count",
+      "nbd_fc6_write_count",
+      "nbd_fc16_write_count",
+      "nbd_error_count",
+      "nbd_traffic_volume",
+      "nbd_modbus_anomaly_rate",
+      "pcd_max_lnr",
+      "pcd_is_target_rtu_max_lnr",
+      "pcd_chi2_statistic",
+      "pcd_chi2_ratio",
+      "pcd_chi2_failed",
+      "pcd_target_rtu_v_residual",
+      "pcd_target_rtu_p_residual",
+      "pcd_target_rtu_is_flagged",
+      "pcd_global_bad_data_flag",
+      "pcd_voltage_pu_reported",
+      "pcd_voltage_dev_nominal",
+      "pcd_p_mw_reported",
+      "pcd_status_code",
+      "pcd_physics_network_disagreement_index",
+      "pcd_temporal_dv_dt_3tick",
+      "pcd_temporal_dp_dt_3tick",
+      "pcd_temporal_dq_dt_3tick",
+      "pcd_cross_rtu_voltage_divergence"
+    ],
+    "threshold": 0.5799999999999997,
+    "primary_confusion_matrix": {
+      "labels": [
+        "Cyber Intrusion",
+        "Natural Fault",
+        "Normal"
+      ],
+      "matrix": [
+        [
+          108,
+          3,
+          93
+        ],
+        [
+          1,
+          427,
+          67
+        ],
+        [
+          2,
+          46,
+          2562
+        ]
+      ]
+    },
+    "primary_binary": {
+      "tp": 108,
+      "fp": 3,
+      "fn": 96,
+      "tn": 3102,
+      "recall": {
+        "success": 108,
+        "total": 204,
+        "estimate": 0.5294117647058824,
+        "wilson_95_low": 0.4610082503578922,
+        "wilson_95_high": 0.5967280649474793
+      },
+      "precision": {
+        "success": 108,
+        "total": 111,
+        "estimate": 0.972972972972973,
+        "wilson_95_low": 0.9235375935169964,
+        "wilson_95_high": 0.9907663615027679
+      },
+      "fpr": {
+        "success": 3,
+        "total": 3105,
+        "estimate": 0.000966183574879227,
+        "wilson_95_low": 0.0003286427938563989,
+        "wilson_95_high": 0.0028369926851645796
+      }
+    }
+  },
+  "lens_ablation": {
+    "NBD-only": {
+      "feature_count": 10,
+      "roc_auc": 0.6013213981244672,
+      "operating_points": {
+        "0.005": {
+          "validation_threshold": 0.415,
+          "test_fpr": 0.2431561996779388,
+          "test_tpr": 0.36764705882352944,
+          "test_counts": {
+            "tp": 75,
+            "fp": 755,
+            "fn": 129,
+            "tn": 2350
+          }
+        },
+        "0.01": {
+          "validation_threshold": 0.36,
+          "test_fpr": 0.26151368760064414,
+          "test_tpr": 0.37745098039215685,
+          "test_counts": {
+            "tp": 77,
+            "fp": 812,
+            "fn": 127,
+            "tn": 2293
+          }
+        }
+      }
+    },
+    "PCD-only": {
+      "feature_count": 27,
+      "roc_auc": 0.7727005778156673,
+      "operating_points": {
+        "0.005": {
+          "validation_threshold": 0.245,
+          "test_fpr": 0.001610305958132045,
+          "test_tpr": 0.39215686274509803,
+          "test_counts": {
+            "tp": 80,
+            "fp": 5,
+            "fn": 124,
+            "tn": 3100
+          }
+        },
+        "0.01": {
+          "validation_threshold": 0.16,
+          "test_fpr": 0.00676328502415459,
+          "test_tpr": 0.4068627450980392,
+          "test_counts": {
+            "tp": 83,
+            "fp": 21,
+            "fn": 121,
+            "tn": 3084
+          }
+        }
+      }
+    },
+    "fusion-all-37": {
+      "feature_count": 37,
+      "roc_auc": 0.8376156420700325,
+      "operating_points": {
+        "0.005": {
+          "validation_threshold": 0.215,
+          "test_fpr": 0.001610305958132045,
+          "test_tpr": 0.5588235294117647,
+          "test_counts": {
+            "tp": 114,
+            "fp": 5,
+            "fn": 90,
+            "tn": 3100
+          }
+        },
+        "0.01": {
+          "validation_threshold": 0.15,
+          "test_fpr": 0.00933977455716586,
+          "test_tpr": 0.5735294117647058,
+          "test_counts": {
+            "tp": 117,
+            "fp": 29,
+            "fn": 87,
+            "tn": 3076
+          }
+        }
+      }
+    }
+  },
+  "feature_importance": {
+    "nbd_unexpected_write_count_rank": 25,
+    "nbd_unexpected_write_count_share": 0.005098867537527444,
+    "top_10": [
+      {
+        "feature": "pcd_voltage_pu_reported",
+        "importance": 0.1059215918648318,
+        "share": 0.10592159186483184
+      },
+      {
+        "feature": "pcd_temporal_dv_dt_3tick",
+        "importance": 0.10088584932651323,
+        "share": 0.10088584932651326
+      },
+      {
+        "feature": "pcd_voltage_dev_nominal",
+        "importance": 0.09802960226330952,
+        "share": 0.09802960226330955
+      },
+      {
+        "feature": "pcd_cross_rtu_voltage_divergence",
+        "importance": 0.07632117291331886,
+        "share": 0.07632117291331889
+      },
+      {
+        "feature": "pcd_resid_rtu_share",
+        "importance": 0.0491926675693949,
+        "share": 0.049192667569394916
+      },
+      {
+        "feature": "pcd_chi2_statistic",
+        "importance": 0.04839869867851535,
+        "share": 0.048398698678515366
+      },
+      {
+        "feature": "pcd_p_mw_reported",
+        "importance": 0.04750633147636986,
+        "share": 0.04750633147636987
+      },
+      {
+        "feature": "pcd_chi2_ratio",
+        "importance": 0.04633187526546521,
+        "share": 0.04633187526546522
+      },
+      {
+        "feature": "pcd_temporal_dq_dt_3tick",
+        "importance": 0.04190768323103974,
+        "share": 0.04190768323103975
+      },
+      {
+        "feature": "pcd_resid_jump",
+        "importance": 0.04150417329260395,
+        "share": 0.04150417329260397
+      }
+    ]
+  },
+  "episodes": {
+    "attack_episode_count": 17,
+    "detected": 17,
+    "detection_rate": 1.0,
+    "delays_seconds": [
+      1,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "median_delay_seconds": 0.0,
+    "p90_delay_seconds": 1.0,
+    "false_alarm_episode_count_non_attack_ticks": 18,
+    "duration_hours": 0.19444444444444445,
+    "false_alarm_episodes_per_hour": 92.57142857142857
+  },
+  "old_vs_new_generation": {
+    "corrected_test_ticks": 700,
+    "corrected_schedule": "seed=1337; total_ticks=700; random scenario transitions with probabilities 25% Normal, 25% Natural Fault, 25% Sensor Malfunction, 25% Cyber Intrusion; durations depend on seeded random.randint calls",
+    "older_reported_episodes": 22,
+    "corrected_observed_episodes": 17,
+    "comparison_note": "The repository's older test_dataset_seed1337.csv has 22 cyber episodes; the corrected nbd_fixed_test_seed1337.csv has 17. They are distinct files; the safe probe is not claimed byte-identical to the documented historical hash."
+  },
+  "model_compatibility": {
+    "production_scored_read_only": true,
+    "production_schema_compatible_with_test_columns": true
+  }
+}
