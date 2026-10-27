@@ -1,0 +1,63 @@
+.......................................................F................ [ 23%]
+........................................................................ [ 46%]
+........................................................................ [ 69%]
+........................................................................ [ 92%]
+.........................                                                [100%]
+================================== FAILURES ===================================
+____________________ test_all_repo_citations_are_canonical ____________________
+
+    def test_all_repo_citations_are_canonical():
+        """Verify that all arXiv IDs and DOIs in the repo match docs/REFERENCES.md."""
+        repo_root = get_repo_root()
+        unverified = scan_repo_for_unverified_identifiers(repo_root)
+    
+        if unverified:
+            details = "\n".join(
+                f"  {file}:{line} -> {identifier}"
+                for file, line, identifier in unverified
+            )
+>           pytest.fail(
+                f"Found {len(unverified)} unverified citation identifier(s) not listed in docs/REFERENCES.md:\n{details}"
+            )
+E           Failed: Found 7 unverified citation identifier(s) not listed in docs/REFERENCES.md:
+E             docs\GridSentinel_doc.txt:2346 -> 10.1109/ISRCS.2014.6900095
+E             backend\reports\Data4Cyber_V3_Audit.md:57 -> 10.5281/zenodo.19965384`
+E             backend\reports\Data4Cyber_V3_Audit.md:59 -> 10.5281/zenodo.19965384`
+E             backend\reports\Data4Cyber_V3_Audit.md:59 -> 10.5281/zenodo.22953576`
+E             backend\reports\Data4Cyber_V3_Audit.md:115 -> 10.5281/zenodo.19965384`
+E             backend\reports\Data4Cyber_V3_Audit.md:134 -> 10.5281/zenodo.19965384`
+E             backend\reports\Data4Cyber_V3_Audit.md:134 -> 10.5281/zenodo.22953576`
+
+backend\tests\test_citation_lint.py:119: Failed
+============================== warnings summary ===============================
+backend/tests/test_api.py: 66 warnings
+backend/tests/test_live_pipeline_regressions.py: 6 warnings
+backend/tests/test_scada_master.py: 3 warnings
+backend/tests/test_scenario_injector.py: 36 warnings
+backend/tests/test_state_estimation.py: 36 warnings
+backend/tests/test_ws_live.py: 36 warnings
+  C:\Users\K Srisai Kedar\OneDrive\Documents\Projects\GridSentinel - SIH\gridsentinel\backend\.venv\Lib\site-packages\pandapower\estimation\results.py:56: DeprecationWarning: Bitwise inversion '~' on bool is deprecated and will be removed in Python 3.16. This returns the bitwise inversion of the underlying int object and is usually not what you expect from negating a bool. Use the 'not' operator for boolean negation or ~int(x) if you really want the bitwise inversion of the underlying int.
+    if ~net[element].empty:
+
+backend/tests/test_benchmark_evaluation_protocol.py::test_production_model_overwrite_guard
+backend/tests/test_benchmark_evaluation_protocol.py::test_production_model_overwrite_guard
+backend/tests/test_benchmark_evaluation_protocol.py::test_production_model_overwrite_guard
+backend/tests/test_benchmark_evaluation_protocol.py::test_evaluation_separation_in_metrics_output
+backend/tests/test_benchmark_evaluation_protocol.py::test_evaluation_separation_in_metrics_output
+backend/tests/test_benchmark_evaluation_protocol.py::test_evaluation_separation_in_metrics_output
+  C:\Users\K Srisai Kedar\OneDrive\Documents\Projects\GridSentinel - SIH\gridsentinel\backend\.venv\Lib\site-packages\sklearn\metrics\_classification.py:1879: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+    _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+
+backend/tests/test_mitre_ics.py: 1 warning
+backend/tests/test_nbd_leakage_regression.py: 1 warning
+backend/tests/test_scenario_injector.py: 2 warnings
+backend/tests/test_sensor_drift_taxonomy.py: 1 warning
+backend/tests/test_validation_metrics.py: 276 warnings
+backend/tests/test_ws_live.py: 2 warnings
+  C:\Users\K Srisai Kedar\OneDrive\Documents\Projects\GridSentinel - SIH\gridsentinel\backend\.venv\Lib\site-packages\sklearn\utils\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED backend/tests/test_citation_lint.py::test_all_repo_citations_are_canonical
+1 failed, 312 passed, 472 warnings in 69.88s (0:01:09)

@@ -1,0 +1,382 @@
+{
+  "inputs": {
+    "test": "backend\\reports\\expo\\appendix_b_probe\\nbd_fixed_test_seed1337.csv",
+    "candidate": "backend\\models\\experiments\\expo_t1_corrected_candidate.joblib"
+  },
+  "definition": "A primary false-alarm episode is a contiguous run of alert-positive tick seconds after excluding Cyber Intrusion and Sensor Malfunction rows. A hold tail starts strictly after a Cyber episode end and no later than end+4 seconds.",
+  "raw_1_of_1": {
+    "grace_seconds": 4,
+    "attack_episodes": [
+      [
+        11,
+        28
+      ],
+      [
+        48,
+        58
+      ],
+      [
+        69,
+        79
+      ],
+      [
+        120,
+        126
+      ],
+      [
+        137,
+        146
+      ],
+      [
+        160,
+        166
+      ],
+      [
+        180,
+        190
+      ],
+      [
+        213,
+        224
+      ],
+      [
+        274,
+        286
+      ],
+      [
+        327,
+        334
+      ],
+      [
+        344,
+        360
+      ],
+      [
+        368,
+        377
+      ],
+      [
+        462,
+        485
+      ],
+      [
+        513,
+        518
+      ],
+      [
+        539,
+        545
+      ],
+      [
+        602,
+        623
+      ],
+      [
+        661,
+        670
+      ]
+    ],
+    "primary_false_alarm_episodes": [
+      [
+        213,
+        213
+      ]
+    ],
+    "hold_tail_episodes": [],
+    "genuine_false_alarm_episodes": [
+      [
+        213,
+        213
+      ]
+    ],
+    "counts": {
+      "primary_false_alarm_episodes": 1,
+      "hold_tail_episodes": 0,
+      "genuine_false_alarm_episodes": 1,
+      "primary_non_attack_seconds": 700
+    },
+    "genuine_rate": {
+      "count": 1,
+      "exposure_hours": 0.19444444444444445,
+      "rate_per_hour": 5.142857142857142,
+      "poisson_95_low_per_hour": 0.1302058696334908,
+      "poisson_95_high_per_hour": 28.654166010542905
+    }
+  },
+  "selected_2_of_3_m4": {
+    "grace_seconds": 4,
+    "attack_episodes": [
+      [
+        11,
+        28
+      ],
+      [
+        48,
+        58
+      ],
+      [
+        69,
+        79
+      ],
+      [
+        120,
+        126
+      ],
+      [
+        137,
+        146
+      ],
+      [
+        160,
+        166
+      ],
+      [
+        180,
+        190
+      ],
+      [
+        213,
+        224
+      ],
+      [
+        274,
+        286
+      ],
+      [
+        327,
+        334
+      ],
+      [
+        344,
+        360
+      ],
+      [
+        368,
+        377
+      ],
+      [
+        462,
+        485
+      ],
+      [
+        513,
+        518
+      ],
+      [
+        539,
+        545
+      ],
+      [
+        602,
+        623
+      ],
+      [
+        661,
+        670
+      ]
+    ],
+    "primary_false_alarm_episodes": [
+      [
+        59,
+        59
+      ],
+      [
+        102,
+        102
+      ],
+      [
+        127,
+        129
+      ],
+      [
+        137,
+        137
+      ],
+      [
+        147,
+        147
+      ],
+      [
+        167,
+        168
+      ],
+      [
+        191,
+        192
+      ],
+      [
+        237,
+        239
+      ],
+      [
+        281,
+        281
+      ],
+      [
+        287,
+        287
+      ],
+      [
+        327,
+        327
+      ],
+      [
+        368,
+        369
+      ],
+      [
+        378,
+        378
+      ],
+      [
+        447,
+        448
+      ],
+      [
+        473,
+        473
+      ],
+      [
+        479,
+        481
+      ],
+      [
+        486,
+        488
+      ],
+      [
+        519,
+        520
+      ],
+      [
+        525,
+        525
+      ],
+      [
+        546,
+        548
+      ],
+      [
+        577,
+        577
+      ],
+      [
+        602,
+        604
+      ],
+      [
+        624,
+        625
+      ]
+    ],
+    "hold_tail_episodes": [
+      [
+        59,
+        59
+      ],
+      [
+        127,
+        129
+      ],
+      [
+        147,
+        147
+      ],
+      [
+        167,
+        168
+      ],
+      [
+        191,
+        192
+      ],
+      [
+        287,
+        287
+      ],
+      [
+        378,
+        378
+      ],
+      [
+        486,
+        488
+      ],
+      [
+        519,
+        520
+      ],
+      [
+        546,
+        548
+      ],
+      [
+        624,
+        625
+      ]
+    ],
+    "genuine_false_alarm_episodes": [
+      [
+        102,
+        102
+      ],
+      [
+        137,
+        137
+      ],
+      [
+        237,
+        239
+      ],
+      [
+        281,
+        281
+      ],
+      [
+        327,
+        327
+      ],
+      [
+        368,
+        369
+      ],
+      [
+        447,
+        448
+      ],
+      [
+        473,
+        473
+      ],
+      [
+        479,
+        481
+      ],
+      [
+        525,
+        525
+      ],
+      [
+        577,
+        577
+      ],
+      [
+        602,
+        604
+      ]
+    ],
+    "counts": {
+      "primary_false_alarm_episodes": 23,
+      "hold_tail_episodes": 11,
+      "genuine_false_alarm_episodes": 12,
+      "primary_non_attack_seconds": 700
+    },
+    "genuine_rate": {
+      "count": 12,
+      "exposure_hours": 0.19444444444444445,
+      "rate_per_hour": 61.714285714285715,
+      "poisson_95_low_per_hour": 31.88867198771426,
+      "poisson_95_high_per_hour": 107.80243739062436
+    }
+  }
+}

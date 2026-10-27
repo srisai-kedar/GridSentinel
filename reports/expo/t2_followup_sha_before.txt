@@ -1,0 +1,3 @@
+Algorithm SHA256
+Hash EE5211510E41EDDAC32ED1EED405AF982A0A550BD0B75E8867253135B812CCAE
+Path C:\Users\K Srisai Kedar\OneDrive\Documents\Projects\GridSentinel - SIH\gridsentinel\backend\models\fusion_classifier.joblib

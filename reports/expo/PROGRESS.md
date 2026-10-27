@@ -221,6 +221,76 @@ Selected 2-of-3/M=4 per-reading test counts were TP/FP/FN/TN = 152/41/52/3,064, 
 
 The latch gains per-reading recall only by materially increasing false alarms and sensor rows called CYBER; it is rejected.
 
+## 2026-10-27 — T2 demo check, tail reconciliation, and slide lock
+
+### Deployed demo command and result
+
+Commands run against `https://gridsentinel-72tf.onrender.com`:
+
+```text
+Invoke-RestMethod https://gridsentinel-72tf.onrender.com/health
+Invoke-RestMethod https://gridsentinel-72tf.onrender.com/ot/fault/sensor-drift -Method Post -Body '{"rtu_id":1,"drift_percent":0.08,"duration_ticks":25}' -ContentType application/json
+1..30 | ForEach-Object { Invoke-RestMethod https://gridsentinel-72tf.onrender.com/classifier/verdict -Method Post -Body '{}' -ContentType application/json; Start-Sleep -Milliseconds 1000 }
+Invoke-RestMethod https://gridsentinel-72tf.onrender.com/ot/reset -Method Post -Body '{}' -ContentType application/json
+```
+
+The deployed health check returned `status=ok`; injection returned `SENSOR_DRIFT` for RTU-1; reset completed. The raw second run is stored at `backend/reports/expo/t1_corrected_candidate/live_sensor_drift_demo.json`.
+
+| Deployed RTU-1 result over 30 samples | Count |
+|---|---:|
+| Natural Fault / physical_fault | 30 |
+| Sensor Drift | 0 |
+| Cyber | 0 |
+| Model loaded | 30/30 true |
+
+The old production model's offline 0/191 drift result is explained by the schema gap. `ClassifierService._predict_untimed` builds its vector from the bundle schema at `backend/app/ml/classifier_service.py:571`; the old bundle has 28 features, so the nine corrected residual/DPN fields are absent. The drift rule at `classifier_service.py:92-113` specifically reads `pcd_resid_concentration`, `pcd_resid_breadth_count`, and `pcd_resid_rtu_share`; absent keys default to zero, and the required concentration condition therefore fails. The interception is applied at `classifier_service.py:621-625`. The deployed demo currently displays `Natural Fault / physical_fault` for this scenario, not `SENSOR_DRIFT`.
+
+### Latch-tail reconciliation
+
+For each false-alarm episode, a hold tail was defined as a false-alarm run whose first alert tick was strictly after, and no more than four seconds after, the end tick of any Cyber episode. **Measured by `t2_tail_reconcile.py`:** the selected latch had 23 primary false-alarm episodes: 11 hold tails and 12 genuine episodes. The raw baseline had 1 primary false-alarm episode: 0 hold tails and 1 genuine episode. The same 4-second rule was applied to both. The selected-latch hold-tail intervals were `(59,59)`, `(127,129)`, `(147,147)`, `(167,168)`, `(191,192)`, `(287,287)`, `(378,378)`, `(486,488)`, `(519,520)`, `(546,548)`, and `(624,625)`; the remaining 12 intervals were genuine. Full raw episode lists and the exact command output are in `tail_reconciliation.json` and `tail_reconciliation_console_output.txt`.
+
+| Method | Per-reading recall | Episode recall | Median / P90 delay | FA episodes after tail exclusion | FA/hour, Poisson 95% |
+|---|---:|---:|---:|---:|---:|
+| Raw candidate 1-of-1 | 54.90% | 17/17 | 0 / 1 s | 1 / 700 s | 5.14 (0.13–28.60) |
+| Selected 2-of-3, M=4 latch | 74.51% | 17/17 | 1 / 2 s | 12 / 700 s | 61.71 (31.89–107.80) |
+
+The 4-second grace rule removes no episodes and therefore does not explain the tail burden.
+
+### Episode and window reconciliation
+
+The subtype episode counts are computed independently within each subtype: FDI 6, replay 7, command injection 8. They sum to 21 because subtype runs can be adjacent in the global Cyber timeline and therefore merge into one contiguous global episode. The global test episode count is 17; subtype episodes are not additive to it.
+
+The feature extractor calls `traffic_logger.get_recent_events(limit=30)` in `backend/app/ml/dataset_generator.py:149`. The generator creates five RTU records per simulation tick (`dataset_generator.py:170-203`), so the global 30-record window is approximately six ticks × five RTU polls. The 56 zero-write command rows occur only 3–17 ticks after their own episode onset, so none has aged beyond 30 ticks; the 30-record window is not a 30-second per-RTU window. This is why “aged out” is not supported as the sole explanation.
+
+### Locked slide results
+
+Every figure below is **Measured** or **Computed** from the cited command/output; no production promotion is implied.
+
+| Slide figure | Locked value | Source command / artifact |
+|---|---:|---|
+| Corrected test rows | 3,500 | T1 follow-up counts command; `followup_counts.json` |
+| Corrected Cyber readings / prevalence | 204 / 5.83% | T1 follow-up counts command |
+| Candidate Cyber recall / precision / FPR | 54.90% / 99.12% / 0.0322% | T1 follow-up counts command |
+| Old production Cyber recall / FPR on same corrected file | 52.94% / 0.0966% | T1 follow-up counts command |
+| Candidate Cyber episodes | 17/17; median 0 s; p90 1 s | T1 follow-up counts command |
+| Fusion ROC-AUC / TPR at validation-selected 0.5% target | 0.8376 / 55.88% | T1 follow-up counts command |
+| NBD-only ROC-AUC | 0.6013 | T1 follow-up counts command |
+| Candidate subtype detection recall: FDI / replay / command | 85.11% / 58.21% / 36.67% | T1 reconciliation command |
+| Candidate service-path sensor rows: SENSOR_DRIFT / CYBER | 119 / 10 | T2 follow-up command |
+| Deployed demo RTU-1 sensor-drift verdict | 30/30 Natural Fault; 0/30 Sensor Drift | deployed demo command; `live_sensor_drift_demo.json` |
+| Selected latch per-reading recall / primary FPR | 74.51% / 1.32% | T2 follow-up command |
+| Selected latch primary false-alarm rate after 4-second hold-tail exclusion | 61.71/hour (31.89–107.80) | `t2_tail_reconcile.py` command; `tail_reconciliation.json` |
+| Selected latch sensor-inclusive false-alarm rate | 128.57/hour (83.20–189.80) | T2 follow-up command |
+
+### Claims in `docs/GridSentinel_doc.txt` now contradicted or unsupported
+
+- The headline `22 / 22` attack episodes, 52.65% recall, 0.43% FPR, and 8 false-alarm episodes in 436 seconds describe the older `test_dataset_seed1337.csv`; they are not results for the corrected 3,500-row test used here.
+- The document's 22-episode assumption is contradicted by the corrected file's 17 global Cyber episodes; the older and corrected files have different class distributions and schemas.
+- The document's per-subtype recalls 73.81% / 46.88% / 38.10% are pre-correction values and cannot be reused as corrected-test results. Corrected top-level detection values are 85.11% FDI, 58.21% replay, and 36.67% command injection.
+- The document states that the held-out test contains no sensor-drift rows and has no drift performance numbers; the corrected test does contain 191 sensor rows, but the deployed 28-feature model still produces no SENSOR_DRIFT verdicts in the live demo.
+- The document's 28-feature Appendix A and its 28-feature test description are inconsistent with the corrected 37-feature candidate and drift-rule dependence on the nine added fields.
+- The document's planned “persistence and hysteresis” work is not a demonstrated improvement: the selected latch increased recall but raised primary false-alarm burden to 118.29/hour and sensor-inclusive burden to 128.57/hour.
+
 ### Episode results by subtype using the selected latch
 
 | Subtype | Episodes detected / total | Median / P90 delay |
