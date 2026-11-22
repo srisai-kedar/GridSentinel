@@ -14,16 +14,23 @@ from __future__ import annotations
 import argparse
 import asyncio
 import collections
+import datetime
+import hashlib
+import importlib.metadata
+import json
 import os
+import platform
 from pathlib import Path
 import random
+import subprocess
+import time
 from typing import Any, Dict, List, Optional
 import numpy as np
 import pandas as pd
 
 from app.core.feeder import build_feeder
 from app.ml.feature_engineering import FEATURE_SCHEMA, extract_features
-from app.ot.rtu_server import rtu_pool
+from app.ot.rtu_server import configure_port_base, rtu_pool
 from app.ot.scenario_injector import scenario_injector
 from app.ot.simulation_loop import sim_loop
 from app.ot.traffic_logger import traffic_logger
@@ -33,6 +40,10 @@ async def generate_dataset(
     seed: int = 42,
     total_ticks: int = 2000,
     out_csv: Optional[str] = None,
+    mode: str = "scenario_mix",
+    port_base: int = 5021,
+    run_id: str = "default",
+    scenario_probabilities: Optional[Dict[str, float]] = None,
 ) -> pd.DataFrame:
     """
     Run automated simulation loop for `total_ticks` and record labeled dataset.
@@ -51,7 +62,13 @@ async def generate_dataset(
     pd.DataFrame
         DataFrame containing all feature columns plus labels.
     """
-    print(f"[DatasetGenerator] Starting generation: Seed={seed}, Ticks={total_ticks}...")
+    if mode not in {"scenario_mix", "clean"}:
+        raise ValueError(f"Unsupported generation mode: {mode}")
+    probabilities = resolve_scenario_probabilities(mode, scenario_probabilities)
+    configure_port_base(port_base)
+    started = datetime.datetime.now(datetime.timezone.utc)
+    perf_started = time.perf_counter()
+    print(f"[DatasetGenerator] Starting generation: Seed={seed}, Ticks={total_ticks}, Mode={mode}, Run={run_id}...")
     random.seed(seed)
     np.random.seed(seed)
 
@@ -78,14 +95,16 @@ async def generate_dataset(
             if scenario_remaining_ticks <= 0:
                 scenario_injector.clear_all_scenarios(net=net)
 
-                # Pick next scenario type roughly balanced
-                # 25% Normal, 25% Natural Fault, 25% Sensor Malfunction, 25% Cyber Intrusion
+                # Pick the next scenario from the configured, normalized probabilities.
                 p = random.random()
-                if p < 0.25:
+                normal_cutoff = probabilities.get("normal", 0.0)
+                natural_cutoff = normal_cutoff + probabilities.get("natural_fault", 0.0)
+                sensor_cutoff = natural_cutoff + probabilities.get("sensor_malfunction", 0.0)
+                if p < normal_cutoff:
                     current_scenario_type = "Normal"
                     current_subtype = "normal"
                     scenario_remaining_ticks = random.randint(8, 20)
-                elif p < 0.50:
+                elif p < natural_cutoff:
                     current_scenario_type = "Natural Fault"
                     current_subtype = random.choice(["line_trip", "short_circuit"])
                     scenario_remaining_ticks = random.randint(4, 10)
@@ -102,7 +121,7 @@ async def generate_dataset(
                             fault_load_mvar=random.uniform(1.0, 2.0),
                             duration_ticks=scenario_remaining_ticks,
                         )
-                elif p < 0.75:
+                elif p < sensor_cutoff:
                     current_scenario_type = "Sensor Malfunction"
                     current_subtype = "sensor_drift"
                     attack_target_rtu = random.choice([1, 2, 3, 4, 5])
@@ -113,7 +132,7 @@ async def generate_dataset(
                         drift_percent=drift_val,
                         duration_ticks=scenario_remaining_ticks,
                     )
-                else:
+                elif mode == "scenario_mix":
                     current_scenario_type = "Cyber Intrusion"
                     current_subtype = random.choice(["data_injection", "command_injection", "replay"])
                     attack_target_rtu = random.choice([1, 2, 3, 4, 5])
@@ -225,8 +244,108 @@ async def generate_dataset(
         out_path.parent.mkdir(parents=True, exist_ok=True)
         df.to_csv(out_path, index=False)
         print(f"[DatasetGenerator] Saved dataset to {out_path} ({len(df)} rows)")
+        _write_run_manifest(
+            out_path=out_path,
+            run_id=run_id,
+            seed=seed,
+            total_ticks=total_ticks,
+            mode=mode,
+            port_base=port_base,
+            probabilities=probabilities,
+            started=started,
+            elapsed_seconds=time.perf_counter() - perf_started,
+            rows=len(df),
+        )
 
     return df
+
+
+def resolve_scenario_probabilities(
+    mode: str, scenario_probabilities: Optional[Dict[str, float]] = None
+) -> Dict[str, float]:
+    """Return normalized scenario weights, restricting clean mode to benign classes."""
+    probabilities = scenario_probabilities or {
+        "normal": 0.25,
+        "natural_fault": 0.25,
+        "sensor_malfunction": 0.25,
+        "cyber": 0.25,
+    }
+    if mode == "clean":
+        probabilities = {
+            "normal": float(probabilities.get("normal", 0.5)),
+            "natural_fault": float(probabilities.get("natural_fault", 0.5)),
+        }
+    if any(value < 0 for value in probabilities.values()):
+        raise ValueError("Scenario probabilities must be non-negative")
+    total_probability = sum(probabilities.values())
+    if total_probability <= 0:
+        raise ValueError("Scenario probabilities must have a positive sum")
+    return {key: value / total_probability for key, value in probabilities.items()}
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _git_sha() -> str:
+    try:
+        return subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+    except Exception:
+        return "unknown"
+
+
+def _package_versions() -> Dict[str, str]:
+    names = ["numpy", "pandas", "pandapower", "pymodbus", "scikit-learn", "scipy"]
+    return {name: importlib.metadata.version(name) for name in names if _has_distribution(name)}
+
+
+def _has_distribution(name: str) -> bool:
+    try:
+        importlib.metadata.version(name)
+        return True
+    except importlib.metadata.PackageNotFoundError:
+        return False
+
+
+def _write_run_manifest(
+    *, out_path: Path, run_id: str, seed: int, total_ticks: int, mode: str,
+    port_base: int, probabilities: Dict[str, float], started: datetime.datetime,
+    elapsed_seconds: float, rows: int,
+) -> None:
+    end = datetime.datetime.now(datetime.timezone.utc)
+    manifest = {
+        "task_id": "P0",
+        "run_id": run_id,
+        "git_sha": _git_sha(),
+        "python_version": platform.python_version(),
+        "package_versions": _package_versions(),
+        "cpu_model": platform.processor() or platform.machine(),
+        "cli_arguments": {
+            "seed": seed,
+            "ticks": total_ticks,
+            "mode": mode,
+            "port_base": port_base,
+            "run_id": run_id,
+            "out": str(out_path),
+            "scenario_probabilities": probabilities,
+        },
+        "seeds": {"python_random": seed, "numpy": seed},
+        "started_at_utc": started.isoformat(),
+        "ended_at_utc": end.isoformat(),
+        "elapsed_seconds": round(elapsed_seconds, 6),
+        "throughput_ticks_per_second": round(total_ticks / elapsed_seconds, 6) if elapsed_seconds else None,
+        "rows": rows,
+        "timing_affected_columns": ["nbd_mean_response_time_ms", "nbd_std_response_time_ms"],
+        "input_datasets": {},
+        "output_datasets": {out_path.name: {"path": str(out_path), "sha256": _sha256(out_path)}},
+    }
+    manifest_path = out_path.parent / "run_manifest.json"
+    manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True), encoding="utf-8")
+    print(f"[DatasetGenerator] Wrote run manifest to {manifest_path}")
 
 
 def main_cli():
@@ -234,9 +353,30 @@ def main_cli():
     parser.add_argument("--seed", type=int, default=42, help="RNG seed")
     parser.add_argument("--ticks", type=int, default=1500, help="Number of ticks to simulate")
     parser.add_argument("--out", type=str, default="data/generated/train_dataset_seed42.csv", help="Output CSV path")
+    parser.add_argument("--mode", choices=["scenario_mix", "clean"], default="scenario_mix")
+    parser.add_argument("--port-base", type=int, default=5021, help="First RTU TCP port for this process")
+    parser.add_argument("--run-id", type=str, default="default", help="Stable identifier recorded in run_manifest.json")
+    parser.add_argument("--normal-prob", type=float, default=0.25)
+    parser.add_argument("--natural-fault-prob", type=float, default=0.25)
+    parser.add_argument("--sensor-malfunction-prob", type=float, default=0.25)
+    parser.add_argument("--cyber-prob", type=float, default=0.25)
 
     args = parser.parse_args()
-    asyncio.run(generate_dataset(seed=args.seed, total_ticks=args.ticks, out_csv=args.out))
+    probabilities = {
+        "normal": args.normal_prob,
+        "natural_fault": args.natural_fault_prob,
+        "sensor_malfunction": args.sensor_malfunction_prob,
+        "cyber": args.cyber_prob,
+    }
+    asyncio.run(generate_dataset(
+        seed=args.seed,
+        total_ticks=args.ticks,
+        out_csv=args.out,
+        mode=args.mode,
+        port_base=args.port_base,
+        run_id=args.run_id,
+        scenario_probabilities=probabilities,
+    ))
 
 
 if __name__ == "__main__":

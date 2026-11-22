@@ -1,0 +1,49 @@
+{
+  "cli_arguments": {
+    "mode": "scenario_mix",
+    "out": "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0\\concurrency\\seed_303\\generated.csv",
+    "port_base": 17021,
+    "run_id": "concurrency-303",
+    "scenario_probabilities": {
+      "cyber": 0.25,
+      "natural_fault": 0.25,
+      "normal": 0.25,
+      "sensor_malfunction": 0.25
+    },
+    "seed": 303,
+    "ticks": 40
+  },
+  "cpu_model": "AMD64 Family 26 Model 96 Stepping 0, AuthenticAMD",
+  "elapsed_seconds": 38.318263,
+  "ended_at_utc": "2026-11-22T18:50:06.153360+00:00",
+  "git_sha": "a4fed43882dda60c926542fb569a31c9361b3294",
+  "input_datasets": {},
+  "output_datasets": {
+    "generated.csv": {
+      "path": "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0\\concurrency\\seed_303\\generated.csv",
+      "sha256": "bb790064e6927ecea244c45f68cf83600c1f262fd8a7422067a94457400d1d8b"
+    }
+  },
+  "package_versions": {
+    "numpy": "2.4.6",
+    "pandapower": "3.5.4",
+    "pandas": "2.3.3",
+    "pymodbus": "3.15.0",
+    "scikit-learn": "1.9.0",
+    "scipy": "1.18.1"
+  },
+  "python_version": "3.13.7",
+  "rows": 200,
+  "run_id": "concurrency-303",
+  "seeds": {
+    "numpy": 303,
+    "python_random": 303
+  },
+  "started_at_utc": "2026-11-22T18:49:27.835068+00:00",
+  "task_id": "P0",
+  "throughput_ticks_per_second": 1.043889,
+  "timing_affected_columns": [
+    "nbd_mean_response_time_ms",
+    "nbd_std_response_time_ms"
+  ]
+}

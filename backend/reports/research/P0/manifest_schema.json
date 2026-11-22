@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GridSentinel P0 run manifest",
+  "type": "object",
+  "required": ["task_id", "run_id", "git_sha", "python_version", "package_versions", "cpu_model", "cli_arguments", "seeds", "started_at_utc", "ended_at_utc", "elapsed_seconds", "throughput_ticks_per_second", "input_datasets", "output_datasets"],
+  "properties": {
+    "task_id": {"const": "P0"},
+    "run_id": {"type": "string"},
+    "git_sha": {"type": "string"},
+    "python_version": {"type": "string"},
+    "package_versions": {"type": "object", "additionalProperties": {"type": "string"}},
+    "cpu_model": {"type": "string"},
+    "cli_arguments": {"type": "object"},
+    "seeds": {"type": "object"},
+    "started_at_utc": {"type": "string"},
+    "ended_at_utc": {"type": "string"},
+    "elapsed_seconds": {"type": "number"},
+    "throughput_ticks_per_second": {"type": ["number", "null"]},
+    "input_datasets": {"type": "object"},
+    "output_datasets": {"type": "object"}
+  }
+}

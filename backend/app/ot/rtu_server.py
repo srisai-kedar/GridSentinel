@@ -121,6 +121,16 @@ RTU_CONFIGS = [
 ]
 
 
+def configure_port_base(port_base: int) -> None:
+    """Configure this process's five RTU ports from a non-overlapping base."""
+    if port_base < 1024 or port_base > 65000 - len(RTU_CONFIGS):
+        raise ValueError("port_base must leave room for all RTU ports")
+    for config in RTU_CONFIGS:
+        config["port"] = int(port_base) + int(config["rtu_id"]) - 1
+    for rtu_id, rtu in rtu_pool.rtus.items():
+        rtu.port = next(c["port"] for c in RTU_CONFIGS if c["rtu_id"] == rtu_id)
+
+
 # ---------------------------------------------------------------------------
 # Conversion Utilities
 # ---------------------------------------------------------------------------

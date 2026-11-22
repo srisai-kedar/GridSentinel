@@ -25,3 +25,6 @@ Thumbs.db
 
 # Logs
 *.log
+
+# P0 generated datasets are reproducibility outputs, not source-controlled data.
+/backend/experiments/P0/**/*.csv
