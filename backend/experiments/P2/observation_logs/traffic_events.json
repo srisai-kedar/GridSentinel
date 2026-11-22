@@ -1,0 +1,16 @@
+[
+  {
+    "target_rtu": "RTU_1",
+    "function_code": 3,
+    "success": true,
+    "response_time_ms": 2.0,
+    "source": "SCADA"
+  },
+  {
+    "target_rtu": "RTU_1",
+    "function_code": 6,
+    "success": false,
+    "response_time_ms": 3.0,
+    "source": "SCADA"
+  }
+]
