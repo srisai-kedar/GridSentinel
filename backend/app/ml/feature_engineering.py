@@ -26,6 +26,7 @@ from app.ml.dpn_features import (
     compute_resid_persist,
     compute_resid_rtu_share,
 )
+from app.core.topology_map import bus_index_for_rtu, measurement_matches_rtu
 
 # ---------------------------------------------------------------------------
 # The sole authoritative source tag for RTU-server-observed write events.
@@ -89,14 +90,6 @@ FEATURE_SCHEMA: List[str] = [
     "dpn_ing_resid",                    # Control: 1 + r_max / chi2_threshold
 ]
 
-# Mapping of RTU IDs to their pandapower element bindings
-# RTU 1 -> Bus 1, Trafo 0
-# RTU 2 -> Bus 2, Line 0
-# RTU 3 -> Bus 3, Line 1
-# RTU 4 -> Bus 4, Line 2
-# RTU 5 -> Bus 5, Line 3
-RTU_BUS_MAPPING = {1: 1, 2: 2, 3: 3, 4: 4, 5: 5}
-
 # Electrical adjacency mapping for radial feeder
 # Bus 1 (Substation) connects to Bus 2, Bus 3, Bus 4
 # Bus 2 (Feeder A) connects to Bus 1 and Bus 5 (Feeder A2)
@@ -141,7 +134,7 @@ def extract_features(
     dict
         Feature dictionary guaranteed to contain exactly the keys in FEATURE_SCHEMA.
     """
-    target_bus = RTU_BUS_MAPPING.get(target_rtu_id, target_rtu_id)
+    target_bus = bus_index_for_rtu(target_rtu_id)
     target_rtu_str = f"RTU_{target_rtu_id}"
     target_rtu_dash = f"RTU-{target_rtu_id}"
 
@@ -227,7 +220,7 @@ def extract_features(
 
     # Residuals inspection
     max_lnr = 0.0
-    max_lnr_element: Optional[int] = None
+    max_lnr_binding: Optional[tuple[str, int]] = None
     target_v_res = 0.0
     target_p_res = 0.0
     target_is_flagged = 0.0
@@ -239,17 +232,21 @@ def extract_features(
 
         if lnr > max_lnr:
             max_lnr = lnr
-            max_lnr_element = elem
+            max_lnr_binding = (elem_type, elem)
 
         # Check if this flagged measurement corresponds to our target RTU
         if elem_type == "bus" and elem == target_bus:
             target_v_res = max(target_v_res, lnr)
             target_is_flagged = 1.0
-        elif elem_type in ("line", "trafo") and elem == (target_rtu_id - 1 if target_rtu_id > 1 else 0):
+        elif measurement_matches_rtu(elem_type, elem, target_rtu_id) and elem_type in ("line", "trafo"):
             target_p_res = max(target_p_res, lnr)
             target_is_flagged = 1.0
 
-    is_target_max_lnr = 1.0 if (max_lnr_element == target_bus and max_lnr > 0.0) else 0.0
+    is_target_max_lnr = 1.0 if (
+        max_lnr > 0.0
+        and max_lnr_binding is not None
+        and measurement_matches_rtu(max_lnr_binding[0], max_lnr_binding[1], target_rtu_id)
+    ) else 0.0
 
     # Telemetry values for target RTU
     reported_v = 1.0
@@ -325,8 +322,7 @@ def extract_features(
     if all_residuals:
         rtu_meas = [
             r for r in all_residuals
-            if (r.get("element_type") == "bus" and r.get("element") == target_bus)
-            or (r.get("element_type") in ("line", "trafo") and r.get("element") == (target_rtu_id - 1 if target_rtu_id > 1 else 0))
+            if measurement_matches_rtu(r.get("element_type", ""), r.get("element", -1), target_rtu_id)
         ]
         curr_rtu_resids = [float(r.get("normalised_residual", 0.0)) for r in rtu_meas]
         all_norm_resids = [float(r.get("normalised_residual", 0.0)) for r in all_residuals]

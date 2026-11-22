@@ -709,7 +709,7 @@ class ClassifierService:
         if state_estimation_result:
             all_resids = state_estimation_result.get("all_residuals", [])
             from app.ml.dpn_features import build_disagreement_payload
-            from app.ml.feature_engineering import RTU_BUS_MAPPING
+            from app.core.topology_map import measurement_matches_rtu
 
             max_rtu_id = None
             max_rtu_resid = -1.0
@@ -720,9 +720,7 @@ class ClassifierService:
                 elem_type = str(r.get("element_type", "")).lower()
                 norm_r = float(r.get("normalised_residual", 0.0))
                 for rid in range(1, 6):
-                    bus_idx = RTU_BUS_MAPPING.get(rid, rid)
-                    dev_idx = rid - 1 if rid > 1 else 0
-                    if (elem_type == "bus" and elem == bus_idx) or (elem_type in ("line", "trafo") and elem == dev_idx):
+                    if measurement_matches_rtu(elem_type, elem, rid):
                         rtu_measurements_map[rid].append(r)
                         if norm_r > max_rtu_resid:
                             max_rtu_resid = norm_r

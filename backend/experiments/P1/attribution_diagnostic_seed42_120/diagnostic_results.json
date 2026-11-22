@@ -1,0 +1,233 @@
+{
+  "diagnostic_only": true,
+  "feature_changes": {
+    "dpn_ing_delta": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "dpn_ing_resid": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "dpn_legacy": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "nbd_distinct_sources_count": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "nbd_error_count": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "nbd_fc16_write_count": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "nbd_fc3_read_count": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "nbd_fc6_write_count": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "nbd_mean_response_time_ms": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "nbd_modbus_anomaly_rate": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "nbd_std_response_time_ms": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "nbd_traffic_volume": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "nbd_unexpected_write_count": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "pcd_chi2_failed": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "pcd_chi2_ratio": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "pcd_chi2_statistic": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "pcd_cross_rtu_voltage_divergence": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "pcd_global_bad_data_flag": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "pcd_is_target_rtu_max_lnr": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "pcd_max_lnr": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "pcd_p_mw_reported": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "pcd_physics_network_disagreement_index": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "pcd_resid_breadth_count": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "pcd_resid_breadth_frac": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "pcd_resid_concentration": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "pcd_resid_jump": {
+      "max_absolute_difference": 30.8776,
+      "rows_changed": 595
+    },
+    "pcd_resid_persist": {
+      "max_absolute_difference": 1.0,
+      "rows_changed": 99
+    },
+    "pcd_resid_rtu_share": {
+      "max_absolute_difference": 0.000300000000000078,
+      "rows_changed": 284
+    },
+    "pcd_status_code": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "pcd_target_rtu_is_flagged": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "pcd_target_rtu_p_residual": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "pcd_target_rtu_v_residual": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "pcd_temporal_dp_dt_3tick": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "pcd_temporal_dq_dt_3tick": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "pcd_temporal_dv_dt_3tick": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "pcd_voltage_dev_nominal": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    },
+    "pcd_voltage_pu_reported": {
+      "max_absolute_difference": 0.0,
+      "rows_changed": 0
+    }
+  },
+  "limitations": [
+    "The same pre-existing candidate bundle is scored; no model is trained here.",
+    "This is a regenerated diagnostic stream and is not a held-out final evaluation.",
+    "Legacy mapping is reconstructed explicitly for comparison and is not used by application code."
+  ],
+  "model": {
+    "path": "models\\experiments\\selected_candidate_bundle.joblib",
+    "schema": [
+      "nbd_unexpected_write_count",
+      "nbd_mean_response_time_ms",
+      "nbd_std_response_time_ms",
+      "nbd_distinct_sources_count",
+      "nbd_fc3_read_count",
+      "nbd_fc6_write_count",
+      "nbd_fc16_write_count",
+      "nbd_error_count",
+      "nbd_traffic_volume",
+      "nbd_modbus_anomaly_rate",
+      "pcd_max_lnr",
+      "pcd_is_target_rtu_max_lnr",
+      "pcd_chi2_statistic",
+      "pcd_chi2_ratio",
+      "pcd_chi2_failed",
+      "pcd_target_rtu_v_residual",
+      "pcd_target_rtu_p_residual",
+      "pcd_target_rtu_is_flagged",
+      "pcd_global_bad_data_flag",
+      "pcd_voltage_pu_reported",
+      "pcd_voltage_dev_nominal",
+      "pcd_p_mw_reported",
+      "pcd_status_code",
+      "pcd_physics_network_disagreement_index",
+      "pcd_temporal_dv_dt_3tick",
+      "pcd_temporal_dp_dt_3tick",
+      "pcd_temporal_dq_dt_3tick",
+      "pcd_cross_rtu_voltage_divergence",
+      "pcd_resid_jump",
+      "pcd_resid_persist",
+      "pcd_resid_concentration",
+      "pcd_resid_rtu_share",
+      "pcd_resid_breadth_count",
+      "pcd_resid_breadth_frac",
+      "dpn_legacy",
+      "dpn_ing_delta",
+      "dpn_ing_resid"
+    ],
+    "sha256": "f5a177fc88d783c4c0d0901566c23b7512fde9f0e2b978b3409fce1acde98060",
+    "threshold": 0.69
+  },
+  "overall_attack_recall": {
+    "corrected_mapping": 0.6363636363636364,
+    "legacy_mapping": 0.6363636363636364
+  },
+  "per_subtype_recall": {
+    "corrected_mapping": {
+      "data_injection": {
+        "recall": 0.7,
+        "support": 10
+      },
+      "replay": {
+        "recall": 0.0,
+        "support": 1
+      }
+    },
+    "legacy_mapping": {
+      "data_injection": {
+        "recall": 0.7,
+        "support": 10
+      },
+      "replay": {
+        "recall": 0.0,
+        "support": 1
+      }
+    }
+  },
+  "rows": 600,
+  "same_stream": true,
+  "seed": 42,
+  "task_id": "P1",
+  "ticks": 120
+}
