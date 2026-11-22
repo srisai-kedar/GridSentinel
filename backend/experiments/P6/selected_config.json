@@ -1,0 +1,192 @@
+{
+  "task": "P6",
+  "policy": "attack_active",
+  "feature_arm": "base28",
+  "features": [
+    "nbd_unexpected_write_count",
+    "nbd_mean_response_time_ms",
+    "nbd_std_response_time_ms",
+    "nbd_distinct_sources_count",
+    "nbd_fc3_read_count",
+    "nbd_fc6_write_count",
+    "nbd_fc16_write_count",
+    "nbd_error_count",
+    "nbd_traffic_volume",
+    "nbd_modbus_anomaly_rate",
+    "pcd_max_lnr",
+    "pcd_is_target_rtu_max_lnr",
+    "pcd_chi2_statistic",
+    "pcd_chi2_ratio",
+    "pcd_chi2_failed",
+    "pcd_target_rtu_v_residual",
+    "pcd_target_rtu_p_residual",
+    "pcd_target_rtu_is_flagged",
+    "pcd_global_bad_data_flag",
+    "pcd_voltage_pu_reported",
+    "pcd_voltage_dev_nominal",
+    "pcd_p_mw_reported",
+    "pcd_status_code",
+    "pcd_physics_network_disagreement_index",
+    "pcd_temporal_dv_dt_3tick",
+    "pcd_temporal_dp_dt_3tick",
+    "pcd_temporal_dq_dt_3tick",
+    "pcd_cross_rtu_voltage_divergence"
+  ],
+  "model": "tree",
+  "threshold": 1.0,
+  "threshold_selection": {
+    "episode_recall": 1.0,
+    "row_recall": 0.4444444444444444,
+    "fpr": 0.0
+  },
+  "validation_calibration": {
+    "ece": 3.4139358007223563e-18,
+    "brier_like_mae": 0.0391869918699187
+  },
+  "latency_ms": 0.004097760003060102,
+  "latency_budget_ms": 10.0,
+  "candidate_sha256": "a73ae8a0480b263959f59f75a8ca973aff5927c2db902f77a4a06b7a07013277",
+  "production_artefact_untouched": true,
+  "feature_importance": [
+    {
+      "feature": "pcd_is_target_rtu_max_lnr",
+      "share": 0.4722644938390267,
+      "rank": 1
+    },
+    {
+      "feature": "pcd_temporal_dv_dt_3tick",
+      "share": 0.1839052213548213,
+      "rank": 2
+    },
+    {
+      "feature": "nbd_std_response_time_ms",
+      "share": 0.16138817608282366,
+      "rank": 3
+    },
+    {
+      "feature": "pcd_p_mw_reported",
+      "share": 0.08801780425534249,
+      "rank": 4
+    },
+    {
+      "feature": "pcd_chi2_ratio",
+      "share": 0.059757634259351586,
+      "rank": 5
+    },
+    {
+      "feature": "pcd_voltage_pu_reported",
+      "share": 0.03180677451318478,
+      "rank": 6
+    },
+    {
+      "feature": "nbd_traffic_volume",
+      "share": 0.002859895695449675,
+      "rank": 7
+    },
+    {
+      "feature": "nbd_unexpected_write_count",
+      "share": 0.0,
+      "rank": 8
+    },
+    {
+      "feature": "nbd_mean_response_time_ms",
+      "share": 0.0,
+      "rank": 9
+    },
+    {
+      "feature": "nbd_distinct_sources_count",
+      "share": 0.0,
+      "rank": 10
+    },
+    {
+      "feature": "nbd_fc3_read_count",
+      "share": 0.0,
+      "rank": 11
+    },
+    {
+      "feature": "nbd_fc6_write_count",
+      "share": 0.0,
+      "rank": 12
+    },
+    {
+      "feature": "nbd_fc16_write_count",
+      "share": 0.0,
+      "rank": 13
+    },
+    {
+      "feature": "nbd_error_count",
+      "share": 0.0,
+      "rank": 14
+    },
+    {
+      "feature": "nbd_modbus_anomaly_rate",
+      "share": 0.0,
+      "rank": 15
+    },
+    {
+      "feature": "pcd_max_lnr",
+      "share": 0.0,
+      "rank": 16
+    },
+    {
+      "feature": "pcd_chi2_statistic",
+      "share": 0.0,
+      "rank": 17
+    },
+    {
+      "feature": "pcd_chi2_failed",
+      "share": 0.0,
+      "rank": 18
+    },
+    {
+      "feature": "pcd_target_rtu_v_residual",
+      "share": 0.0,
+      "rank": 19
+    },
+    {
+      "feature": "pcd_target_rtu_p_residual",
+      "share": 0.0,
+      "rank": 20
+    },
+    {
+      "feature": "pcd_target_rtu_is_flagged",
+      "share": 0.0,
+      "rank": 21
+    },
+    {
+      "feature": "pcd_global_bad_data_flag",
+      "share": 0.0,
+      "rank": 22
+    },
+    {
+      "feature": "pcd_voltage_dev_nominal",
+      "share": 0.0,
+      "rank": 23
+    },
+    {
+      "feature": "pcd_status_code",
+      "share": 0.0,
+      "rank": 24
+    },
+    {
+      "feature": "pcd_physics_network_disagreement_index",
+      "share": 0.0,
+      "rank": 25
+    },
+    {
+      "feature": "pcd_temporal_dp_dt_3tick",
+      "share": 0.0,
+      "rank": 26
+    },
+    {
+      "feature": "pcd_temporal_dq_dt_3tick",
+      "share": 0.0,
+      "rank": 27
+    },
+    {
+      "feature": "pcd_cross_rtu_voltage_divergence",
+      "share": 0.0,
+      "rank": 28
+    }
+  ]
+}
