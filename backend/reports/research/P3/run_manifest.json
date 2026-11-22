@@ -1,0 +1,27 @@
+{
+  "cli_arguments": [
+    "backend\\scripts\\expo\\p3_report.py",
+    "--description",
+    "backend\\reports\\research\\P3\\dataset_description.json",
+    "--pytest-output",
+    "backend\\reports\\research\\P3\\final_pytest.txt",
+    "--out",
+    "backend\\reports\\research\\P3\\FINDINGS.md"
+  ],
+  "cpu_model": "AMD64 Family 26 Model 96 Stepping 0, AuthenticAMD",
+  "ended_at_utc": "2026-11-22T20:14:07.525382+00:00",
+  "git_sha": "6f94b5f602f04b190b8bc042f7253302b84bf49e",
+  "input_datasets": {
+    "backend\\reports\\research\\P3\\dataset_description.json": "70411f0df838a57a2f74ced75e0d8bf048162feaac011d0a9172d57b8a5e442a",
+    "backend\\reports\\research\\P3\\final_pytest.txt": "d0b6c4aae622e350c6c4264a73b9c06a58ea3eb0e8352f015ce241d636da4ddc"
+  },
+  "output_datasets": {
+    "backend\\reports\\research\\P3\\FINDINGS.md": "0f7adb69397dd92bd120d08efc333d75eb4dd871fea72b9970cef5f684fe978e"
+  },
+  "python_version": "3.13.7",
+  "seeds": {
+    "smoke": 701
+  },
+  "started_at_utc": "2026-11-22T20:14:07.525338+00:00",
+  "task_id": "P3"
+}
