@@ -26,6 +26,7 @@ import numpy as np
 import pandapower as pp
 
 from app.core.feeder import build_feeder, run_power_flow
+from app.core.topology_map import RTU_IDS, bindings_for_rtu
 from app.core.state_estimation import (
     add_measurements,
     detect_bad_data,
@@ -68,6 +69,30 @@ def _safe_float_val(val_in: Any, default: float = 0.0, noise_std: float = 0.0) -
         return f
     except Exception:
         return default
+
+
+def _telemetry_from_topology(net: pp.pandapowerNet, rtu_id: int) -> Dict[str, float]:
+    """Read one RTU's P/Q/V values using the shared topology map."""
+    telemetry: Dict[str, float] = {}
+    for binding in bindings_for_rtu(rtu_id):
+        if binding.element_type == "bus" and "v" in binding.measurement_types:
+            value = net.res_bus.at[binding.element, "vm_pu"] if binding.element in net.res_bus.index else None
+            telemetry["voltage_pu"] = _safe_float_val(value, 1.0, 0.002)
+        elif binding.element_type == "line":
+            if binding.element not in net.res_line.index:
+                continue
+            if "p" in binding.measurement_types:
+                telemetry["p_mw"] = _safe_float_val(net.res_line.at[binding.element, "p_from_mw"], 0.0, 0.004)
+            if "q" in binding.measurement_types:
+                telemetry["q_mvar"] = _safe_float_val(net.res_line.at[binding.element, "q_from_mvar"], 0.0, 0.004)
+        elif binding.element_type == "trafo":
+            if binding.element not in net.res_trafo.index:
+                continue
+            if "p" in binding.measurement_types:
+                telemetry["p_mw"] = _safe_float_val(net.res_trafo.at[binding.element, "p_lv_mw"], 0.0, 0.004)
+            if "q" in binding.measurement_types:
+                telemetry["q_mvar"] = _safe_float_val(net.res_trafo.at[binding.element, "q_lv_mvar"], 0.0, 0.004)
+    return telemetry
 
 
 class SimulationLoop:
@@ -270,47 +295,14 @@ class SimulationLoop:
         pf_res = run_power_flow(self.net)
         converged = pf_res.get("converged", False)
 
-        # 4. Generate telemetry for all 5 RTUs
-        # Monitored mappings:
-        # RTU 1 -> Bus 1 V, Trafo 0 LV P/Q
-        # RTU 2 -> Bus 2 V, Line 0 from P/Q
-        # RTU 3 -> Bus 3 V, Line 1 from P/Q
-        # RTU 4 -> Bus 4 V, Line 2 from P/Q
-        # RTU 5 -> Bus 5 V, Line 3 from P/Q
+        # 4. Generate telemetry for all attackable RTUs from the shared map.
         rtu_telemetry_to_write: Dict[int, Dict[str, Any]] = {}
 
         if converged:
-            # RTU 1 (Substation)
-            v1 = _safe_float_val(self.net.res_bus.at[1, "vm_pu"] if 1 in self.net.res_bus.index else None, 1.0, 0.002)
-            p1 = _safe_float_val(self.net.res_trafo.at[0, "p_lv_mw"] if 0 in self.net.res_trafo.index else None, 0.0, 0.004)
-            q1 = _safe_float_val(self.net.res_trafo.at[0, "q_lv_mvar"] if 0 in self.net.res_trafo.index else None, 0.0, 0.004)
-            rtu_telemetry_to_write[1] = {"voltage_pu": v1, "p_mw": p1, "q_mvar": q1}
-
-            # RTU 2 (Feeder A)
-            v2 = _safe_float_val(self.net.res_bus.at[2, "vm_pu"] if 2 in self.net.res_bus.index else None, 0.0, 0.002)
-            p2 = _safe_float_val(self.net.res_line.at[0, "p_from_mw"] if 0 in self.net.res_line.index else None, 0.0, 0.004)
-            q2 = _safe_float_val(self.net.res_line.at[0, "q_from_mvar"] if 0 in self.net.res_line.index else None, 0.0, 0.004)
-            rtu_telemetry_to_write[2] = {"voltage_pu": v2, "p_mw": p2, "q_mvar": q2}
-
-            # RTU 3 (Feeder B)
-            v3 = _safe_float_val(self.net.res_bus.at[3, "vm_pu"] if 3 in self.net.res_bus.index else None, 0.0, 0.002)
-            p3 = _safe_float_val(self.net.res_line.at[1, "p_from_mw"] if 1 in self.net.res_line.index else None, 0.0, 0.004)
-            q3 = _safe_float_val(self.net.res_line.at[1, "q_from_mvar"] if 1 in self.net.res_line.index else None, 0.0, 0.004)
-            rtu_telemetry_to_write[3] = {"voltage_pu": v3, "p_mw": p3, "q_mvar": q3}
-
-            # RTU 4 (Feeder C)
-            v4 = _safe_float_val(self.net.res_bus.at[4, "vm_pu"] if 4 in self.net.res_bus.index else None, 0.0, 0.002)
-            p4 = _safe_float_val(self.net.res_line.at[2, "p_from_mw"] if 2 in self.net.res_line.index else None, 0.0, 0.004)
-            q4 = _safe_float_val(self.net.res_line.at[2, "q_from_mvar"] if 2 in self.net.res_line.index else None, 0.0, 0.004)
-            rtu_telemetry_to_write[4] = {"voltage_pu": v4, "p_mw": p4, "q_mvar": q4}
-
-            # RTU 5 (Feeder A2)
-            v5 = _safe_float_val(self.net.res_bus.at[5, "vm_pu"] if 5 in self.net.res_bus.index else None, 0.0, 0.002)
-            p5 = _safe_float_val(self.net.res_line.at[3, "p_from_mw"] if 3 in self.net.res_line.index else None, 0.0, 0.004)
-            q5 = _safe_float_val(self.net.res_line.at[3, "q_from_mvar"] if 3 in self.net.res_line.index else None, 0.0, 0.004)
-            rtu_telemetry_to_write[5] = {"voltage_pu": v5, "p_mw": p5, "q_mvar": q5}
+            for rtu_id in RTU_IDS:
+                rtu_telemetry_to_write[rtu_id] = _telemetry_from_topology(self.net, rtu_id)
         else:
-            for rtu_id in range(1, 6):
+            for rtu_id in RTU_IDS:
                 rtu_telemetry_to_write[rtu_id] = {"voltage_pu": 0.0, "p_mw": 0.0, "q_mvar": 0.0}
 
         # 5. Apply cyber overrides (Silent Data Injection or Replay)

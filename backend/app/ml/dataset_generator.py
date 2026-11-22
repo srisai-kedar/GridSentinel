@@ -30,6 +30,7 @@ import pandas as pd
 
 from app.core.feeder import build_feeder
 from app.ml.feature_engineering import FEATURE_SCHEMA, extract_features
+from app.core.topology_map import measurement_matches_rtu
 from app.ot.rtu_server import configure_port_base, rtu_pool
 from app.ot.scenario_injector import scenario_injector
 from app.ot.simulation_loop import sim_loop
@@ -171,7 +172,6 @@ async def generate_dataset(
             telemetry_history.append(polled_t)
 
             # Collect per-RTU standardized residuals for history
-            from app.ml.feature_engineering import RTU_BUS_MAPPING
             all_resids = se_res.get("all_residuals", [])
             tick_residuals_by_rtu: Dict[int, List[float]] = {i: [] for i in range(1, 6)}
             for r in all_resids:
@@ -179,9 +179,7 @@ async def generate_dataset(
                 elem_type = str(r.get("element_type", "")).lower()
                 norm_r = float(r.get("normalised_residual", 0.0))
                 for rid in range(1, 6):
-                    bus_idx = RTU_BUS_MAPPING.get(rid, rid)
-                    dev_idx = rid - 1 if rid > 1 else 0
-                    if (elem_type == "bus" and elem == bus_idx) or (elem_type in ("line", "trafo") and elem == dev_idx):
+                    if measurement_matches_rtu(elem_type, elem, rid):
                         tick_residuals_by_rtu[rid].append(norm_r)
 
             for rtu_id in range(1, 6):

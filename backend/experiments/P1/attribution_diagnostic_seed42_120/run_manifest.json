@@ -1,0 +1,36 @@
+{
+  "cli_arguments": {
+    "model": "models/experiments/selected_candidate_bundle.joblib",
+    "out_dir": "experiments\\P1\\attribution_diagnostic_seed42_120",
+    "port_base": 22021,
+    "run_id": "p1-attribution-seed42-120",
+    "seed": 42,
+    "ticks": 120
+  },
+  "cpu_model": "AMD64 Family 26 Model 96 Stepping 0, AuthenticAMD",
+  "ended_at_utc": "2026-11-22T19:19:47.851665+00:00",
+  "git_sha": "8f2de9ffe916b0b8ae5fd164d8fa6c4d02792d38",
+  "input_datasets": {
+    "models\\experiments\\selected_candidate_bundle.joblib": "f5a177fc88d783c4c0d0901566c23b7512fde9f0e2b978b3409fce1acde98060"
+  },
+  "output_datasets": {
+    "experiments\\P1\\attribution_diagnostic_seed42_120\\corrected_features.csv": "108bfab751d7e30afe472ce2f48d02db5579115390eb2056a4b62eb394a13653",
+    "experiments\\P1\\attribution_diagnostic_seed42_120\\diagnostic_results.json": "9282b46b46dfcdcee1dad8e449d9b70ec28736c5b919b9c237c3885514b8b587",
+    "experiments\\P1\\attribution_diagnostic_seed42_120\\legacy_features.csv": "5126883f03c6d9a9c1fb71a6a69be038d64be081c0b161f56d046271c706e15c"
+  },
+  "package_versions": {
+    "joblib": "1.5.3",
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.9.0",
+    "xgboost": "3.4.1"
+  },
+  "python_version": "3.13.7",
+  "run_id": "p1-attribution-seed42-120",
+  "seeds": {
+    "numpy": 42,
+    "python_random": 42
+  },
+  "started_at_utc": "2026-11-22T19:19:47.851595+00:00",
+  "task_id": "P1"
+}

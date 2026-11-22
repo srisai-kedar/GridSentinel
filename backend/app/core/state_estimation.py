@@ -21,6 +21,7 @@ import numpy as np
 import pandapower as pp
 import pandapower.estimation as est
 from scipy.stats import chi2
+from app.core.topology_map import rtu_for_measurement
 
 
 # ---------------------------------------------------------------------------
@@ -53,20 +54,10 @@ def add_measurements(
 
     rng = np.random.default_rng(seed=42)
 
-    # Mapping of RTU IDs to monitored buses/elements
-    # RTU 1 -> Bus 1 & Trafo 0
-    # RTU 2 -> Bus 2 & Line 0
-    # RTU 3 -> Bus 3 & Line 1
-    # RTU 4 -> Bus 4 & Line 2
-    # RTU 5 -> Bus 5 & Line 3
-    bus_to_rtu = {1: 1, 2: 2, 3: 3, 4: 4, 5: 5}
-    line_to_rtu = {0: 2, 1: 3, 2: 4, 3: 5}
-    trafo_to_rtu = {0: 1}
-
     # --- Voltage magnitude measurements at all 11kV buses ------------------
     lv_buses = net.bus.index[net.bus.vn_kv == 11.0].tolist()
     for bus_idx in lv_buses:
-        rtu_id = bus_to_rtu.get(bus_idx)
+        rtu_id = rtu_for_measurement("bus", bus_idx)
         if telemetry and rtu_id in telemetry and "voltage_pu" in telemetry[rtu_id]:
             v_val = float(telemetry[rtu_id]["voltage_pu"])
         else:
@@ -86,7 +77,7 @@ def add_measurements(
 
     # --- P and Q power flow measurements at each line (from-bus side) ------
     for line_idx in net.line.index:
-        rtu_id = line_to_rtu.get(line_idx)
+        rtu_id = rtu_for_measurement("line", line_idx)
         if telemetry and rtu_id in telemetry and "p_mw" in telemetry[rtu_id] and "q_mvar" in telemetry[rtu_id]:
             p_val = float(telemetry[rtu_id]["p_mw"])
             q_val = float(telemetry[rtu_id]["q_mvar"])
@@ -119,7 +110,7 @@ def add_measurements(
 
     # --- P and Q power flow measurements at Transformer LV side ------------
     for trafo_idx in net.trafo.index:
-        rtu_id = trafo_to_rtu.get(trafo_idx)
+        rtu_id = rtu_for_measurement("trafo", trafo_idx)
         if telemetry and rtu_id in telemetry and "p_mw" in telemetry[rtu_id] and "q_mvar" in telemetry[rtu_id]:
             p_val = float(telemetry[rtu_id]["p_mw"])
             q_val = float(telemetry[rtu_id]["q_mvar"])
