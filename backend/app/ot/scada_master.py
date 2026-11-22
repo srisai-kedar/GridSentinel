@@ -32,6 +32,13 @@ class SCADAMaster:
         self.last_poll_results: Dict[int, Dict[str, Any]] = {}
         self.last_poll_timestamp: Optional[float] = None
         self.poll_count: int = 0
+        self.communication_stalls: Dict[int, int] = {}
+
+    def inject_communication_stall(self, rtu_id: int, duration_ticks: int) -> None:
+        """Cause deterministic failed polls for one RTU without changing its state."""
+        if duration_ticks <= 0:
+            raise ValueError("duration_ticks must be positive")
+        self.communication_stalls[int(rtu_id)] = int(duration_ticks)
 
     async def poll_rtu(self, rtu_cfg: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """
@@ -44,6 +51,20 @@ class SCADAMaster:
 
         client = AsyncModbusTcpClient(self.host, port=port, timeout=self.timeout)
         start_time = time.perf_counter()
+
+        if self.communication_stalls.get(rtu_id, 0) > 0:
+            self.communication_stalls[rtu_id] -= 1
+            if self.communication_stalls[rtu_id] <= 0:
+                del self.communication_stalls[rtu_id]
+            traffic_logger.log_transaction(
+                source="SCADA_MASTER",
+                target_rtu=target_name,
+                function_code=3,
+                response_time_ms=0.0,
+                details="Injected communication stall",
+                success=False,
+            )
+            return None
 
         try:
             connected = await client.connect()

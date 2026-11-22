@@ -25,6 +25,7 @@ import pandapower as pp
 from pymodbus.client import AsyncModbusTcpClient
 
 from app.ot.rtu_server import RTU_CONFIGS, rtu_pool
+from app.ot.traffic_logger import traffic_logger
 
 logger = logging.getLogger("GridSentinel.ScenarioInjector")
 
@@ -43,6 +44,7 @@ class ScenarioInjector:
 
         # Sensor drift / decalibration state: {rtu_id: {"drift_percent": float, "remaining_ticks": int}}
         self.sensor_drifts: Dict[int, Dict[str, Any]] = {}
+        self.sustained_setpoints: Dict[int, Dict[str, Any]] = {}
 
         # Physical fault state
         self.tripped_lines: List[int] = []
@@ -91,6 +93,36 @@ class ScenarioInjector:
             "overrides": overrides,
             "duration_ticks": duration_ticks,
         }
+
+    def inject_fdi(
+        self,
+        rtu_id: int,
+        target: str,
+        sigma_multiple: float,
+        duration_ticks: int,
+        baseline: Optional[Dict[str, float]] = None,
+    ) -> Dict[str, Any]:
+        """Apply a parameterized FDI override using an explicit sigma magnitude."""
+        if sigma_multiple not in {1, 2, 3, 5, 10, 25}:
+            raise ValueError("sigma_multiple must be one of 1, 2, 3, 5, 10, 25")
+        base = baseline or {"voltage_pu": 1.0, "p_mw": 0.2, "q_mvar": 0.1}
+        if target == "V":
+            overrides = {"voltage_pu": float(base["voltage_pu"] + sigma_multiple * 0.01)}
+        elif target == "P":
+            overrides = {"p_mw": float(base["p_mw"] + sigma_multiple * 0.05)}
+        elif target == "Q":
+            overrides = {"q_mvar": float(base["q_mvar"] + sigma_multiple * 0.03)}
+        elif target == "mixed":
+            overrides = {
+                "voltage_pu": float(base["voltage_pu"] + sigma_multiple * 0.01),
+                "p_mw": float(base["p_mw"] + sigma_multiple * 0.05),
+                "q_mvar": float(base["q_mvar"] + sigma_multiple * 0.03),
+            }
+        else:
+            raise ValueError("target must be V, P, Q, or mixed")
+        result = self.inject_silent_data_injection(rtu_id=rtu_id, duration_ticks=duration_ticks, **overrides)
+        result["scenario_params"] = {"target": target, "sigma_multiple": sigma_multiple}
+        return result
 
     async def inject_command_write(
         self,
@@ -159,6 +191,77 @@ class ScenarioInjector:
             }
         finally:
             client.close()
+
+    async def inject_breaker_open(
+        self,
+        net: pp.pandapowerNet,
+        rtu_id: int,
+        line_index: int,
+        host: str = "127.0.0.1",
+    ) -> Dict[str, Any]:
+        """Send a real write and take a line out of service."""
+        write_result = await self.inject_command_write(rtu_id, register_address=4, value=1, host=host)
+        physical_result = self.trigger_line_trip(net, line_index)
+        return {"type": "BREAKER_OPEN", "write": write_result, "physical": physical_result}
+
+    async def inject_sustained_setpoint_write(
+        self,
+        rtu_id: int,
+        register_address: int,
+        value: int,
+        duration_ticks: int,
+        host: str = "127.0.0.1",
+    ) -> Dict[str, Any]:
+        """Write once and hold the altered setpoint for the configured duration."""
+        write_result = await self.inject_command_write(rtu_id, register_address, value, host)
+        self.sustained_setpoints[rtu_id] = {
+            "register_address": register_address,
+            "value": int(value),
+            "remaining_ticks": int(duration_ticks),
+        }
+        return {"type": "SUSTAINED_SETPOINT_WRITE", "write": write_result, "duration_ticks": duration_ticks}
+
+    def inject_authorized_control_write(
+        self,
+        rtu_id: int,
+        register_address: int,
+        value: int,
+        source: str = "AUTHORIZED_CONTROL",
+    ) -> Dict[str, Any]:
+        """Record a benign allow-listed control write without attack labeling."""
+        target = next((cfg for cfg in RTU_CONFIGS if cfg["rtu_id"] == rtu_id), None)
+        if target is None:
+            raise ValueError(f"RTU ID {rtu_id} not found")
+        event = traffic_logger.record_authorized_write(
+            source=source,
+            target_rtu=f"{target['name']} (Port {target['port']})",
+            details=f"Authorized register {register_address}={value}",
+        )
+        return {"type": "AUTHORIZED_CONTROL_WRITE", "event": event, "label": "Normal-Operational"}
+
+    def inject_drift(
+        self,
+        rtu_id: int,
+        mode: str,
+        target: str,
+        duration_ticks: int,
+        magnitude: float,
+    ) -> Dict[str, Any]:
+        """Configure step/ramp/gain/stuck/noise drift for V or P/Q telemetry."""
+        if mode not in {"step", "ramp", "gain_error", "stuck_at", "noise_increase"}:
+            raise ValueError("Unsupported drift mode")
+        if target not in {"V", "P", "Q", "mixed"}:
+            raise ValueError("Unsupported drift target")
+        self.sensor_drifts[rtu_id] = {
+            "mode": mode,
+            "target": target,
+            "magnitude": float(magnitude),
+            "duration_ticks": int(duration_ticks),
+            "remaining_ticks": int(duration_ticks),
+            "elapsed_ticks": 0,
+        }
+        self.active_scenario_summary = f"FAULT: {mode} drift on RTU-{rtu_id} target={target}"
+        return {"type": "SENSOR_DRIFT", "rtu_id": rtu_id, "mode": mode, "target": target, "duration_ticks": duration_ticks}
 
     def inject_replay(
         self,
@@ -321,6 +424,14 @@ class ScenarioInjector:
         for rtu_id in expired_drift:
             del self.sensor_drifts[rtu_id]
 
+        expired_setpoints = []
+        for rtu_id, item in self.sustained_setpoints.items():
+            item["remaining_ticks"] -= 1
+            if item["remaining_ticks"] <= 0:
+                expired_setpoints.append(rtu_id)
+        for rtu_id in expired_setpoints:
+            del self.sustained_setpoints[rtu_id]
+
         # Decrement short circuit fault
         if self.short_circuit_remaining_ticks > 0:
             self.short_circuit_remaining_ticks -= 1
@@ -332,7 +443,7 @@ class ScenarioInjector:
                 self.short_circuit_loads.clear()
 
         # Update active scenario summary
-        if not self.silent_overrides and not self.replay_attacks and not self.sensor_drifts and not self.tripped_lines and not self.short_circuit_loads:
+        if not self.silent_overrides and not self.replay_attacks and not self.sensor_drifts and not self.sustained_setpoints and not self.tripped_lines and not self.short_circuit_loads:
             self.active_scenario_summary = "NORMAL_OPERATION"
 
     def clear_all_scenarios(self, net: Optional[pp.pandapowerNet] = None) -> None:
@@ -342,6 +453,7 @@ class ScenarioInjector:
         self.silent_overrides.clear()
         self.replay_attacks.clear()
         self.sensor_drifts.clear()
+        self.sustained_setpoints.clear()
 
         if net is not None:
             # Restore all lines
@@ -368,6 +480,10 @@ class ScenarioInjector:
             "replay_attacks": list(self.replay_attacks.keys()),
             "sensor_drifts": {
                 rtu_id: item["drift_percent"] for rtu_id, item in self.sensor_drifts.items()
+            },
+            "sustained_setpoints": {
+                rtu_id: {key: value for key, value in item.items() if key != "remaining_ticks"}
+                for rtu_id, item in self.sustained_setpoints.items()
             },
             "tripped_lines": list(self.tripped_lines),
             "short_circuit_active": len(self.short_circuit_loads) > 0,

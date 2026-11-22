@@ -35,6 +35,20 @@ from app.ot.rtu_server import configure_port_base, rtu_pool
 from app.ot.scenario_injector import scenario_injector
 from app.ot.simulation_loop import sim_loop
 from app.ot.traffic_logger import traffic_logger
+from app.ot.scenario_registry import (
+    apply_authorized_control_write,
+    apply_breaker_open,
+    apply_command_injection,
+    apply_communication_stall,
+    apply_drift,
+    apply_fdi,
+    apply_load_step,
+    apply_natural_line_trip,
+    apply_replay,
+    apply_short_circuit,
+    apply_sustained_setpoint,
+    load_scenario_weights,
+)
 
 
 P3_SEED_BANDS = {
@@ -127,30 +141,56 @@ async def generate_dataset(
             # Check if we need to transition to a new scenario
             if scenario_remaining_ticks <= 0:
                 scenario_injector.clear_all_scenarios(net=net)
+                sim_loop.clear_load_step()
                 episode_counter += 1
                 episode_id = f"{run_id}:episode:{episode_counter}"
                 scenario_onset_tick = tick_idx
                 scenario_params = {}
                 affected_rtus = []
 
-                # Pick the next scenario from the configured, normalized probabilities.
+                # Pick from the registry; explicit probabilities remain supported for compatibility.
+                registry_weights = load_scenario_weights(effective_regime)
                 p = random.random()
-                normal_cutoff = probabilities.get("normal", 0.0)
-                natural_cutoff = normal_cutoff + probabilities.get("natural_fault", 0.0)
-                sensor_cutoff = natural_cutoff + probabilities.get("sensor_malfunction", 0.0)
-                if p < normal_cutoff:
+                selected = "normal"
+                cumulative = 0.0
+                for name, weight in registry_weights.items():
+                    cumulative += weight
+                    if p < cumulative:
+                        selected = name
+                        break
+                if selected == "normal":
                     current_scenario_type = "Normal"
                     current_subtype = "normal"
                     scenario_remaining_ticks = random.randint(8, 20)
-                elif p < natural_cutoff:
+                elif selected == "load_step":
+                    current_scenario_type = "Normal"
+                    current_subtype = "benign_load_step"
+                    scenario_remaining_ticks = random.randint(3, 12)
+                    magnitude = random.uniform(-0.12, 0.12)
+                    scenario_params = {"magnitude": magnitude}
+                    apply_load_step(magnitude, scenario_remaining_ticks)
+                elif selected == "authorized_control_write":
+                    current_scenario_type = "Normal"
+                    current_subtype = "authorized_control_write"
+                    scenario_remaining_ticks = random.randint(3, 8)
+                    scenario_params = {"rtu_id": random.choice([1, 2, 3, 4, 5]), "register_address": 3, "value": 2}
+                    apply_authorized_control_write(**scenario_params)
+                elif selected == "communication_stall":
+                    current_scenario_type = "Normal"
+                    current_subtype = "communication_stall"
+                    scenario_remaining_ticks = random.randint(3, 8)
+                    stalled_rtu = random.choice([1, 2, 3, 4, 5])
+                    scenario_params = {"rtu_id": stalled_rtu}
+                    apply_communication_stall(stalled_rtu, scenario_remaining_ticks)
+                elif selected in {"natural_line_trip", "short_circuit"}:
                     current_scenario_type = "Natural Fault"
-                    current_subtype = random.choice(["line_trip", "short_circuit"])
+                    current_subtype = "line_trip" if selected == "natural_line_trip" else "short_circuit"
                     scenario_remaining_ticks = random.randint(4, 10)
 
                     if current_subtype == "line_trip":
                         target_line = random.choice([0, 1, 2, 3])
                         scenario_params = {"line_index": target_line}
-                        scenario_injector.trigger_line_trip(net=net, line_index=target_line)
+                        apply_natural_line_trip(net=net, line_index=target_line)
                     elif current_subtype == "short_circuit":
                         target_bus = random.choice([2, 3, 4, 5])
                         fault_load_mw = random.uniform(1.8, 3.2)
@@ -160,29 +200,31 @@ async def generate_dataset(
                             "fault_load_mw": fault_load_mw,
                             "fault_load_mvar": fault_load_mvar,
                         }
-                        scenario_injector.trigger_short_circuit_stub(
+                        apply_short_circuit(
                             net=net,
                             bus_index=target_bus,
                             fault_load_mw=fault_load_mw,
                             fault_load_mvar=fault_load_mvar,
                             duration_ticks=scenario_remaining_ticks,
                         )
-                elif p < sensor_cutoff:
+                elif selected == "drift":
                     current_scenario_type = "Sensor Malfunction"
                     current_subtype = "sensor_drift"
                     attack_target_rtu = random.choice([1, 2, 3, 4, 5])
                     affected_rtus = [attack_target_rtu]
                     scenario_remaining_ticks = random.randint(5, 15)
                     drift_val = random.choice([-0.08, -0.06, 0.07, 0.09])
-                    scenario_params = {"rtu_id": attack_target_rtu, "drift_percent": drift_val}
-                    scenario_injector.inject_sensor_drift(
+                    scenario_params = {"rtu_id": attack_target_rtu, "drift_percent": drift_val, "mode": "step", "target": "V"}
+                    apply_drift(
                         rtu_id=attack_target_rtu,
-                        drift_percent=drift_val,
+                        mode="step",
+                        target="V",
+                        magnitude=drift_val,
                         duration_ticks=scenario_remaining_ticks,
                     )
-                elif mode == "scenario_mix":
+                elif selected in {"fdi", "command_injection", "breaker_open", "sustained_setpoint", "replay"} and mode == "scenario_mix":
                     current_scenario_type = "Cyber Intrusion"
-                    current_subtype = random.choice(["data_injection", "command_injection", "replay"])
+                    current_subtype = "data_injection" if selected == "fdi" else selected
                     attack_target_rtu = random.choice([1, 2, 3, 4, 5])
                     affected_rtus = [attack_target_rtu]
                     scenario_remaining_ticks = random.randint(4, 12)
@@ -190,23 +232,40 @@ async def generate_dataset(
                     if current_subtype == "data_injection":
                         # Fabricate voltage (either overvoltage 1.08-1.25 or undervoltage 0.75-0.90)
                         fake_v = random.choice([random.uniform(1.08, 1.25), random.uniform(0.75, 0.90)])
-                        scenario_params = {"rtu_id": attack_target_rtu, "voltage_pu": fake_v}
-                        scenario_injector.inject_silent_data_injection(
+                        sigma_multiple = random.choice([1, 2, 3, 5, 10, 25])
+                        scenario_params = {"rtu_id": attack_target_rtu, "target": "V", "sigma_multiple": sigma_multiple, "voltage_pu": fake_v}
+                        apply_fdi(
                             rtu_id=attack_target_rtu,
-                            voltage_pu=fake_v,
+                            target="V",
+                            sigma_multiple=sigma_multiple,
+                            baseline={"voltage_pu": fake_v - 0.01, "p_mw": 0.2, "q_mvar": 0.1},
                             duration_ticks=scenario_remaining_ticks,
                         )
                     elif current_subtype == "command_injection":
                         # Send unauthorized command write to target RTU
                         fake_raw_val = random.randint(11000, 15000)
                         scenario_params = {"rtu_id": attack_target_rtu, "register_address": 0, "value": fake_raw_val}
-                        await scenario_injector.inject_command_write(
+                        await apply_command_injection(
                             rtu_id=attack_target_rtu,
                             register_address=0,
                             value=fake_raw_val,
                         )
+                    elif current_subtype == "breaker_open":
+                        line_index = random.choice([0, 1, 2, 3])
+                        scenario_params = {"rtu_id": attack_target_rtu, "line_index": line_index, "variant": "breaker_open"}
+                        await apply_breaker_open(net=net, rtu_id=attack_target_rtu, line_index=line_index)
+                    elif current_subtype == "sustained_setpoint":
+                        register_address = random.choice([0, 1, 2])
+                        fake_raw_val = random.randint(11000, 15000) if register_address == 0 else random.randint(100, 500)
+                        scenario_params = {"rtu_id": attack_target_rtu, "register_address": register_address, "value": fake_raw_val, "variant": "sustained_setpoint"}
+                        await apply_sustained_setpoint(
+                            rtu_id=attack_target_rtu,
+                            register_address=register_address,
+                            value=fake_raw_val,
+                            duration_ticks=scenario_remaining_ticks,
+                        )
                     elif current_subtype == "replay":
-                        scenario_injector.inject_replay(
+                        apply_replay(
                             rtu_id=attack_target_rtu,
                             duration_ticks=scenario_remaining_ticks,
                         )

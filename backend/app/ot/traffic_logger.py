@@ -184,6 +184,25 @@ class ModbusTrafficLogger:
             self._buffer.append(event)
             return event
 
+    def record_authorized_write(
+        self,
+        source: str,
+        target_rtu: str,
+        function_code: int = 6,
+        details: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Record a control-plane write from an explicitly allow-listed source."""
+        if source not in {"SCADA_MASTER", "AUTHORIZED_CONTROL"}:
+            raise PermissionError(f"Source is not allow-listed for authorized writes: {source}")
+        return self.log_transaction(
+            source=source,
+            target_rtu=target_rtu,
+            function_code=function_code,
+            response_time_ms=0.0,
+            details=details or "Authorized control write",
+            success=True,
+        )
+
     def get_recent_events(self, limit: int = 50) -> List[Dict[str, Any]]:
         """
         Retrieve the latest N events in reverse chronological order (newest first).

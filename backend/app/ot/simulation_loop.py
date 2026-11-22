@@ -126,6 +126,8 @@ class SimulationLoop:
         self._load_shape_offsets: Dict[int, float] = {}
         self._load_steps: Dict[int, float] = {}
         self._load_step_remaining: Dict[int, int] = {}
+        self._manual_load_step: float = 0.0
+        self._manual_load_step_remaining: int = 0
 
         self.tick_count: int = 0
         self.latest_state: Dict[str, Any] = {}
@@ -157,6 +159,17 @@ class SimulationLoop:
         self._load_profile_family = profile_family
         self._load_noise_scale = float(noise_scale)
         self._day_scale = float(day_scale)
+
+    def apply_load_step(self, magnitude: float, duration_ticks: int) -> None:
+        """Apply a benign, explicit feeder-wide load step for a bounded duration."""
+        if duration_ticks <= 0:
+            raise ValueError("duration_ticks must be positive")
+        self._manual_load_step = float(magnitude)
+        self._manual_load_step_remaining = int(duration_ticks)
+
+    def clear_load_step(self) -> None:
+        self._manual_load_step = 0.0
+        self._manual_load_step_remaining = 0
 
     def _initialize_operating_conditions(self) -> None:
         self._load_rng = np.random.default_rng(self._operating_seed)
@@ -218,6 +231,7 @@ class SimulationLoop:
 
         classifier_service.clear_cache()
         replay_capture_store.clear()
+        scada_master.communication_stalls.clear()
         self.ticks_per_second = 0.0
         self._last_tick_started_at = None
         self.last_error = None
@@ -344,10 +358,14 @@ class SimulationLoop:
                     sim_hour + self._load_phase_offsets.get(idx, 0.0),
                 )
                 local_mult *= 1.0 + self._load_shape_offsets.get(idx, 0.0)
-                local_mult *= self._day_scale * (1.0 + self._ou_state.get(idx, 0.0) + step)
+                local_mult *= self._day_scale * (1.0 + self._ou_state.get(idx, 0.0) + step + self._manual_load_step)
                 local_mult = max(0.2, local_mult)
                 self.net.load.at[idx, "p_mw"] = base_p * local_mult
                 self.net.load.at[idx, "q_mvar"] = self._base_load_q[idx] * local_mult
+        if self._manual_load_step_remaining > 0:
+            self._manual_load_step_remaining -= 1
+            if self._manual_load_step_remaining <= 0:
+                self._manual_load_step = 0.0
 
         # 2. Advance scenario injector lifecycle
         scenario_injector.on_simulation_tick(self.net)
@@ -385,9 +403,43 @@ class SimulationLoop:
 
             # Check Sensor Drift / decalibration (clean Modbus network, localized telemetry bias)
             if rtu_id in scenario_injector.sensor_drifts:
-                drift_pct = scenario_injector.sensor_drifts[rtu_id]["drift_percent"]
-                cur_v = rtu_telemetry_to_write[rtu_id]["voltage_pu"]
-                rtu_telemetry_to_write[rtu_id]["voltage_pu"] = round(cur_v * (1.0 + drift_pct), 4)
+                drift = scenario_injector.sensor_drifts[rtu_id]
+                if "drift_percent" in drift:
+                    drift = {"mode": "step", "target": "V", "magnitude": drift["drift_percent"], **drift}
+                mode = drift.get("mode", "step")
+                target = drift.get("target", "V")
+                magnitude = float(drift.get("magnitude", 0.0))
+                progress = float(drift.get("elapsed_ticks", 0)) / max(1, int(drift.get("duration_ticks", 1)) - 1)
+                if mode == "ramp":
+                    amount = magnitude * min(1.0, progress)
+                elif mode == "gain_error":
+                    amount = magnitude
+                elif mode == "stuck_at":
+                    amount = magnitude
+                else:
+                    amount = magnitude
+                keys = {"V": ["voltage_pu"], "P": ["p_mw"], "Q": ["q_mvar"], "mixed": ["voltage_pu", "p_mw", "q_mvar"]}[target]
+                for key in keys:
+                    if mode == "stuck_at":
+                        rtu_telemetry_to_write[rtu_id][key] = amount
+                    elif mode == "noise_increase":
+                        rtu_telemetry_to_write[rtu_id][key] += float(np.random.normal(0.0, abs(magnitude)))
+                    elif mode == "gain_error":
+                        rtu_telemetry_to_write[rtu_id][key] *= 1.0 + amount
+                    else:
+                        rtu_telemetry_to_write[rtu_id][key] *= 1.0 + amount
+                drift["elapsed_ticks"] = int(drift.get("elapsed_ticks", 0)) + 1
+
+            if rtu_id in scenario_injector.sustained_setpoints:
+                setpoint = scenario_injector.sustained_setpoints[rtu_id]
+                address = int(setpoint["register_address"])
+                value = int(setpoint["value"])
+                if address == 0:
+                    rtu_telemetry_to_write[rtu_id]["voltage_pu"] = value / 10000.0
+                elif address == 1:
+                    rtu_telemetry_to_write[rtu_id]["p_mw"] = value / 1000.0
+                elif address == 2:
+                    rtu_telemetry_to_write[rtu_id]["q_mvar"] = value / 1000.0
 
             # Write to RTU server registers
             rtu = rtu_pool.get_rtu(rtu_id)

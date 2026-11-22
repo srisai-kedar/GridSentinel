@@ -1,0 +1,36 @@
+{
+  "stress": {
+    "fdi": 0.08,
+    "replay": 0.08,
+    "command_injection": 0.04,
+    "breaker_open": 0.02,
+    "sustained_setpoint": 0.02,
+    "natural_line_trip": 0.10,
+    "short_circuit": 0.10,
+    "drift": 0.10,
+    "load_step": 0.10,
+    "authorized_control_write": 0.05,
+    "communication_stall": 0.05,
+    "normal": 0.30
+  },
+  "operational": {
+    "fdi": 0.0033,
+    "replay": 0.0033,
+    "command_injection": 0.0034,
+    "breaker_open": 0.0017,
+    "sustained_setpoint": 0.0017,
+    "natural_line_trip": 0.005,
+    "short_circuit": 0.005,
+    "drift": 0.01,
+    "load_step": 0.025,
+    "authorized_control_write": 0.015,
+    "communication_stall": 0.01,
+    "normal": 0.92
+  },
+  "clean": {
+    "load_step": 0.05,
+    "authorized_control_write": 0.02,
+    "communication_stall": 0.03,
+    "normal": 0.90
+  }
+}

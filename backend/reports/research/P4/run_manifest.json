@@ -1,0 +1,27 @@
+{
+  "cli_arguments": [
+    "backend\\scripts\\expo\\p4_report.py",
+    "--smoke",
+    "backend\\experiments\\P4\\smoke_seed801.csv",
+    "--pytest-output",
+    "backend\\reports\\research\\P4\\final_pytest.txt",
+    "--out",
+    "backend\\reports\\research\\P4\\FINDINGS.md"
+  ],
+  "cpu_model": "AMD64 Family 26 Model 96 Stepping 0, AuthenticAMD",
+  "ended_at_utc": "2026-11-22T20:36:02.333866+00:00",
+  "git_sha": "1857afc08544ff4a5b6d546729964542e4f2037c",
+  "input_datasets": {
+    "backend\\experiments\\P4\\smoke_seed801.csv": "aeedffd5ced171089494cad7abddf75d7186fb859aeb4e6b0be9d2fa67d09580",
+    "backend\\reports\\research\\P4\\final_pytest.txt": "748e8652beb0bf0e6f5a1050e315ba07c83ba26c6d2c78743635482f31dbd4de"
+  },
+  "output_datasets": {
+    "backend\\reports\\research\\P4\\FINDINGS.md": "2e063bc7045d71464509a95a684cf979a888afae3cec291c3bc26d6912cc5760"
+  },
+  "python_version": "3.13.7",
+  "seeds": {
+    "smoke": 801
+  },
+  "started_at_utc": "2026-11-22T20:36:02.333832+00:00",
+  "task_id": "P4"
+}
