@@ -1,0 +1,54 @@
+{
+  "cli_arguments": {
+    "compressed_stress": false,
+    "initial_sim_time_hour": 17.931358208581432,
+    "mode": "scenario_mix",
+    "out": "..\\experiments\\P3\\smoke_seed701.csv",
+    "port_base": 25021,
+    "profile_family": "default",
+    "regime": "stress",
+    "run_id": "p3-smoke-701",
+    "scenario_probabilities": {
+      "cyber": 0.25,
+      "natural_fault": 0.25,
+      "normal": 0.25,
+      "sensor_malfunction": 0.25
+    },
+    "seed": 701,
+    "sim_seconds_per_tick": 1.0,
+    "ticks": 20
+  },
+  "cpu_model": "AMD64 Family 26 Model 96 Stepping 0, AuthenticAMD",
+  "elapsed_seconds": 20.206411,
+  "ended_at_utc": "2026-11-22T20:09:04.617802+00:00",
+  "git_sha": "6f94b5f602f04b190b8bc042f7253302b84bf49e",
+  "input_datasets": {},
+  "output_datasets": {
+    "smoke_seed701.csv": {
+      "path": "..\\experiments\\P3\\smoke_seed701.csv",
+      "sha256": "0e1e22e2fa9c46b6e518ab122d2a4fd42a076a0c63d032e8aa8f5bd44dfbbbe4"
+    }
+  },
+  "package_versions": {
+    "numpy": "2.4.6",
+    "pandapower": "3.5.4",
+    "pandas": "2.3.3",
+    "pymodbus": "3.15.0",
+    "scikit-learn": "1.9.0",
+    "scipy": "1.18.1"
+  },
+  "python_version": "3.13.7",
+  "rows": 100,
+  "run_id": "p3-smoke-701",
+  "seeds": {
+    "numpy": 701,
+    "python_random": 701
+  },
+  "started_at_utc": "2026-11-22T20:08:44.411363+00:00",
+  "task_id": "P3",
+  "throughput_ticks_per_second": 0.989785,
+  "timing_affected_columns": [
+    "nbd_mean_response_time_ms",
+    "nbd_std_response_time_ms"
+  ]
+}

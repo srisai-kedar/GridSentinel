@@ -116,6 +116,16 @@ class SimulationLoop:
         self.net: Optional[pp.pandapowerNet] = None
         self._base_load_p: Dict[int, float] = {}
         self._base_load_q: Dict[int, float] = {}
+        self._operating_seed: int = 0
+        self._load_noise_scale: float = 0.0
+        self._load_profile_family: str = "default"
+        self._day_scale: float = 1.0
+        self._load_rng: Optional[np.random.Generator] = None
+        self._ou_state: Dict[int, float] = {}
+        self._load_phase_offsets: Dict[int, float] = {}
+        self._load_shape_offsets: Dict[int, float] = {}
+        self._load_steps: Dict[int, float] = {}
+        self._load_step_remaining: Dict[int, int] = {}
 
         self.tick_count: int = 0
         self.latest_state: Dict[str, Any] = {}
@@ -129,6 +139,39 @@ class SimulationLoop:
         # WebSocket broadcast subscribers and stalled client drop tracking
         self._ws_subscribers: Set[asyncio.Queue] = set()
         self._ws_dropped_counts: Dict[asyncio.Queue, int] = {}
+
+    def configure_operating_conditions(
+        self,
+        *,
+        seed: int = 0,
+        profile_family: str = "default",
+        noise_scale: float = 0.0,
+        day_scale: float = 1.0,
+    ) -> None:
+        """Configure reproducible load variation for an upcoming run."""
+        if profile_family not in {"default", "ood"}:
+            raise ValueError(f"Unsupported operating profile family: {profile_family}")
+        if noise_scale < 0 or day_scale <= 0:
+            raise ValueError("noise_scale must be non-negative and day_scale must be positive")
+        self._operating_seed = int(seed)
+        self._load_profile_family = profile_family
+        self._load_noise_scale = float(noise_scale)
+        self._day_scale = float(day_scale)
+
+    def _initialize_operating_conditions(self) -> None:
+        self._load_rng = np.random.default_rng(self._operating_seed)
+        bus_indices = [int(idx) for idx in self.net.load.index]
+        phase_width = 1.0 if self._load_profile_family == "default" else 3.0
+        shape_width = 0.015 if self._load_profile_family == "default" else 0.05
+        self._load_phase_offsets = {
+            idx: float(self._load_rng.uniform(-phase_width, phase_width)) for idx in bus_indices
+        }
+        self._load_shape_offsets = {
+            idx: float(self._load_rng.uniform(-shape_width, shape_width)) for idx in bus_indices
+        }
+        self._ou_state = {idx: 0.0 for idx in bus_indices}
+        self._load_steps = {idx: 0.0 for idx in bus_indices}
+        self._load_step_remaining = {idx: 0 for idx in bus_indices}
 
     def get_sim_time_string(self) -> str:
         """Format total simulated minutes as HH:MM:SS."""
@@ -168,6 +211,7 @@ class SimulationLoop:
         # Cache baseline load values for diurnal scaling
         self._base_load_p = {idx: float(row["p_mw"]) for idx, row in self.net.load.iterrows()}
         self._base_load_q = {idx: float(row["q_mvar"]) for idx, row in self.net.load.iterrows()}
+        self._initialize_operating_conditions()
 
         # Start all 5 RTU servers
         await rtu_pool.start_all()
@@ -285,8 +329,25 @@ class SimulationLoop:
         # 1. Apply diurnal curve to loads
         for idx, base_p in self._base_load_p.items():
             if idx in self.net.load.index:
-                self.net.load.at[idx, "p_mw"] = base_p * diurnal_mult
-                self.net.load.at[idx, "q_mvar"] = self._base_load_q[idx] * diurnal_mult
+                rng = self._load_rng or np.random.default_rng(self._operating_seed)
+                if self._load_noise_scale > 0.0:
+                    previous = self._ou_state[idx]
+                    self._ou_state[idx] = 0.92 * previous + float(rng.normal(0.0, self._load_noise_scale * 0.18))
+                    if self._load_step_remaining[idx] <= 0 and rng.random() < 0.01:
+                        self._load_steps[idx] = float(rng.normal(0.0, self._load_noise_scale * 2.0))
+                        self._load_step_remaining[idx] = int(rng.integers(5, 21))
+                    self._load_step_remaining[idx] = max(0, self._load_step_remaining[idx] - 1)
+                    step = self._load_steps[idx]
+                else:
+                    step = 0.0
+                local_mult = calculate_diurnal_multiplier(
+                    sim_hour + self._load_phase_offsets.get(idx, 0.0),
+                )
+                local_mult *= 1.0 + self._load_shape_offsets.get(idx, 0.0)
+                local_mult *= self._day_scale * (1.0 + self._ou_state.get(idx, 0.0) + step)
+                local_mult = max(0.2, local_mult)
+                self.net.load.at[idx, "p_mw"] = base_p * local_mult
+                self.net.load.at[idx, "q_mvar"] = self._base_load_q[idx] * local_mult
 
         # 2. Advance scenario injector lifecycle
         scenario_injector.on_simulation_tick(self.net)

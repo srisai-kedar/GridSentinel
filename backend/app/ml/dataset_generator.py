@@ -37,6 +37,15 @@ from app.ot.simulation_loop import sim_loop
 from app.ot.traffic_logger import traffic_logger
 
 
+P3_SEED_BANDS = {
+    "train": list(range(100, 120)),
+    "validation": list(range(200, 205)),
+    "test": list(range(300, 330)),
+    "ood_test": list(range(400, 410)),
+    "clean": list(range(500, 505)),
+}
+
+
 async def generate_dataset(
     seed: int = 42,
     total_ticks: int = 2000,
@@ -45,6 +54,11 @@ async def generate_dataset(
     port_base: int = 5021,
     run_id: str = "default",
     scenario_probabilities: Optional[Dict[str, float]] = None,
+    regime: Optional[str] = None,
+    compressed_stress: bool = False,
+    sim_seconds_per_tick: float = 1.0,
+    profile_family: str = "default",
+    load_noise_scale: Optional[float] = None,
 ) -> pd.DataFrame:
     """
     Run automated simulation loop for `total_ticks` and record labeled dataset.
@@ -65,13 +79,25 @@ async def generate_dataset(
     """
     if mode not in {"scenario_mix", "clean"}:
         raise ValueError(f"Unsupported generation mode: {mode}")
-    probabilities = resolve_scenario_probabilities(mode, scenario_probabilities)
+    effective_regime = regime or ("clean" if mode == "clean" else "stress")
+    probabilities = resolve_prevalence_regime(effective_regime, scenario_probabilities)
+    if sim_seconds_per_tick <= 0:
+        raise ValueError("sim_seconds_per_tick must be positive")
     configure_port_base(port_base)
     started = datetime.datetime.now(datetime.timezone.utc)
     perf_started = time.perf_counter()
     print(f"[DatasetGenerator] Starting generation: Seed={seed}, Ticks={total_ticks}, Mode={mode}, Run={run_id}...")
     random.seed(seed)
     np.random.seed(seed)
+    initial_hour = random.uniform(0.0, 24.0)
+    sim_loop.sim_minutes_per_tick = 15.0 if compressed_stress else sim_seconds_per_tick / 60.0
+    sim_loop.sim_time_total_minutes = initial_hour * 60.0
+    sim_loop.configure_operating_conditions(
+        seed=seed,
+        profile_family=profile_family,
+        noise_scale=(0.03 if load_noise_scale is None else load_noise_scale),
+        day_scale=random.uniform(0.95, 1.05),
+    )
 
     # Ensure clean logger and network
     traffic_logger.clear()
@@ -86,6 +112,12 @@ async def generate_dataset(
     current_subtype = "normal"
     scenario_remaining_ticks = 0
     attack_target_rtu = 1
+    episode_counter = 0
+    episode_id = f"{run_id}:episode:0"
+    scenario_params: Dict[str, Any] = {}
+    scenario_onset_tick = 1
+    scenario_end_tick = 0
+    affected_rtus: List[int] = []
 
     telemetry_history: collections.deque = collections.deque(maxlen=3)
     residual_history: collections.deque = collections.deque(maxlen=6)
@@ -95,6 +127,11 @@ async def generate_dataset(
             # Check if we need to transition to a new scenario
             if scenario_remaining_ticks <= 0:
                 scenario_injector.clear_all_scenarios(net=net)
+                episode_counter += 1
+                episode_id = f"{run_id}:episode:{episode_counter}"
+                scenario_onset_tick = tick_idx
+                scenario_params = {}
+                affected_rtus = []
 
                 # Pick the next scenario from the configured, normalized probabilities.
                 p = random.random()
@@ -112,22 +149,32 @@ async def generate_dataset(
 
                     if current_subtype == "line_trip":
                         target_line = random.choice([0, 1, 2, 3])
+                        scenario_params = {"line_index": target_line}
                         scenario_injector.trigger_line_trip(net=net, line_index=target_line)
                     elif current_subtype == "short_circuit":
                         target_bus = random.choice([2, 3, 4, 5])
+                        fault_load_mw = random.uniform(1.8, 3.2)
+                        fault_load_mvar = random.uniform(1.0, 2.0)
+                        scenario_params = {
+                            "bus_index": target_bus,
+                            "fault_load_mw": fault_load_mw,
+                            "fault_load_mvar": fault_load_mvar,
+                        }
                         scenario_injector.trigger_short_circuit_stub(
                             net=net,
                             bus_index=target_bus,
-                            fault_load_mw=random.uniform(1.8, 3.2),
-                            fault_load_mvar=random.uniform(1.0, 2.0),
+                            fault_load_mw=fault_load_mw,
+                            fault_load_mvar=fault_load_mvar,
                             duration_ticks=scenario_remaining_ticks,
                         )
                 elif p < sensor_cutoff:
                     current_scenario_type = "Sensor Malfunction"
                     current_subtype = "sensor_drift"
                     attack_target_rtu = random.choice([1, 2, 3, 4, 5])
+                    affected_rtus = [attack_target_rtu]
                     scenario_remaining_ticks = random.randint(5, 15)
                     drift_val = random.choice([-0.08, -0.06, 0.07, 0.09])
+                    scenario_params = {"rtu_id": attack_target_rtu, "drift_percent": drift_val}
                     scenario_injector.inject_sensor_drift(
                         rtu_id=attack_target_rtu,
                         drift_percent=drift_val,
@@ -137,11 +184,13 @@ async def generate_dataset(
                     current_scenario_type = "Cyber Intrusion"
                     current_subtype = random.choice(["data_injection", "command_injection", "replay"])
                     attack_target_rtu = random.choice([1, 2, 3, 4, 5])
+                    affected_rtus = [attack_target_rtu]
                     scenario_remaining_ticks = random.randint(4, 12)
 
                     if current_subtype == "data_injection":
                         # Fabricate voltage (either overvoltage 1.08-1.25 or undervoltage 0.75-0.90)
                         fake_v = random.choice([random.uniform(1.08, 1.25), random.uniform(0.75, 0.90)])
+                        scenario_params = {"rtu_id": attack_target_rtu, "voltage_pu": fake_v}
                         scenario_injector.inject_silent_data_injection(
                             rtu_id=attack_target_rtu,
                             voltage_pu=fake_v,
@@ -150,6 +199,7 @@ async def generate_dataset(
                     elif current_subtype == "command_injection":
                         # Send unauthorized command write to target RTU
                         fake_raw_val = random.randint(11000, 15000)
+                        scenario_params = {"rtu_id": attack_target_rtu, "register_address": 0, "value": fake_raw_val}
                         await scenario_injector.inject_command_write(
                             rtu_id=attack_target_rtu,
                             register_address=0,
@@ -160,6 +210,8 @@ async def generate_dataset(
                             rtu_id=attack_target_rtu,
                             duration_ticks=scenario_remaining_ticks,
                         )
+
+                scenario_end_tick = tick_idx + scenario_remaining_ticks - 1
 
             # Advance simulation tick
             snap = await sim_loop.tick()
@@ -214,11 +266,35 @@ async def generate_dataset(
                     rtu_top_label = "Normal"
                     rtu_sub_label = "normal"
 
+                target_row = rtu_id in affected_rtus
+                attack_active = current_scenario_type == "Cyber Intrusion" and target_row
+                evidence_visible = False
+                if target_row and current_scenario_type in {"Cyber Intrusion", "Sensor Malfunction"}:
+                    if current_subtype in {"data_injection", "sensor_drift"}:
+                        evidence_visible = True
+                    elif current_subtype == "replay":
+                        evidence_visible = tick_idx > scenario_onset_tick
+                    elif current_subtype == "command_injection":
+                        evidence_visible = any(
+                            event.get("observer_verified")
+                            and event.get("target_rtu") == f"RTU_{rtu_id}"
+                            and event.get("is_unexpected_write")
+                            for event in recent_traffic
+                        )
+
                 record = dict(feats)
                 record["tick"] = tick_idx
                 record["rtu_id"] = rtu_id
                 record["top_level_label"] = rtu_top_label
                 record["subtype_label"] = rtu_sub_label
+                record["episode_id"] = episode_id
+                record["scenario_type"] = current_scenario_type
+                record["scenario_params"] = json.dumps(scenario_params, sort_keys=True)
+                record["onset_tick"] = scenario_onset_tick
+                record["end_tick"] = scenario_end_tick
+                record["attack_active"] = attack_active
+                record["evidence_visible"] = evidence_visible
+                record["affected_rtus"] = json.dumps(affected_rtus)
                 records.append(record)
 
             residual_history.append(tick_residuals_by_rtu)
@@ -253,9 +329,29 @@ async def generate_dataset(
             started=started,
             elapsed_seconds=time.perf_counter() - perf_started,
             rows=len(df),
+            regime=effective_regime,
+            compressed_stress=compressed_stress,
+            sim_seconds_per_tick=sim_seconds_per_tick,
+            profile_family=profile_family,
+            initial_sim_time_hour=initial_hour,
         )
 
     return df
+
+
+def resolve_prevalence_regime(
+    regime: str, scenario_probabilities: Optional[Dict[str, float]] = None
+) -> Dict[str, float]:
+    """Resolve the documented P3 prevalence regimes."""
+    defaults = {
+        "stress": {"normal": 0.25, "natural_fault": 0.25, "sensor_malfunction": 0.25, "cyber": 0.25},
+        "operational": {"normal": 0.97, "natural_fault": 0.01, "sensor_malfunction": 0.01, "cyber": 0.01},
+        "clean": {"normal": 0.5, "natural_fault": 0.5},
+    }
+    if regime not in defaults:
+        raise ValueError(f"Unsupported prevalence regime: {regime}")
+    probabilities = scenario_probabilities or defaults[regime]
+    return resolve_scenario_probabilities("clean" if regime == "clean" else "scenario_mix", probabilities)
 
 
 def resolve_scenario_probabilities(
@@ -312,11 +408,12 @@ def _has_distribution(name: str) -> bool:
 def _write_run_manifest(
     *, out_path: Path, run_id: str, seed: int, total_ticks: int, mode: str,
     port_base: int, probabilities: Dict[str, float], started: datetime.datetime,
-    elapsed_seconds: float, rows: int,
+    elapsed_seconds: float, rows: int, regime: str, compressed_stress: bool,
+    sim_seconds_per_tick: float, profile_family: str, initial_sim_time_hour: float,
 ) -> None:
     end = datetime.datetime.now(datetime.timezone.utc)
     manifest = {
-        "task_id": "P0",
+        "task_id": "P3",
         "run_id": run_id,
         "git_sha": _git_sha(),
         "python_version": platform.python_version(),
@@ -329,7 +426,13 @@ def _write_run_manifest(
             "port_base": port_base,
             "run_id": run_id,
             "out": str(out_path),
-            "scenario_probabilities": probabilities,
+        "scenario_probabilities": probabilities,
+            "regime": regime,
+            "compressed_stress": compressed_stress,
+            "sim_seconds_per_tick": sim_seconds_per_tick,
+            "profile_family": profile_family,
+            "initial_sim_time_hour": initial_sim_time_hour,
+        "regime": regime,
         },
         "seeds": {"python_random": seed, "numpy": seed},
         "started_at_utc": started.isoformat(),
@@ -338,8 +441,11 @@ def _write_run_manifest(
         "throughput_ticks_per_second": round(total_ticks / elapsed_seconds, 6) if elapsed_seconds else None,
         "rows": rows,
         "timing_affected_columns": ["nbd_mean_response_time_ms", "nbd_std_response_time_ms"],
+        "seed_bands": P3_SEED_BANDS,
         "input_datasets": {},
-        "output_datasets": {out_path.name: {"path": str(out_path), "sha256": _sha256(out_path)}},
+        "output_datasets": {
+            out_path.name: {"path": str(out_path), "sha256": _sha256(out_path)},
+        },
     }
     manifest_path = out_path.parent / "run_manifest.json"
     manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True), encoding="utf-8")
@@ -352,20 +458,27 @@ def main_cli():
     parser.add_argument("--ticks", type=int, default=1500, help="Number of ticks to simulate")
     parser.add_argument("--out", type=str, default="data/generated/train_dataset_seed42.csv", help="Output CSV path")
     parser.add_argument("--mode", choices=["scenario_mix", "clean"], default="scenario_mix")
+    parser.add_argument("--regime", choices=["stress", "operational", "clean"], default=None)
+    parser.add_argument("--compressed-stress", action="store_true")
+    parser.add_argument("--sim-seconds-per-tick", type=float, default=1.0)
+    parser.add_argument("--profile-family", choices=["default", "ood"], default="default")
+    parser.add_argument("--load-noise-scale", type=float, default=None)
     parser.add_argument("--port-base", type=int, default=5021, help="First RTU TCP port for this process")
     parser.add_argument("--run-id", type=str, default="default", help="Stable identifier recorded in run_manifest.json")
-    parser.add_argument("--normal-prob", type=float, default=0.25)
-    parser.add_argument("--natural-fault-prob", type=float, default=0.25)
-    parser.add_argument("--sensor-malfunction-prob", type=float, default=0.25)
-    parser.add_argument("--cyber-prob", type=float, default=0.25)
+    parser.add_argument("--normal-prob", type=float, default=None)
+    parser.add_argument("--natural-fault-prob", type=float, default=None)
+    parser.add_argument("--sensor-malfunction-prob", type=float, default=None)
+    parser.add_argument("--cyber-prob", type=float, default=None)
 
     args = parser.parse_args()
-    probabilities = {
-        "normal": args.normal_prob,
-        "natural_fault": args.natural_fault_prob,
-        "sensor_malfunction": args.sensor_malfunction_prob,
-        "cyber": args.cyber_prob,
-    }
+    probabilities = None
+    if any(value is not None for value in (args.normal_prob, args.natural_fault_prob, args.sensor_malfunction_prob, args.cyber_prob)):
+        probabilities = {
+            "normal": args.normal_prob if args.normal_prob is not None else 0.0,
+            "natural_fault": args.natural_fault_prob if args.natural_fault_prob is not None else 0.0,
+            "sensor_malfunction": args.sensor_malfunction_prob if args.sensor_malfunction_prob is not None else 0.0,
+            "cyber": args.cyber_prob if args.cyber_prob is not None else 0.0,
+        }
     asyncio.run(generate_dataset(
         seed=args.seed,
         total_ticks=args.ticks,
@@ -374,6 +487,11 @@ def main_cli():
         port_base=args.port_base,
         run_id=args.run_id,
         scenario_probabilities=probabilities,
+        regime=args.regime,
+        compressed_stress=args.compressed_stress,
+        sim_seconds_per_tick=args.sim_seconds_per_tick,
+        profile_family=args.profile_family,
+        load_noise_scale=args.load_noise_scale,
     ))
 
 
