@@ -1,0 +1,3 @@
+generator,attack_rows_validation,command_injection_recall,command_injection_rows_validation,overall_cyber_recall,precision,rows,train_rows,validation_rows
+leaky_pre_pr16,15,0.06666666666666667,15,0.06666666666666667,1.0,600,420,180
+repaired,15,0.2,15,0.2,1.0,600,420,180
