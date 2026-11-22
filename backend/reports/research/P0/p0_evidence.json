@@ -1,0 +1,536 @@
+{
+  "clean_required": {
+    "completed": false,
+    "ticks": 5000
+  },
+  "clean_smoke": {
+    "contains_labelled_scenarios": false,
+    "dataset_sha256": "229d9177e1bc799e7efd9e1f999997397774a826fdd0d338f4675e4e4a5b94bb",
+    "manifest": {
+      "cli_arguments": {
+        "mode": "clean",
+        "out": "..\\experiments\\P0\\clean_smoke\\generated.csv",
+        "port_base": 19021,
+        "run_id": "clean-smoke",
+        "scenario_probabilities": {
+          "natural_fault": 0.5,
+          "normal": 0.5
+        },
+        "seed": 5050,
+        "ticks": 100
+      },
+      "cpu_model": "AMD64 Family 26 Model 96 Stepping 0, AuthenticAMD",
+      "elapsed_seconds": 87.139163,
+      "ended_at_utc": "2026-11-22T18:54:13.243532+00:00",
+      "git_sha": "a4fed43882dda60c926542fb569a31c9361b3294",
+      "input_datasets": {},
+      "output_datasets": {
+        "generated.csv": {
+          "path": "..\\experiments\\P0\\clean_smoke\\generated.csv",
+          "sha256": "229d9177e1bc799e7efd9e1f999997397774a826fdd0d338f4675e4e4a5b94bb"
+        }
+      },
+      "package_versions": {
+        "numpy": "2.4.6",
+        "pandapower": "3.5.4",
+        "pandas": "2.3.3",
+        "pymodbus": "3.15.0",
+        "scikit-learn": "1.9.0",
+        "scipy": "1.18.1"
+      },
+      "python_version": "3.13.7",
+      "rows": 500,
+      "run_id": "clean-smoke",
+      "seeds": {
+        "numpy": 5050,
+        "python_random": 5050
+      },
+      "started_at_utc": "2026-11-22T18:52:46.104289+00:00",
+      "task_id": "P0",
+      "throughput_ticks_per_second": 1.14759,
+      "timing_affected_columns": [
+        "nbd_mean_response_time_ms",
+        "nbd_std_response_time_ms"
+      ]
+    },
+    "ticks": 100,
+    "top_level_counts": {
+      "Natural Fault": 115,
+      "Normal": 385
+    }
+  },
+  "concurrency_smoke": {
+    "elapsed_seconds": 100.920993,
+    "requested_runs": 4,
+    "runs": [
+      {
+        "manifest": {
+          "cli_arguments": {
+            "mode": "scenario_mix",
+            "out": "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0\\concurrency\\seed_101\\generated.csv",
+            "port_base": 15021,
+            "run_id": "concurrency-101",
+            "scenario_probabilities": {
+              "cyber": 0.25,
+              "natural_fault": 0.25,
+              "normal": 0.25,
+              "sensor_malfunction": 0.25
+            },
+            "seed": 101,
+            "ticks": 40
+          },
+          "cpu_model": "AMD64 Family 26 Model 96 Stepping 0, AuthenticAMD",
+          "elapsed_seconds": 39.814009,
+          "ended_at_utc": "2026-11-22T18:50:07.639446+00:00",
+          "git_sha": "a4fed43882dda60c926542fb569a31c9361b3294",
+          "input_datasets": {},
+          "output_datasets": {
+            "generated.csv": {
+              "path": "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0\\concurrency\\seed_101\\generated.csv",
+              "sha256": "1958712db031f182f7e7db0e83ced1127d292a94e9aa0a73c3f083c5fa440fde"
+            }
+          },
+          "package_versions": {
+            "numpy": "2.4.6",
+            "pandapower": "3.5.4",
+            "pandas": "2.3.3",
+            "pymodbus": "3.15.0",
+            "scikit-learn": "1.9.0",
+            "scipy": "1.18.1"
+          },
+          "python_version": "3.13.7",
+          "rows": 200,
+          "run_id": "concurrency-101",
+          "seeds": {
+            "numpy": 101,
+            "python_random": 101
+          },
+          "started_at_utc": "2026-11-22T18:49:27.825409+00:00",
+          "task_id": "P0",
+          "throughput_ticks_per_second": 1.004672,
+          "timing_affected_columns": [
+            "nbd_mean_response_time_ms",
+            "nbd_std_response_time_ms"
+          ]
+        },
+        "port_base": 15021,
+        "returncode": 0,
+        "seed": 101,
+        "stderr": "ined in pp-grid does not exist in ppci, will be deleted!\nMeasurement defined in pp-grid does not exist in ppci, will be deleted!\nMeasurement defined in pp-grid does not exist in ppci, will be deleted!\nMeasurement defined in pp-grid does not exist in ppci, will be deleted!\nMeasurement defined in pp-grid does not exist in ppci, will be deleted!\nMeasurement defined in pp-grid does not exist in ppci, will be deleted!\nMeasurement defined in pp-grid does not exist in ppci, will be deleted!\nMeasurement defined in pp-grid does not exist in ppci, will be deleted!\nMeasurement defined in pp-grid does not exist in ppci, will be deleted!\nMeasurement defined in pp-grid does not exist in ppci, will be deleted!\nMeasurement defined in pp-grid does not exist in ppci, will be deleted!\nC:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Lib\\site-packages\\sklearn\\utils\\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n  warnings.warn(\nC:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Lib\\site-packages\\sklearn\\utils\\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n  warnings.warn(\nC:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Lib\\site-packages\\sklearn\\utils\\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n  warnings.warn(\nC:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Lib\\site-packages\\sklearn\\utils\\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n  warnings.warn(\nFAULT: Short Circuit Stub at Bus 3 (Bus-2-FeederB) for 5 ticks\nFAULT: Short Circuit Stub at Bus 4 (Bus-3-FeederC) for 10 ticks\n",
+        "stdout": "[DatasetGenerator] Starting generation: Seed=101, Ticks=40, Mode=scenario_mix, Run=concurrency-101...\n  ... Tick 40/40 complete (200 samples generated)\n\n[DatasetGenerator] Class Distribution Summary:\nTop-level counts:\n top_level_label\nNatural Fault         90\nNormal                88\nSensor Malfunction    13\nCyber Intrusion        9\nName: count, dtype: int64\n\nSubtype counts:\n subtype_label\nnormal               88\nshort_circuit        50\nline_trip            40\nsensor_drift         13\ncommand_injection     9\nName: count, dtype: int64\n[DatasetGenerator] Saved dataset to C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0\\concurrency\\seed_101\\generated.csv (200 rows)\n[DatasetGenerator] Wrote run manifest to C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0\\concurrency\\seed_101\\run_manifest.json\n"
+      },
+      {
+        "manifest": {
+          "cli_arguments": {
+            "mode": "scenario_mix",
+            "out": "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0\\concurrency\\seed_202\\generated.csv",
+            "port_base": 16021,
+            "run_id": "concurrency-202",
+            "scenario_probabilities": {
+              "cyber": 0.25,
+              "natural_fault": 0.25,
+              "normal": 0.25,
+              "sensor_malfunction": 0.25
+            },
+            "seed": 202,
+            "ticks": 40
+          },
+          "cpu_model": "AMD64 Family 26 Model 96 Stepping 0, AuthenticAMD",
+          "elapsed_seconds": 71.792074,
+          "ended_at_utc": "2026-11-22T18:50:39.582094+00:00",
+          "git_sha": "a4fed43882dda60c926542fb569a31c9361b3294",
+          "input_datasets": {},
+          "output_datasets": {
+            "generated.csv": {
+              "path": "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0\\concurrency\\seed_202\\generated.csv",
+              "sha256": "33c90b940e9b3b08c01626706928363f7a7064cc434fbe02165da29fa6454499"
+            }
+          },
+          "package_versions": {
+            "numpy": "2.4.6",
+            "pandapower": "3.5.4",
+            "pandas": "2.3.3",
+            "pymodbus": "3.15.0",
+            "scikit-learn": "1.9.0",
+            "scipy": "1.18.1"
+          },
+          "python_version": "3.13.7",
+          "rows": 200,
+          "run_id": "concurrency-202",
+          "seeds": {
+            "numpy": 202,
+            "python_random": 202
+          },
+          "started_at_utc": "2026-11-22T18:49:27.789990+00:00",
+          "task_id": "P0",
+          "throughput_ticks_per_second": 0.557165,
+          "timing_affected_columns": [
+            "nbd_mean_response_time_ms",
+            "nbd_std_response_time_ms"
+          ]
+        },
+        "port_base": 16021,
+        "returncode": 0,
+        "seed": 202,
+        "stderr": "urement defined in pp-grid does not exist in ppci, will be deleted!\nMeasurement defined in pp-grid does not exist in ppci, will be deleted!\nMeasurement defined in pp-grid does not exist in ppci, will be deleted!\nMeasurement defined in pp-grid does not exist in ppci, will be deleted!\nMeasurement defined in pp-grid does not exist in ppci, will be deleted!\nC:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Lib\\site-packages\\sklearn\\utils\\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n  warnings.warn(\nC:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Lib\\site-packages\\sklearn\\utils\\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n  warnings.warn(\nC:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Lib\\site-packages\\sklearn\\utils\\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n  warnings.warn(\nC:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Lib\\site-packages\\sklearn\\utils\\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n  warnings.warn(\nC:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Lib\\site-packages\\sklearn\\utils\\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n  warnings.warn(\nC:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Lib\\site-packages\\sklearn\\utils\\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n  warnings.warn(\n",
+        "stdout": "[DatasetGenerator] Starting generation: Seed=202, Ticks=40, Mode=scenario_mix, Run=concurrency-202...\n  ... Tick 40/40 complete (200 samples generated)\n\n[DatasetGenerator] Class Distribution Summary:\nTop-level counts:\n top_level_label\nNormal                132\nNatural Fault          35\nCyber Intrusion        21\nSensor Malfunction     12\nName: count, dtype: int64\n\nSubtype counts:\n subtype_label\nnormal               132\nline_trip             35\nsensor_drift          12\nreplay                10\ncommand_injection      7\ndata_injection         4\nName: count, dtype: int64\n[DatasetGenerator] Saved dataset to C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0\\concurrency\\seed_202\\generated.csv (200 rows)\n[DatasetGenerator] Wrote run manifest to C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0\\concurrency\\seed_202\\run_manifest.json\n"
+      },
+      {
+        "manifest": {
+          "cli_arguments": {
+            "mode": "scenario_mix",
+            "out": "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0\\concurrency\\seed_303\\generated.csv",
+            "port_base": 17021,
+            "run_id": "concurrency-303",
+            "scenario_probabilities": {
+              "cyber": 0.25,
+              "natural_fault": 0.25,
+              "normal": 0.25,
+              "sensor_malfunction": 0.25
+            },
+            "seed": 303,
+            "ticks": 40
+          },
+          "cpu_model": "AMD64 Family 26 Model 96 Stepping 0, AuthenticAMD",
+          "elapsed_seconds": 38.318263,
+          "ended_at_utc": "2026-11-22T18:50:06.153360+00:00",
+          "git_sha": "a4fed43882dda60c926542fb569a31c9361b3294",
+          "input_datasets": {},
+          "output_datasets": {
+            "generated.csv": {
+              "path": "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0\\concurrency\\seed_303\\generated.csv",
+              "sha256": "bb790064e6927ecea244c45f68cf83600c1f262fd8a7422067a94457400d1d8b"
+            }
+          },
+          "package_versions": {
+            "numpy": "2.4.6",
+            "pandapower": "3.5.4",
+            "pandas": "2.3.3",
+            "pymodbus": "3.15.0",
+            "scikit-learn": "1.9.0",
+            "scipy": "1.18.1"
+          },
+          "python_version": "3.13.7",
+          "rows": 200,
+          "run_id": "concurrency-303",
+          "seeds": {
+            "numpy": 303,
+            "python_random": 303
+          },
+          "started_at_utc": "2026-11-22T18:49:27.835068+00:00",
+          "task_id": "P0",
+          "throughput_ticks_per_second": 1.043889,
+          "timing_affected_columns": [
+            "nbd_mean_response_time_ms",
+            "nbd_std_response_time_ms"
+          ]
+        },
+        "port_base": 17021,
+        "returncode": 0,
+        "seed": 303,
+        "stderr": "dthedocs.io/en/dev/source/upgrade_40.html#convert-to-simdata-simdevice\nModbusServerContext is deprecated and will be removed in v4.\nPlease convert to SimData/SimDevice.\nPlease read https://pymodbus.readthedocs.io/en/dev/source/upgrade_40.html#convert-to-simdata-simdevice\n[ClassifierService] Bundle schema has 28 features; current code has 37.  New features not in bundle (will be unused): ['pcd_resid_jump', 'pcd_resid_persist', 'pcd_resid_concentration', 'pcd_resid_rtu_share', 'pcd_resid_breadth_count', 'pcd_resid_breadth_frac', 'dpn_legacy', 'dpn_ing_delta', 'dpn_ing_resid'].  Consider re-training to leverage new features.\nC:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Lib\\site-packages\\sklearn\\utils\\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n  warnings.warn(\nC:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Lib\\site-packages\\sklearn\\utils\\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n  warnings.warn(\nC:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Lib\\site-packages\\sklearn\\utils\\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n  warnings.warn(\nC:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Lib\\site-packages\\sklearn\\utils\\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n  warnings.warn(\nC:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Lib\\site-packages\\sklearn\\utils\\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n  warnings.warn(\n",
+        "stdout": "[DatasetGenerator] Starting generation: Seed=303, Ticks=40, Mode=scenario_mix, Run=concurrency-303...\n  ... Tick 40/40 complete (200 samples generated)\n\n[DatasetGenerator] Class Distribution Summary:\nTop-level counts:\n top_level_label\nNormal             196\nCyber Intrusion      4\nName: count, dtype: int64\n\nSubtype counts:\n subtype_label\nnormal               196\ncommand_injection      4\nName: count, dtype: int64\n[DatasetGenerator] Saved dataset to C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0\\concurrency\\seed_303\\generated.csv (200 rows)\n[DatasetGenerator] Wrote run manifest to C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0\\concurrency\\seed_303\\run_manifest.json\n"
+      },
+      {
+        "manifest": {
+          "cli_arguments": {
+            "mode": "scenario_mix",
+            "out": "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0\\concurrency\\seed_404\\generated.csv",
+            "port_base": 18021,
+            "run_id": "concurrency-404",
+            "scenario_probabilities": {
+              "cyber": 0.25,
+              "natural_fault": 0.25,
+              "normal": 0.25,
+              "sensor_malfunction": 0.25
+            },
+            "seed": 404,
+            "ticks": 40
+          },
+          "cpu_model": "AMD64 Family 26 Model 96 Stepping 0, AuthenticAMD",
+          "elapsed_seconds": 84.224267,
+          "ended_at_utc": "2026-11-22T18:50:52.122369+00:00",
+          "git_sha": "a4fed43882dda60c926542fb569a31c9361b3294",
+          "input_datasets": {},
+          "output_datasets": {
+            "generated.csv": {
+              "path": "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0\\concurrency\\seed_404\\generated.csv",
+              "sha256": "33f6f544daa56ff3c0f358ea148fd684f723d0d4cc5f5d294c729dafb4ee2a85"
+            }
+          },
+          "package_versions": {
+            "numpy": "2.4.6",
+            "pandapower": "3.5.4",
+            "pandas": "2.3.3",
+            "pymodbus": "3.15.0",
+            "scikit-learn": "1.9.0",
+            "scipy": "1.18.1"
+          },
+          "python_version": "3.13.7",
+          "rows": 200,
+          "run_id": "concurrency-404",
+          "seeds": {
+            "numpy": 404,
+            "python_random": 404
+          },
+          "started_at_utc": "2026-11-22T18:49:27.898073+00:00",
+          "task_id": "P0",
+          "throughput_ticks_per_second": 0.474923,
+          "timing_affected_columns": [
+            "nbd_mean_response_time_ms",
+            "nbd_std_response_time_ms"
+          ]
+        },
+        "port_base": 18021,
+        "returncode": 0,
+        "seed": 404,
+        "stderr": "risai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Lib\\site-packages\\sklearn\\utils\\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n  warnings.warn(\nC:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Lib\\site-packages\\sklearn\\utils\\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n  warnings.warn(\nC:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Lib\\site-packages\\sklearn\\utils\\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n  warnings.warn(\nFAULT: Line Trip on Line 1 (L1-Sub-B)\nMeasurement defined in pp-grid does not exist in ppci, will be deleted!\nMeasurement defined in pp-grid does not exist in ppci, will be deleted!\nMeasurement defined in pp-grid does not exist in ppci, will be deleted!\nMeasurement defined in pp-grid does not exist in ppci, will be deleted!\nMeasurement defined in pp-grid does not exist in ppci, will be deleted!\nMeasurement defined in pp-grid does not exist in ppci, will be deleted!\nMeasurement defined in pp-grid does not exist in ppci, will be deleted!\nMeasurement defined in pp-grid does not exist in ppci, will be deleted!\nMeasurement defined in pp-grid does not exist in ppci, will be deleted!\nMeasurement defined in pp-grid does not exist in ppci, will be deleted!\nMeasurement defined in pp-grid does not exist in ppci, will be deleted!\nMeasurement defined in pp-grid does not exist in ppci, will be deleted!\nMeasurement defined in pp-grid does not exist in ppci, will be deleted!\nMeasurement defined in pp-grid does not exist in ppci, will be deleted!\nMeasurement defined in pp-grid does not exist in ppci, will be deleted!\nMeasurement defined in pp-grid does not exist in ppci, will be deleted!\n",
+        "stdout": "[DatasetGenerator] Starting generation: Seed=404, Ticks=40, Mode=scenario_mix, Run=concurrency-404...\n  ... Tick 40/40 complete (200 samples generated)\n\n[DatasetGenerator] Class Distribution Summary:\nTop-level counts:\n top_level_label\nNormal             150\nNatural Fault       45\nCyber Intrusion      5\nName: count, dtype: int64\n\nSubtype counts:\n subtype_label\nnormal           150\nline_trip         25\nshort_circuit     20\nreplay             5\nName: count, dtype: int64\n[DatasetGenerator] Saved dataset to C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0\\concurrency\\seed_404\\generated.csv (200 rows)\n[DatasetGenerator] Wrote run manifest to C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0\\concurrency\\seed_404\\run_manifest.json\n"
+      }
+    ],
+    "task_id": "P0",
+    "ticks": 40
+  },
+  "container_image_digest": {
+    "returncode": 1,
+    "stderr": "failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.\n",
+    "stdout": ""
+  },
+  "host": {
+    "cpu": "AMD64 Family 26 Model 96 Stepping 0, AuthenticAMD",
+    "python": "3.13.7 (tags/v3.13.7:bcee1c3, Aug 14 2025, 14:15:11) [MSC v.1944 64 bit (AMD64)]"
+  },
+  "repro_check": {
+    "comparison": {
+      "columns": [
+        "nbd_unexpected_write_count",
+        "nbd_mean_response_time_ms",
+        "nbd_std_response_time_ms",
+        "nbd_distinct_sources_count",
+        "nbd_fc3_read_count",
+        "nbd_fc6_write_count",
+        "nbd_fc16_write_count",
+        "nbd_error_count",
+        "nbd_traffic_volume",
+        "nbd_modbus_anomaly_rate",
+        "pcd_max_lnr",
+        "pcd_is_target_rtu_max_lnr",
+        "pcd_chi2_statistic",
+        "pcd_chi2_ratio",
+        "pcd_chi2_failed",
+        "pcd_target_rtu_v_residual",
+        "pcd_target_rtu_p_residual",
+        "pcd_target_rtu_is_flagged",
+        "pcd_global_bad_data_flag",
+        "pcd_voltage_pu_reported",
+        "pcd_voltage_dev_nominal",
+        "pcd_p_mw_reported",
+        "pcd_status_code",
+        "pcd_physics_network_disagreement_index",
+        "pcd_temporal_dv_dt_3tick",
+        "pcd_temporal_dp_dt_3tick",
+        "pcd_temporal_dq_dt_3tick",
+        "pcd_cross_rtu_voltage_divergence",
+        "pcd_resid_jump",
+        "pcd_resid_persist",
+        "pcd_resid_concentration",
+        "pcd_resid_rtu_share",
+        "pcd_resid_breadth_count",
+        "pcd_resid_breadth_frac",
+        "dpn_legacy",
+        "dpn_ing_delta",
+        "dpn_ing_resid",
+        "tick",
+        "rtu_id",
+        "top_level_label",
+        "subtype_label"
+      ],
+      "columns_equal": true,
+      "identical_non_timing": true,
+      "labels_equal": true,
+      "non_timing_mismatches": {},
+      "rows": 25,
+      "rows_equal": true,
+      "timing": {
+        "nbd_mean_response_time_ms": {
+          "max_absolute_difference": 87.55799999999999,
+          "rows_different": 25
+        },
+        "nbd_std_response_time_ms": {
+          "max_absolute_difference": 73.00299999999999,
+          "rows_different": 25
+        }
+      }
+    },
+    "input_datasets": {},
+    "outputs": {
+      "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0\\repro\\run_a\\generated.csv": "656fe31493f3b7f46dccd988dfa72d91259741bfbe328607e57692cae73bd98e",
+      "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0\\repro\\run_b\\generated.csv": "13b3934f101e2a1933fa364567b7ebd0d3015d5cbf42da19971a51ff50c7e2ac"
+    },
+    "port_bases": [
+      15021,
+      16021
+    ],
+    "run_manifests": [
+      {
+        "cli_arguments": {
+          "mode": "scenario_mix",
+          "out": "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0\\repro\\run_a\\generated.csv",
+          "port_base": 15021,
+          "run_id": "repro-a",
+          "scenario_probabilities": {
+            "cyber": 0.25,
+            "natural_fault": 0.25,
+            "normal": 0.25,
+            "sensor_malfunction": 0.25
+          },
+          "seed": 42,
+          "ticks": 5
+        },
+        "cpu_model": "AMD64 Family 26 Model 96 Stepping 0, AuthenticAMD",
+        "elapsed_seconds": 6.047934,
+        "ended_at_utc": "2026-11-22T18:48:19.465526+00:00",
+        "git_sha": "a4fed43882dda60c926542fb569a31c9361b3294",
+        "input_datasets": {},
+        "output_datasets": {
+          "generated.csv": {
+            "path": "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0\\repro\\run_a\\generated.csv",
+            "sha256": "656fe31493f3b7f46dccd988dfa72d91259741bfbe328607e57692cae73bd98e"
+          }
+        },
+        "package_versions": {
+          "numpy": "2.4.6",
+          "pandapower": "3.5.4",
+          "pandas": "2.3.3",
+          "pymodbus": "3.15.0",
+          "scikit-learn": "1.9.0",
+          "scipy": "1.18.1"
+        },
+        "python_version": "3.13.7",
+        "rows": 25,
+        "run_id": "repro-a",
+        "seeds": {
+          "numpy": 42,
+          "python_random": 42
+        },
+        "started_at_utc": "2026-11-22T18:48:13.417566+00:00",
+        "task_id": "P0",
+        "throughput_ticks_per_second": 0.826729,
+        "timing_affected_columns": [
+          "nbd_mean_response_time_ms",
+          "nbd_std_response_time_ms"
+        ]
+      },
+      {
+        "cli_arguments": {
+          "mode": "scenario_mix",
+          "out": "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0\\repro\\run_b\\generated.csv",
+          "port_base": 16021,
+          "run_id": "repro-b",
+          "scenario_probabilities": {
+            "cyber": 0.25,
+            "natural_fault": 0.25,
+            "normal": 0.25,
+            "sensor_malfunction": 0.25
+          },
+          "seed": 42,
+          "ticks": 5
+        },
+        "cpu_model": "AMD64 Family 26 Model 96 Stepping 0, AuthenticAMD",
+        "elapsed_seconds": 5.304572,
+        "ended_at_utc": "2026-11-22T18:48:40.252190+00:00",
+        "git_sha": "a4fed43882dda60c926542fb569a31c9361b3294",
+        "input_datasets": {},
+        "output_datasets": {
+          "generated.csv": {
+            "path": "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0\\repro\\run_b\\generated.csv",
+            "sha256": "13b3934f101e2a1933fa364567b7ebd0d3015d5cbf42da19971a51ff50c7e2ac"
+          }
+        },
+        "package_versions": {
+          "numpy": "2.4.6",
+          "pandapower": "3.5.4",
+          "pandas": "2.3.3",
+          "pymodbus": "3.15.0",
+          "scikit-learn": "1.9.0",
+          "scipy": "1.18.1"
+        },
+        "python_version": "3.13.7",
+        "rows": 25,
+        "run_id": "repro-b",
+        "seeds": {
+          "numpy": 42,
+          "python_random": 42
+        },
+        "started_at_utc": "2026-11-22T18:48:34.947585+00:00",
+        "task_id": "P0",
+        "throughput_ticks_per_second": 0.942583,
+        "timing_affected_columns": [
+          "nbd_mean_response_time_ms",
+          "nbd_std_response_time_ms"
+        ]
+      }
+    ],
+    "runs": [
+      {
+        "command": [
+          "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Scripts\\python.exe",
+          "-m",
+          "app.ml.dataset_generator",
+          "--seed",
+          "42",
+          "--ticks",
+          "5",
+          "--mode",
+          "scenario_mix",
+          "--port-base",
+          "15021",
+          "--run-id",
+          "repro-a",
+          "--out",
+          "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0\\repro\\run_a\\generated.csv"
+        ],
+        "elapsed_seconds": 20.348811,
+        "output": "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0\\repro\\run_a\\generated.csv",
+        "returncode": 0,
+        "stderr": " will be removed in v4.\nPlease convert to SimData/SimDevice.\nPlease read https://pymodbus.readthedocs.io/en/dev/source/upgrade_40.html#convert-to-simdata-simdevice\nModbusServerContext is deprecated and will be removed in v4.\nPlease convert to SimData/SimDevice.\nPlease read https://pymodbus.readthedocs.io/en/dev/source/upgrade_40.html#convert-to-simdata-simdevice\nModbusDeviceContext, ModbusSequentialDataBlock, ModbusSparseDataBlock are deprecated and will be removed in v4.\nPlease convert to SimData/SimDevice.\nPlease read https://pymodbus.readthedocs.io/en/dev/source/upgrade_40.html#convert-to-simdata-simdevice\nModbusServerContext is deprecated and will be removed in v4.\nPlease convert to SimData/SimDevice.\nPlease read https://pymodbus.readthedocs.io/en/dev/source/upgrade_40.html#convert-to-simdata-simdevice\nModbusDeviceContext, ModbusSequentialDataBlock, ModbusSparseDataBlock are deprecated and will be removed in v4.\nPlease convert to SimData/SimDevice.\nPlease read https://pymodbus.readthedocs.io/en/dev/source/upgrade_40.html#convert-to-simdata-simdevice\nModbusServerContext is deprecated and will be removed in v4.\nPlease convert to SimData/SimDevice.\nPlease read https://pymodbus.readthedocs.io/en/dev/source/upgrade_40.html#convert-to-simdata-simdevice\nModbusDeviceContext, ModbusSequentialDataBlock, ModbusSparseDataBlock are deprecated and will be removed in v4.\nPlease convert to SimData/SimDevice.\nPlease read https://pymodbus.readthedocs.io/en/dev/source/upgrade_40.html#convert-to-simdata-simdevice\nModbusServerContext is deprecated and will be removed in v4.\nPlease convert to SimData/SimDevice.\nPlease read https://pymodbus.readthedocs.io/en/dev/source/upgrade_40.html#convert-to-simdata-simdevice\n[ClassifierService] Bundle schema has 28 features; current code has 37.  New features not in bundle (will be unused): ['pcd_resid_jump', 'pcd_resid_persist', 'pcd_resid_concentration', 'pcd_resid_rtu_share', 'pcd_resid_breadth_count', 'pcd_resid_breadth_frac', 'dpn_legacy', 'dpn_ing_delta', 'dpn_ing_resid'].  Consider re-training to leverage new features.\nC:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Lib\\site-packages\\sklearn\\utils\\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n  warnings.warn(\nC:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Lib\\site-packages\\sklearn\\utils\\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n  warnings.warn(\nC:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Lib\\site-packages\\sklearn\\utils\\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n  warnings.warn(\nC:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Lib\\site-packages\\sklearn\\utils\\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n  warnings.warn(\nC:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Lib\\site-packages\\sklearn\\utils\\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n  warnings.warn(\nC:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Lib\\site-packages\\sklearn\\utils\\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n  warnings.warn(\nC:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Lib\\site-packages\\sklearn\\utils\\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n  warnings.warn(\n",
+        "stdout": "[DatasetGenerator] Starting generation: Seed=42, Ticks=5, Mode=scenario_mix, Run=repro-a...\n  ... Tick 5/5 complete (25 samples generated)\n\n[DatasetGenerator] Class Distribution Summary:\nTop-level counts:\n top_level_label\nNormal                20\nSensor Malfunction     5\nName: count, dtype: int64\n\nSubtype counts:\n subtype_label\nnormal          20\nsensor_drift     5\nName: count, dtype: int64\n[DatasetGenerator] Saved dataset to C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0\\repro\\run_a\\generated.csv (25 rows)\n[DatasetGenerator] Wrote run manifest to C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0\\repro\\run_a\\run_manifest.json\n"
+      },
+      {
+        "command": [
+          "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Scripts\\python.exe",
+          "-m",
+          "app.ml.dataset_generator",
+          "--seed",
+          "42",
+          "--ticks",
+          "5",
+          "--mode",
+          "scenario_mix",
+          "--port-base",
+          "16021",
+          "--run-id",
+          "repro-b",
+          "--out",
+          "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0\\repro\\run_b\\generated.csv"
+        ],
+        "elapsed_seconds": 20.643986,
+        "output": "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0\\repro\\run_b\\generated.csv",
+        "returncode": 0,
+        "stderr": " will be removed in v4.\nPlease convert to SimData/SimDevice.\nPlease read https://pymodbus.readthedocs.io/en/dev/source/upgrade_40.html#convert-to-simdata-simdevice\nModbusServerContext is deprecated and will be removed in v4.\nPlease convert to SimData/SimDevice.\nPlease read https://pymodbus.readthedocs.io/en/dev/source/upgrade_40.html#convert-to-simdata-simdevice\nModbusDeviceContext, ModbusSequentialDataBlock, ModbusSparseDataBlock are deprecated and will be removed in v4.\nPlease convert to SimData/SimDevice.\nPlease read https://pymodbus.readthedocs.io/en/dev/source/upgrade_40.html#convert-to-simdata-simdevice\nModbusServerContext is deprecated and will be removed in v4.\nPlease convert to SimData/SimDevice.\nPlease read https://pymodbus.readthedocs.io/en/dev/source/upgrade_40.html#convert-to-simdata-simdevice\nModbusDeviceContext, ModbusSequentialDataBlock, ModbusSparseDataBlock are deprecated and will be removed in v4.\nPlease convert to SimData/SimDevice.\nPlease read https://pymodbus.readthedocs.io/en/dev/source/upgrade_40.html#convert-to-simdata-simdevice\nModbusServerContext is deprecated and will be removed in v4.\nPlease convert to SimData/SimDevice.\nPlease read https://pymodbus.readthedocs.io/en/dev/source/upgrade_40.html#convert-to-simdata-simdevice\nModbusDeviceContext, ModbusSequentialDataBlock, ModbusSparseDataBlock are deprecated and will be removed in v4.\nPlease convert to SimData/SimDevice.\nPlease read https://pymodbus.readthedocs.io/en/dev/source/upgrade_40.html#convert-to-simdata-simdevice\nModbusServerContext is deprecated and will be removed in v4.\nPlease convert to SimData/SimDevice.\nPlease read https://pymodbus.readthedocs.io/en/dev/source/upgrade_40.html#convert-to-simdata-simdevice\n[ClassifierService] Bundle schema has 28 features; current code has 37.  New features not in bundle (will be unused): ['pcd_resid_jump', 'pcd_resid_persist', 'pcd_resid_concentration', 'pcd_resid_rtu_share', 'pcd_resid_breadth_count', 'pcd_resid_breadth_frac', 'dpn_legacy', 'dpn_ing_delta', 'dpn_ing_resid'].  Consider re-training to leverage new features.\nC:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Lib\\site-packages\\sklearn\\utils\\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n  warnings.warn(\nC:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Lib\\site-packages\\sklearn\\utils\\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n  warnings.warn(\nC:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Lib\\site-packages\\sklearn\\utils\\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n  warnings.warn(\nC:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Lib\\site-packages\\sklearn\\utils\\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n  warnings.warn(\nC:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Lib\\site-packages\\sklearn\\utils\\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n  warnings.warn(\nC:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Lib\\site-packages\\sklearn\\utils\\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n  warnings.warn(\nC:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Lib\\site-packages\\sklearn\\utils\\validation.py:2827: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n  warnings.warn(\n",
+        "stdout": "[DatasetGenerator] Starting generation: Seed=42, Ticks=5, Mode=scenario_mix, Run=repro-b...\n  ... Tick 5/5 complete (25 samples generated)\n\n[DatasetGenerator] Class Distribution Summary:\nTop-level counts:\n top_level_label\nNormal                20\nSensor Malfunction     5\nName: count, dtype: int64\n\nSubtype counts:\n subtype_label\nnormal          20\nsensor_drift     5\nName: count, dtype: int64\n[DatasetGenerator] Saved dataset to C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0\\repro\\run_b\\generated.csv (25 rows)\n[DatasetGenerator] Wrote run manifest to C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0\\repro\\run_b\\run_manifest.json\n"
+      }
+    ],
+    "seed": 42,
+    "task_id": "P0",
+    "ticks": 5
+  },
+  "task_id": "P0",
+  "tests": {
+    "failed": 1,
+    "passed": 321,
+    "path": "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\reports\\research\\P0\\final_pytest.txt",
+    "sha256": "8861d8e0b367327e749e1eac373a1b3b599b61feb5223e17bae7d81c7581520e",
+    "summary": "1 failed, 321 passed"
+  }
+}
