@@ -1,0 +1,21 @@
+{
+  "cli_arguments": {
+    "out_dir": "reports\\research\\P9",
+    "pytest_log": "reports\\research\\P9\\full_pytest.txt",
+    "results": "experiments\\P9\\taxonomy_readiness.json"
+  },
+  "cpu_model": "AMD64 Family 26 Model 96 Stepping 0, AuthenticAMD",
+  "ended_at_utc": "2026-11-23T09:56:11.011518+00:00",
+  "git_sha": "90cf860a2b0d7c39f8ef253ba4aedd6074518115",
+  "input_datasets": {
+    "experiments\\P9\\taxonomy_readiness.json": "a85ad74db747781767b69209f7cbd6ba4fac7cd8c1d27dfa7f12e625a8b6fdfb"
+  },
+  "output_datasets": {
+    "reports\\research\\P9\\FINDINGS.md": "8c0f569627cfe9b4760045cc8cc7d129923058887f6c47f7c3aa93bc63a53aeb",
+    "reports\\research\\P9\\confusion.csv": "4698abb43f3f961023d11c5e372d3c2aa762b362e91f1a3652703434aa59325a"
+  },
+  "python_version": "3.13.7 (tags/v3.13.7:bcee1c3, Aug 14 2025, 14:15:11) [MSC v.1944 64 bit (AMD64)]",
+  "seeds": {},
+  "started_at_utc": "2026-11-23T09:56:11.011477+00:00",
+  "task_id": "P9-report"
+}
