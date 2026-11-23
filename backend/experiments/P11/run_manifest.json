@@ -1,0 +1,43 @@
+{
+  "task": "P11",
+  "git_sha": "60a9cfb83d4ccdf5940c02a3102de91aea9ffc3f",
+  "python": "3.13.7 (tags/v3.13.7:bcee1c3, Aug 14 2025, 14:15:11) [MSC v.1944 64 bit (AMD64)]",
+  "packages": {
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "pandapower": "3.5.4",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.0",
+    "xgboost": "3.4.1"
+  },
+  "cpu_model": "AMD64 Family 26 Model 96 Stepping 0, AuthenticAMD",
+  "cli_arguments": {
+    "out_dir": "backend/experiments/P11",
+    "report_dir": "backend/reports/research/P11",
+    "samples": 20,
+    "seed": 1111,
+    "pytest_output": "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P11\\full_suite.txt"
+  },
+  "seeds": {
+    "experiment": 1111
+  },
+  "start_time_utc": "2026-11-23T12:27:27.275179+00:00",
+  "end_time_utc": "2026-11-23T12:27:38.504396+00:00",
+  "input_sha256": {
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\models\\fusion_classifier.joblib": "ee5211510e41eddac32ed1eed405af982a0a550bd0b75e8867253135b812ccae",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\app\\core\\feeder.py": "1348586f5c9c72b8132144b17acbfb57ca251fbbb88d7b14b3efdd9f9dee97ee",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\app\\core\\state_estimation.py": "bd8bcd8739f4cce51c563ca3dd8bb75f9a2aa89407ecac4022db11977b978d55",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\app\\core\\topology_map.py": "b9e7569a62fc4ea4d1447304f58382fee08c38ee3d059823b7888c4695276b16",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\app\\ml\\feature_engineering.py": "ee16a6fa1bcc4341a2e03574703aeeef774c9ca4bd0e6ba5f9b77a9ff1d88754",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\app\\ml\\classifier_service.py": "19943a89dd10b6e85afecc12f0d8c20cb2adf4065f93a258390fc3222fbac49c"
+  },
+  "output_sha256": {
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P11\\p11_results.json": "4b73bc5fdda47098a419d22ca009c4aeea19fdf68e0b2c211de8c0692229cd7c",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\reports\\research\\P11\\redundancy_latency.csv": "816c4bec36359bf65228d6421c2c6f72f52f9fb7e4fcca341e0bf37b416c3b9b",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\reports\\research\\P11\\cross_condition.csv": "8e78279723b0df4a9017f4f144d15c8a93126f03c811f555462fd92cffadf0f9",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\reports\\research\\P11\\cross_topology.csv": "d2ff9fca156e2a6932169776e0a821862175b33e4d2b5c4d37b929c1621bcccf",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P11\\full_suite.txt": "dcb4426ee02198f443ab7bb4598c3c4234b53c0aedb75f0aa862399ab6b2a7e1"
+  },
+  "test_set_read": false,
+  "pytest_summary": "396 passed, 1 failed (raw output: C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P11\\full_suite.txt)"
+}
