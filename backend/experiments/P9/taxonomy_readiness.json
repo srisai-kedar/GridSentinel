@@ -1,0 +1,104 @@
+{
+  "available_input_files": [
+    "experiments\\P6-complete\\generated\\train_seed100.csv",
+    "experiments\\P6-complete\\generated\\train_seed101.csv",
+    "experiments\\P6-complete\\generated\\train_seed102.csv",
+    "experiments\\P6-complete\\generated\\train_seed103.csv",
+    "experiments\\P6-complete\\generated\\train_seed104.csv",
+    "experiments\\P6-complete\\generated\\train_seed105.csv",
+    "experiments\\P6-complete\\generated\\train_seed106.csv",
+    "experiments\\P6-complete\\generated\\train_seed107.csv",
+    "experiments\\P6-complete\\generated\\train_seed108.csv",
+    "experiments\\P6-complete\\generated\\train_seed109.csv",
+    "experiments\\P6-complete\\generated\\train_seed110.csv",
+    "experiments\\P6-complete\\generated\\train_seed111.csv",
+    "experiments\\P6-complete\\generated\\train_seed112.csv",
+    "experiments\\P6-complete\\generated\\train_seed113.csv",
+    "experiments\\P6-complete\\generated\\train_seed114.csv",
+    "experiments\\P6-complete\\generated\\train_seed115.csv",
+    "experiments\\P6-complete\\generated\\train_seed116.csv",
+    "experiments\\P6-complete\\generated\\train_seed117.csv",
+    "experiments\\P6-complete\\generated\\train_seed118.csv",
+    "experiments\\P6-complete\\generated\\train_seed119.csv",
+    "experiments\\P6-complete\\generated\\validation_seed200.csv",
+    "experiments\\P6-complete\\generated\\validation_seed201.csv",
+    "experiments\\P6-complete\\generated\\validation_seed202.csv",
+    "experiments\\P6-complete\\generated\\validation_seed203.csv",
+    "experiments\\P6-complete\\generated\\validation_seed204.csv"
+  ],
+  "available_input_metadata": {
+    "drift_modes_observed": [
+      "step"
+    ],
+    "fdi_sigma_multiples_observed": [
+      2,
+      10
+    ],
+    "scenario_param_keys": [
+      "bus_index",
+      "drift_percent",
+      "fault_load_mvar",
+      "fault_load_mw",
+      "line_index",
+      "magnitude",
+      "mode",
+      "register_address",
+      "rtu_id",
+      "sigma_multiple",
+      "target",
+      "value",
+      "voltage_pu"
+    ],
+    "scenario_param_records": 1250
+  },
+  "confusion_matrix": "unavailable; confusion.csv is an empty schema only",
+  "ended_at_utc": "2026-11-23T09:53:11.370825+00:00",
+  "learned_four_class_model": "not trained because the required systematic study and independent held-out runs are unavailable",
+  "missing_drift_modes": [
+    "gain_error",
+    "noise_increase",
+    "ramp",
+    "stuck_at"
+  ],
+  "missing_fdi_sigma_multiples": [
+    1,
+    3,
+    5,
+    25
+  ],
+  "required_drift_modes": [
+    "ramp",
+    "step",
+    "gain_error",
+    "stuck_at",
+    "noise_increase"
+  ],
+  "required_fdi_sigma_multiples": [
+    1,
+    2,
+    3,
+    5,
+    10,
+    25
+  ],
+  "rule_audit": {
+    "has_always_true_key_presence_clause": false,
+    "has_concentration_comparison": true,
+    "source": "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\app\\ml\\classifier_service.py",
+    "source_lines": {
+      "end": 119,
+      "start": 82
+    },
+    "threshold_literals": [
+      "anomaly_rate\", 0.0) <= 0.05",
+      "breadth_count <= 1.0",
+      "concentration >= 0.70",
+      "pcd_max_lnr\", 0.0) > 2.5",
+      "pcd_target_rtu_v_residual\", 0.0) > 2.0",
+      "v_dev <= 0.125"
+    ]
+  },
+  "started_at_utc": "2026-11-23T09:53:11.232291+00:00",
+  "status": "BLOCKED",
+  "task_id": "P9"
+}
