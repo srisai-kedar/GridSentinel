@@ -1,0 +1,2264 @@
+{
+  "topology": {
+    "actual_attackable_measurement_count": 15,
+    "requested_attackable_measurement_count": 13,
+    "measurement_count": 18,
+    "measurements": [
+      {
+        "index": 0,
+        "type": "v",
+        "element_type": "bus",
+        "element": 1,
+        "rtu": 1,
+        "trusted_pseudo_sensor": false
+      },
+      {
+        "index": 1,
+        "type": "v",
+        "element_type": "bus",
+        "element": 2,
+        "rtu": 2,
+        "trusted_pseudo_sensor": false
+      },
+      {
+        "index": 2,
+        "type": "v",
+        "element_type": "bus",
+        "element": 3,
+        "rtu": 3,
+        "trusted_pseudo_sensor": false
+      },
+      {
+        "index": 3,
+        "type": "v",
+        "element_type": "bus",
+        "element": 4,
+        "rtu": 4,
+        "trusted_pseudo_sensor": false
+      },
+      {
+        "index": 4,
+        "type": "v",
+        "element_type": "bus",
+        "element": 5,
+        "rtu": 5,
+        "trusted_pseudo_sensor": false
+      },
+      {
+        "index": 5,
+        "type": "v",
+        "element_type": "bus",
+        "element": 6,
+        "rtu": null,
+        "trusted_pseudo_sensor": true
+      },
+      {
+        "index": 6,
+        "type": "p",
+        "element_type": "line",
+        "element": 0,
+        "rtu": 2,
+        "trusted_pseudo_sensor": false
+      },
+      {
+        "index": 7,
+        "type": "q",
+        "element_type": "line",
+        "element": 0,
+        "rtu": 2,
+        "trusted_pseudo_sensor": false
+      },
+      {
+        "index": 8,
+        "type": "p",
+        "element_type": "line",
+        "element": 1,
+        "rtu": 3,
+        "trusted_pseudo_sensor": false
+      },
+      {
+        "index": 9,
+        "type": "q",
+        "element_type": "line",
+        "element": 1,
+        "rtu": 3,
+        "trusted_pseudo_sensor": false
+      },
+      {
+        "index": 10,
+        "type": "p",
+        "element_type": "line",
+        "element": 2,
+        "rtu": 4,
+        "trusted_pseudo_sensor": false
+      },
+      {
+        "index": 11,
+        "type": "q",
+        "element_type": "line",
+        "element": 2,
+        "rtu": 4,
+        "trusted_pseudo_sensor": false
+      },
+      {
+        "index": 12,
+        "type": "p",
+        "element_type": "line",
+        "element": 3,
+        "rtu": 5,
+        "trusted_pseudo_sensor": false
+      },
+      {
+        "index": 13,
+        "type": "q",
+        "element_type": "line",
+        "element": 3,
+        "rtu": 5,
+        "trusted_pseudo_sensor": false
+      },
+      {
+        "index": 14,
+        "type": "p",
+        "element_type": "line",
+        "element": 4,
+        "rtu": null,
+        "trusted_pseudo_sensor": true
+      },
+      {
+        "index": 15,
+        "type": "q",
+        "element_type": "line",
+        "element": 4,
+        "rtu": null,
+        "trusted_pseudo_sensor": true
+      },
+      {
+        "index": 16,
+        "type": "p",
+        "element_type": "trafo",
+        "element": 0,
+        "rtu": 1,
+        "trusted_pseudo_sensor": false
+      },
+      {
+        "index": 17,
+        "type": "q",
+        "element_type": "trafo",
+        "element": 0,
+        "rtu": 1,
+        "trusted_pseudo_sensor": false
+      }
+    ],
+    "discrepancy": "Current topology_map.py exposes 15 RTU-reported measurements; the task premise says 13. Results retain both full-theory and actual-RTU-only scopes."
+  },
+  "thresholds": {
+    "lnr": 3.0,
+    "chi2": "production state_estimation chi-square 95% threshold",
+    "fusion": "read-only production bundle decision_threshold"
+  },
+  "rows": [
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 1.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 1.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 1.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 1.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 1.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 1.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 1.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 1.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 1.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 1.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 2.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 2.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 2.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 2.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 2.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 2.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 2.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 2.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 2.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 2.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 3.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 3.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 3.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 3.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 3.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 3.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 3.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 3.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 3.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 3.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 5.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 5.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 5.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 5.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 5.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 5.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 5.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 5.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 5.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 5.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 10.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 10.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 10.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 10.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 10.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 10.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 10.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 10.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 10.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 10.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 1.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 1.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 1.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 1.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 1.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 1.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 1.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 1.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 1.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 1.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 2.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 2.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 2.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 2.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 2.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 2.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 2.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 2.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 2.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 2.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 3.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2693
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 3.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2693
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 3.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2693
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 3.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2693
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 3.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2693
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 3.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2693
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 3.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2693
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 3.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2693
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 3.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2693
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 3.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2693
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 5.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2693
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 5.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2693
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 5.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2693
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 5.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2693
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 5.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2693
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 5.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2693
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 5.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2693
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 5.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2693
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 5.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2693
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 5.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2693
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 10.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2692
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 10.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2692
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 10.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2692
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 10.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2692
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 10.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2692
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 10.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2692
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 10.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2692
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 10.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2692
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 10.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2692
+    },
+    {
+      "geometry": "single_rtu",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 10.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2692
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 1.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 1.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 1.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 1.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 1.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 1.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 1.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 1.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 1.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 1.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 2.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 2.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 2.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 2.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 2.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 2.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 2.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 2.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 2.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 2.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 3.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 3.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 3.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 3.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 3.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 3.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 3.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 3.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 3.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 3.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 5.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 5.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 5.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 5.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 5.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 5.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 5.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 5.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 5.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 5.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 10.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 10.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 10.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 10.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 10.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 10.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 10.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 10.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 10.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "exact_current_operating_point",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 10.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5566,
+      "chi2_statistic": 7.2694
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 1.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5567,
+      "chi2_statistic": 7.2695
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 1.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5567,
+      "chi2_statistic": 7.2695
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 1.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5567,
+      "chi2_statistic": 7.2695
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 1.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5567,
+      "chi2_statistic": 7.2695
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 1.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5567,
+      "chi2_statistic": 7.2695
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 1.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5567,
+      "chi2_statistic": 7.2695
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 1.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5567,
+      "chi2_statistic": 7.2695
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 1.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5567,
+      "chi2_statistic": 7.2695
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 1.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5567,
+      "chi2_statistic": 7.2695
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 1.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5567,
+      "chi2_statistic": 7.2695
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 2.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5567,
+      "chi2_statistic": 7.2696
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 2.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5567,
+      "chi2_statistic": 7.2696
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 2.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5567,
+      "chi2_statistic": 7.2696
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 2.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5567,
+      "chi2_statistic": 7.2696
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 2.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5567,
+      "chi2_statistic": 7.2696
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 2.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5567,
+      "chi2_statistic": 7.2696
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 2.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5567,
+      "chi2_statistic": 7.2696
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 2.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5567,
+      "chi2_statistic": 7.2696
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 2.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5567,
+      "chi2_statistic": 7.2696
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 2.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5567,
+      "chi2_statistic": 7.2696
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 3.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5567,
+      "chi2_statistic": 7.2698
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 3.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5567,
+      "chi2_statistic": 7.2698
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 3.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5567,
+      "chi2_statistic": 7.2698
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 3.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5567,
+      "chi2_statistic": 7.2698
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 3.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5567,
+      "chi2_statistic": 7.2698
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 3.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5567,
+      "chi2_statistic": 7.2698
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 3.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5567,
+      "chi2_statistic": 7.2698
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 3.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5567,
+      "chi2_statistic": 7.2698
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 3.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5567,
+      "chi2_statistic": 7.2698
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 3.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5567,
+      "chi2_statistic": 7.2698
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 5.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5568,
+      "chi2_statistic": 7.27
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 5.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5568,
+      "chi2_statistic": 7.27
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 5.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5568,
+      "chi2_statistic": 7.27
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 5.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5568,
+      "chi2_statistic": 7.27
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 5.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5568,
+      "chi2_statistic": 7.27
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 5.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.5568,
+      "chi2_statistic": 7.27
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 5.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.5568,
+      "chi2_statistic": 7.27
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 5.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.5568,
+      "chi2_statistic": 7.27
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 5.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.5568,
+      "chi2_statistic": 7.27
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 5.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.5568,
+      "chi2_statistic": 7.27
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 10.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.557,
+      "chi2_statistic": 7.2706
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 10.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.557,
+      "chi2_statistic": 7.2706
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 10.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.557,
+      "chi2_statistic": 7.2706
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 10.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.557,
+      "chi2_statistic": 7.2706
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "all_measurements_theory",
+      "magnitude_whitened_norm": 10.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.557,
+      "chi2_statistic": 7.2706
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 10.0,
+      "method": "chi2",
+      "episode_detected": 0,
+      "max_lnr": 1.557,
+      "chi2_statistic": 7.2706
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 10.0,
+      "method": "lnr",
+      "episode_detected": 0,
+      "max_lnr": 1.557,
+      "chi2_statistic": 7.2706
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 10.0,
+      "method": "pcd",
+      "episode_detected": 0,
+      "max_lnr": 1.557,
+      "chi2_statistic": 7.2706
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 10.0,
+      "method": "nbd",
+      "episode_detected": 0,
+      "max_lnr": 1.557,
+      "chi2_statistic": 7.2706
+    },
+    {
+      "geometry": "two_rtu_coordinated",
+      "knowledge": "nominal_topology",
+      "attack_scope": "rtu_reported_only",
+      "magnitude_whitened_norm": 10.0,
+      "method": "fusion",
+      "episode_detected": 0,
+      "max_lnr": 1.557,
+      "chi2_statistic": 7.2706
+    }
+  ],
+  "theory_check": [
+    {
+      "knowledge": "exact_current_operating_point",
+      "magnitude_whitened_norm": 1.0,
+      "clean_l2": 2.6961426464488114,
+      "attacked_l2": 2.6961426464488114,
+      "absolute_l2_difference": 0.0,
+      "clean_max": 1.5566,
+      "attacked_max": 1.5566
+    },
+    {
+      "knowledge": "exact_current_operating_point",
+      "magnitude_whitened_norm": 2.0,
+      "clean_l2": 2.6961426464488114,
+      "attacked_l2": 2.6961426464488114,
+      "absolute_l2_difference": 0.0,
+      "clean_max": 1.5566,
+      "attacked_max": 1.5566
+    },
+    {
+      "knowledge": "exact_current_operating_point",
+      "magnitude_whitened_norm": 3.0,
+      "clean_l2": 2.6961426464488114,
+      "attacked_l2": 2.6961426464488114,
+      "absolute_l2_difference": 0.0,
+      "clean_max": 1.5566,
+      "attacked_max": 1.5566
+    },
+    {
+      "knowledge": "exact_current_operating_point",
+      "magnitude_whitened_norm": 5.0,
+      "clean_l2": 2.6961426464488114,
+      "attacked_l2": 2.6961426464488114,
+      "absolute_l2_difference": 0.0,
+      "clean_max": 1.5566,
+      "attacked_max": 1.5566
+    },
+    {
+      "knowledge": "exact_current_operating_point",
+      "magnitude_whitened_norm": 10.0,
+      "clean_l2": 2.6961426464488114,
+      "attacked_l2": 2.6961844410203097,
+      "absolute_l2_difference": 9.999999999998899e-05,
+      "clean_max": 1.5566,
+      "attacked_max": 1.5566
+    },
+    {
+      "knowledge": "nominal_topology",
+      "magnitude_whitened_norm": 1.0,
+      "clean_l2": 2.6961426464488114,
+      "attacked_l2": 2.6961844410203097,
+      "absolute_l2_difference": 9.999999999998899e-05,
+      "clean_max": 1.5566,
+      "attacked_max": 1.5566
+    },
+    {
+      "knowledge": "nominal_topology",
+      "magnitude_whitened_norm": 2.0,
+      "clean_l2": 2.6961426464488114,
+      "attacked_l2": 2.696150016226842,
+      "absolute_l2_difference": 0.00014142135623729392,
+      "clean_max": 1.5566,
+      "attacked_max": 1.5566
+    },
+    {
+      "knowledge": "nominal_topology",
+      "magnitude_whitened_norm": 3.0,
+      "clean_l2": 2.6961426464488114,
+      "attacked_l2": 2.6961744620851227,
+      "absolute_l2_difference": 0.00019999999999997797,
+      "clean_max": 1.5566,
+      "attacked_max": 1.5566
+    },
+    {
+      "knowledge": "nominal_topology",
+      "magnitude_whitened_norm": 5.0,
+      "clean_l2": 2.6961426464488114,
+      "attacked_l2": 2.6961744620851227,
+      "absolute_l2_difference": 0.00019999999999997797,
+      "clean_max": 1.5566,
+      "attacked_max": 1.5566
+    },
+    {
+      "knowledge": "nominal_topology",
+      "magnitude_whitened_norm": 10.0,
+      "clean_l2": 2.6961426464488114,
+      "attacked_l2": 2.6961235746901515,
+      "absolute_l2_difference": 0.00034641016151383346,
+      "clean_max": 1.5566,
+      "attacked_max": 1.5566
+    }
+  ],
+  "model_status": {
+    "path": "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\models\\fusion_classifier.joblib",
+    "loaded": true,
+    "decision_threshold": 0.5799999999999997
+  },
+  "limitations": [
+    "This is a fixed-feeder diagnostic and not a held-out scenario evaluation.",
+    "NBD has no changed traffic event in an a=Hc injection, so its alarm is explicitly false; this is a network-evidence invariance diagnostic, not a trained NBD benchmark.",
+    "The current code exposes 15 attackable measurements, not the requested 13; no measurements were silently removed.",
+    "Nominal-topology attacks use the base-load Jacobian against a 1.35 load-scaled operating point; this is a controlled topology-knowledge contrast, not an empirical attacker trace."
+  ]
+}
