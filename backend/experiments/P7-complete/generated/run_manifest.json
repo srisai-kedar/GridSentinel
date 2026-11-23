@@ -1,0 +1,134 @@
+{
+  "cli_arguments": {
+    "compressed_stress": false,
+    "initial_sim_time_hour": 3.590564177666253,
+    "mode": "clean",
+    "out": "experiments\\P7-complete\\generated\\heldout_clean_seed505.csv",
+    "port_base": 16500,
+    "profile_family": "default",
+    "regime": "clean",
+    "run_id": "P7-heldout-clean-505",
+    "scenario_probabilities": {
+      "natural_fault": 0.5,
+      "normal": 0.5
+    },
+    "seed": 505,
+    "sim_seconds_per_tick": 1.0,
+    "ticks": 10
+  },
+  "cpu_model": "AMD64 Family 26 Model 96 Stepping 0, AuthenticAMD",
+  "elapsed_seconds": 5.602099,
+  "ended_at_utc": "2026-11-23T09:24:03.658339+00:00",
+  "git_sha": "cf9ffbd9db97df0b40201599297fd4b8d188be9b",
+  "input_datasets": {},
+  "output_datasets": {
+    "heldout_clean_seed505.csv": {
+      "path": "experiments\\P7-complete\\generated\\heldout_clean_seed505.csv",
+      "sha256": "4a5c010ad56f90e1fa9ce82ed26cc8d2fbec849cb7173c9eae061ccf5ca7a1e5"
+    }
+  },
+  "package_versions": {
+    "numpy": "2.4.6",
+    "pandapower": "3.5.4",
+    "pandas": "2.3.3",
+    "pymodbus": "3.15.0",
+    "scikit-learn": "1.9.0",
+    "scipy": "1.18.1"
+  },
+  "python_version": "3.13.7",
+  "rows": 50,
+  "run_id": "P7-heldout-clean-505",
+  "seed_bands": {
+    "clean": [
+      500,
+      501,
+      502,
+      503,
+      504
+    ],
+    "ood_test": [
+      400,
+      401,
+      402,
+      403,
+      404,
+      405,
+      406,
+      407,
+      408,
+      409
+    ],
+    "test": [
+      300,
+      301,
+      302,
+      303,
+      304,
+      305,
+      306,
+      307,
+      308,
+      309,
+      310,
+      311,
+      312,
+      313,
+      314,
+      315,
+      316,
+      317,
+      318,
+      319,
+      320,
+      321,
+      322,
+      323,
+      324,
+      325,
+      326,
+      327,
+      328,
+      329
+    ],
+    "train": [
+      100,
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+      110,
+      111,
+      112,
+      113,
+      114,
+      115,
+      116,
+      117,
+      118,
+      119
+    ],
+    "validation": [
+      200,
+      201,
+      202,
+      203,
+      204
+    ]
+  },
+  "seeds": {
+    "numpy": 505,
+    "python_random": 505
+  },
+  "started_at_utc": "2026-11-23T09:23:58.056214+00:00",
+  "task_id": "P3",
+  "throughput_ticks_per_second": 1.785045,
+  "timing_affected_columns": [
+    "nbd_mean_response_time_ms",
+    "nbd_std_response_time_ms"
+  ]
+}

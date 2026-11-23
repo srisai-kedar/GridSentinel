@@ -354,7 +354,14 @@ async def generate_dataset(
                 record["attack_active"] = attack_active
                 record["evidence_visible"] = evidence_visible
                 record["affected_rtus"] = json.dumps(affected_rtus)
-                records.append(record)
+                records.append(add_run_provenance(
+                    record,
+                    run_id=run_id,
+                    total_ticks=total_ticks,
+                    sim_seconds_per_tick=sim_seconds_per_tick,
+                    mode=mode,
+                    regime=effective_regime,
+                ))
 
             residual_history.append(tick_residuals_by_rtu)
 
@@ -442,6 +449,19 @@ def _sha256(path: Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def add_run_provenance(
+    record: Dict[str, Any], *, run_id: str, total_ticks: int,
+    sim_seconds_per_tick: float, mode: str, regime: str,
+) -> Dict[str, Any]:
+    """Attach provenance derived from the immutable generator invocation."""
+    enriched = dict(record)
+    enriched["run_id"] = run_id
+    enriched["capture_id"] = run_id
+    enriched["duration_hours"] = float(total_ticks * sim_seconds_per_tick / 3600.0)
+    enriched["is_clean_run"] = bool(mode == "clean" or regime == "clean")
+    return enriched
 
 
 def _git_sha() -> str:

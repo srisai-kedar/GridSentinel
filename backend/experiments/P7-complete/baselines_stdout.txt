@@ -1,0 +1,425 @@
+C:\Users\K Srisai Kedar\OneDrive\Documents\Projects\GridSentinel - SIH\gridsentinel\backend\.venv\Lib\site-packages\sklearn\linear_model\_logistic.py:599: ConvergenceWarning: lbfgs failed to converge after 500 iteration(s) (status=1):
+STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT
+
+Increase the number of iterations to improve the convergence (max_iter=500).
+You might also want to scale the data as shown in:
+    https://scikit-learn.org/stable/modules/preprocessing.html
+Please also refer to the documentation for alternative solver options:
+    https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+  n_iter_i = _check_optimize_result(
+{
+  "methods": [
+    "classical_bad_data",
+    "frozen_production",
+    "isolation_forest",
+    "logistic",
+    "nbd_only",
+    "pcd_only",
+    "rule_nbd_unexpected_write",
+    "tree_depth3"
+  ],
+  "thresholds": {
+    "classical_bad_data": 1.0,
+    "frozen_production": 0.9301061630249023,
+    "isolation_forest": 0.1862548923398838,
+    "logistic": 0.9952702237544316,
+    "nbd_only": 0.7905236907730653,
+    "pcd_only": 0.6302186878727638,
+    "rule_nbd_unexpected_write": 0.0,
+    "tree_depth3": 0.981424148606811
+  },
+  "validation_results": {
+    "classical_bad_data": {
+      "attack_rows": 9,
+      "confusion_matrix": [
+        [
+          225,
+          16
+        ],
+        [
+          5,
+          4
+        ]
+      ],
+      "episode": {
+        "delays": [
+          0
+        ],
+        "detected": 1,
+        "episodes": 1,
+        "recall": 1.0
+      },
+      "f1": 0.27586206896551724,
+      "false_alarms": {
+        "clean_hours": 0.0055555555555554,
+        "events": 0,
+        "exact_poisson_95": [
+          0.0,
+          663.998301740527
+        ],
+        "per_hour": 0.0
+      },
+      "false_positive_rate": 0.06639004149377593,
+      "per_type": {
+        "Cyber Intrusion": {
+          "delays": [
+            0
+          ],
+          "detected": 1,
+          "episodes": 1,
+          "median_delay_ticks": 0,
+          "recall": 1.0
+        }
+      },
+      "pr_auc": 0.1088888888888889,
+      "precision": 0.2,
+      "reading_rows": 250,
+      "recall": 0.4444444444444444,
+      "roc_auc": 0.6890272014753342,
+      "threshold": 1.0
+    },
+    "frozen_production": {
+      "attack_rows": 9,
+      "confusion_matrix": [
+        [
+          241,
+          0
+        ],
+        [
+          8,
+          1
+        ]
+      ],
+      "episode": {
+        "delays": [
+          0
+        ],
+        "detected": 1,
+        "episodes": 1,
+        "recall": 1.0
+      },
+      "f1": 0.2,
+      "false_alarms": {
+        "clean_hours": 0.0055555555555554,
+        "events": 0,
+        "exact_poisson_95": [
+          0.0,
+          663.998301740527
+        ],
+        "per_hour": 0.0
+      },
+      "false_positive_rate": 0.0,
+      "per_type": {
+        "Cyber Intrusion": {
+          "delays": [
+            0
+          ],
+          "detected": 1,
+          "episodes": 1,
+          "median_delay_ticks": 0,
+          "recall": 1.0
+        }
+      },
+      "pr_auc": 0.47870464686946274,
+      "precision": 1.0,
+      "reading_rows": 250,
+      "recall": 0.1111111111111111,
+      "roc_auc": 0.719225449515906,
+      "threshold": 0.9301061630249023
+    },
+    "isolation_forest": {
+      "attack_rows": 9,
+      "confusion_matrix": [
+        [
+          241,
+          0
+        ],
+        [
+          8,
+          1
+        ]
+      ],
+      "episode": {
+        "delays": [
+          5
+        ],
+        "detected": 1,
+        "episodes": 1,
+        "recall": 1.0
+      },
+      "f1": 0.2,
+      "false_alarms": {
+        "clean_hours": 0.0055555555555554,
+        "events": 0,
+        "exact_poisson_95": [
+          0.0,
+          663.998301740527
+        ],
+        "per_hour": 0.0
+      },
+      "false_positive_rate": 0.0,
+      "per_type": {
+        "Cyber Intrusion": {
+          "delays": [
+            5
+          ],
+          "detected": 1,
+          "episodes": 1,
+          "median_delay_ticks": 5,
+          "recall": 1.0
+        }
+      },
+      "pr_auc": 0.20612269872127534,
+      "precision": 1.0,
+      "reading_rows": 250,
+      "recall": 0.1111111111111111,
+      "roc_auc": 0.5338865836791148,
+      "threshold": 0.1862548923398838
+    },
+    "logistic": {
+      "attack_rows": 9,
+      "confusion_matrix": [
+        [
+          240,
+          1
+        ],
+        [
+          9,
+          0
+        ]
+      ],
+      "episode": {
+        "delays": [
+          4
+        ],
+        "detected": 1,
+        "episodes": 1,
+        "recall": 1.0
+      },
+      "f1": 0.0,
+      "false_alarms": {
+        "clean_hours": 0.0055555555555554,
+        "events": 0,
+        "exact_poisson_95": [
+          0.0,
+          663.998301740527
+        ],
+        "per_hour": 0.0
+      },
+      "false_positive_rate": 0.004149377593360996,
+      "per_type": {
+        "Cyber Intrusion": {
+          "delays": [
+            4
+          ],
+          "detected": 1,
+          "episodes": 1,
+          "median_delay_ticks": 4,
+          "recall": 1.0
+        }
+      },
+      "pr_auc": 0.18968714946551118,
+      "precision": 0.0,
+      "reading_rows": 250,
+      "recall": 0.0,
+      "roc_auc": 0.6422314430613186,
+      "threshold": 0.9952702237544316
+    },
+    "nbd_only": {
+      "attack_rows": 9,
+      "confusion_matrix": [
+        [
+          197,
+          44
+        ],
+        [
+          3,
+          6
+        ]
+      ],
+      "episode": {
+        "delays": [
+          2
+        ],
+        "detected": 1,
+        "episodes": 1,
+        "recall": 1.0
+      },
+      "f1": 0.2033898305084746,
+      "false_alarms": {
+        "clean_hours": 0.0055555555555554,
+        "events": 1,
+        "exact_poisson_95": [
+          4.557205437172306,
+          1002.8958103690298
+        ],
+        "per_hour": 180.00000000000506
+      },
+      "false_positive_rate": 0.1825726141078838,
+      "per_type": {
+        "Cyber Intrusion": {
+          "delays": [
+            2
+          ],
+          "detected": 1,
+          "episodes": 1,
+          "median_delay_ticks": 2,
+          "recall": 1.0
+        }
+      },
+      "pr_auc": 0.09199999999999998,
+      "precision": 0.12,
+      "reading_rows": 250,
+      "recall": 0.6666666666666666,
+      "roc_auc": 0.7116182572614107,
+      "threshold": 0.7905236907730653
+    },
+    "pcd_only": {
+      "attack_rows": 9,
+      "confusion_matrix": [
+        [
+          191,
+          50
+        ],
+        [
+          9,
+          0
+        ]
+      ],
+      "episode": {
+        "delays": [
+          0
+        ],
+        "detected": 1,
+        "episodes": 1,
+        "recall": 1.0
+      },
+      "f1": 0.0,
+      "false_alarms": {
+        "clean_hours": 0.0055555555555554,
+        "events": 1,
+        "exact_poisson_95": [
+          4.557205437172306,
+          1002.8958103690298
+        ],
+        "per_hour": 180.00000000000506
+      },
+      "false_positive_rate": 0.2074688796680498,
+      "per_type": {
+        "Cyber Intrusion": {
+          "delays": [
+            0
+          ],
+          "detected": 1,
+          "episodes": 1,
+          "median_delay_ticks": 0,
+          "recall": 1.0
+        }
+      },
+      "pr_auc": 0.036,
+      "precision": 0.0,
+      "reading_rows": 250,
+      "recall": 0.0,
+      "roc_auc": 0.3962655601659751,
+      "threshold": 0.6302186878727638
+    },
+    "rule_nbd_unexpected_write": {
+      "attack_rows": 9,
+      "confusion_matrix": [
+        [
+          0,
+          241
+        ],
+        [
+          0,
+          9
+        ]
+      ],
+      "episode": {
+        "delays": [
+          0
+        ],
+        "detected": 1,
+        "episodes": 1,
+        "recall": 1.0
+      },
+      "f1": 0.0694980694980695,
+      "false_alarms": {
+        "clean_hours": 0.0055555555555554,
+        "events": 2,
+        "exact_poisson_95": [
+          43.59767013791492,
+          1300.4437801903493
+        ],
+        "per_hour": 360.0000000000101
+      },
+      "false_positive_rate": 1.0,
+      "per_type": {
+        "Cyber Intrusion": {
+          "delays": [
+            0
+          ],
+          "detected": 1,
+          "episodes": 1,
+          "median_delay_ticks": 0,
+          "recall": 1.0
+        }
+      },
+      "pr_auc": 0.036,
+      "precision": 0.036,
+      "reading_rows": 250,
+      "recall": 1.0,
+      "roc_auc": 0.5,
+      "threshold": 0.0
+    },
+    "tree_depth3": {
+      "attack_rows": 9,
+      "confusion_matrix": [
+        [
+          229,
+          12
+        ],
+        [
+          9,
+          0
+        ]
+      ],
+      "episode": {
+        "delays": [
+          2
+        ],
+        "detected": 1,
+        "episodes": 1,
+        "recall": 1.0
+      },
+      "f1": 0.0,
+      "false_alarms": {
+        "clean_hours": 0.0055555555555554,
+        "events": 0,
+        "exact_poisson_95": [
+          0.0,
+          663.998301740527
+        ],
+        "per_hour": 0.0
+      },
+      "false_positive_rate": 0.04979253112033195,
+      "per_type": {
+        "Cyber Intrusion": {
+          "delays": [
+            2
+          ],
+          "detected": 1,
+          "episodes": 1,
+          "median_delay_ticks": 2,
+          "recall": 1.0
+        }
+      },
+      "pr_auc": 0.036,
+      "precision": 0.0,
+      "reading_rows": 250,
+      "recall": 0.0,
+      "roc_auc": 0.475103734439834,
+      "threshold": 0.981424148606811
+    }
+  }
+}
