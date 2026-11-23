@@ -1,0 +1,75 @@
+{
+  "blockers": [
+    "run/episode/timing/clean-duration metadata required by P5 is missing",
+    "no explicit clean runs are available for the P5 false-alarm budget"
+  ],
+  "clean_rows": {
+    "train": 0,
+    "validation": 0
+  },
+  "final_heldout_evaluation": "not performed by this script",
+  "grouping_metadata": {
+    "duration_hours": false,
+    "episode_id": false,
+    "is_clean_run": false,
+    "run_id": false,
+    "tick": true
+  },
+  "labels": {
+    "train": {
+      "Cyber Intrusion": 387,
+      "Natural Fault": 1055,
+      "Normal": 5740,
+      "Sensor Malfunction": 318
+    },
+    "validation": {
+      "Cyber Intrusion": 128,
+      "Natural Fault": 795,
+      "Normal": 2399,
+      "Sensor Malfunction": 178
+    }
+  },
+  "production_schema": [
+    "nbd_unexpected_write_count",
+    "nbd_mean_response_time_ms",
+    "nbd_std_response_time_ms",
+    "nbd_distinct_sources_count",
+    "nbd_fc3_read_count",
+    "nbd_fc6_write_count",
+    "nbd_fc16_write_count",
+    "nbd_error_count",
+    "nbd_traffic_volume",
+    "nbd_modbus_anomaly_rate",
+    "pcd_max_lnr",
+    "pcd_is_target_rtu_max_lnr",
+    "pcd_chi2_statistic",
+    "pcd_chi2_ratio",
+    "pcd_chi2_failed",
+    "pcd_target_rtu_v_residual",
+    "pcd_target_rtu_p_residual",
+    "pcd_target_rtu_is_flagged",
+    "pcd_global_bad_data_flag",
+    "pcd_voltage_pu_reported",
+    "pcd_voltage_dev_nominal",
+    "pcd_p_mw_reported",
+    "pcd_status_code",
+    "pcd_physics_network_disagreement_index",
+    "pcd_temporal_dv_dt_3tick",
+    "pcd_temporal_dp_dt_3tick",
+    "pcd_temporal_dq_dt_3tick",
+    "pcd_cross_rtu_voltage_divergence"
+  ],
+  "status": "BLOCKED",
+  "train": {
+    "columns": 41,
+    "path": "data\\generated\\nbd_fixed_train_seed42.csv",
+    "rows": 7500,
+    "sha256": "6974e0acb9a5039df216d1f7df461f6584381571e109d3d23c2232c96dc8f448"
+  },
+  "validation": {
+    "columns": 41,
+    "path": "data\\generated\\nbd_fixed_val_seed999.csv",
+    "rows": 3500,
+    "sha256": "aac973ac24177e95a3d81b32914ff92de0a4d4f35a46546510ded6f831357791"
+  }
+}
