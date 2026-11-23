@@ -1,0 +1,106 @@
+{
+  "blind_reextraction": {
+    "differences": {},
+    "keys_equal": true,
+    "passed": true
+  },
+  "canary": {
+    "audit_detected_leak": true,
+    "comparison": {
+      "differences": {},
+      "keys_equal": false,
+      "passed": false
+    }
+  },
+  "impact": {
+    "leaky_pre_pr16": {
+      "attack_rows_validation": 15,
+      "command_injection_recall": 0.06666666666666667,
+      "command_injection_rows_validation": 15,
+      "overall_cyber_recall": 0.06666666666666667,
+      "precision": 1.0,
+      "rows": 600,
+      "train_rows": 420,
+      "validation_rows": 180
+    },
+    "repaired": {
+      "attack_rows_validation": 15,
+      "command_injection_recall": 0.2,
+      "command_injection_rows_validation": 15,
+      "overall_cyber_recall": 0.2,
+      "precision": 1.0,
+      "rows": 600,
+      "train_rows": 420,
+      "validation_rows": 180
+    }
+  },
+  "impact_runs": [
+    {
+      "command": [
+        "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Scripts\\python.exe",
+        "-m",
+        "app.ml.dataset_generator",
+        "--seed",
+        "101",
+        "--ticks",
+        "120",
+        "--out",
+        "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P2\\impact\\leaky_pre_pr16_seed101.csv"
+      ],
+      "dataset": "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P2\\impact\\leaky_pre_pr16_seed101.csv",
+      "manifest": "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P2\\impact\\leaky_pre_pr16_seed101_run_manifest.json",
+      "repo": "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel-P2-pre-pr16",
+      "sha256": "e75794ef8c3a0d5915846f023e1041314dbe3b47a67d1ac6010ef02b00e1652c",
+      "stdout_tail": "[DatasetGenerator] Starting generation: Seed=101, Ticks=120...\n  ... Tick 120/120 complete (600 samples generated)\n\n[DatasetGenerator] Class Distribution Summary:\nTop-level counts:\n top_level_label\nNormal                302\nNatural Fault         245\nSensor Malfunction     29\nCyber Intrusion        24\nName: count, dtype: int64\n\nSubtype counts:\n subtype_label\nnormal               302\nshort_circuit        125\nline_trip            120\nsensor_drift          29\ncommand_injection     24\nName: count, dtype: int64\n[DatasetGenerator] Saved dataset to C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P2\\impact\\leaky_pre_pr16_seed101.csv (600 rows)\n"
+    },
+    {
+      "command": [
+        "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\.venv\\Scripts\\python.exe",
+        "-m",
+        "app.ml.dataset_generator",
+        "--seed",
+        "101",
+        "--ticks",
+        "120",
+        "--out",
+        "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P2\\impact\\repaired_seed101.csv",
+        "--port-base",
+        "24031",
+        "--run-id",
+        "repaired-101"
+      ],
+      "dataset": "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P2\\impact\\repaired_seed101.csv",
+      "manifest": "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P2\\impact\\repaired_seed101_run_manifest.json",
+      "repo": "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel",
+      "sha256": "9fe18415364e8975d6727b13fa12b13c6ab7cd796e45b8a952f994696fe1abdf",
+      "stdout_tail": "[DatasetGenerator] Starting generation: Seed=101, Ticks=120, Mode=scenario_mix, Run=repaired-101...\n  ... Tick 120/120 complete (600 samples generated)\n\n[DatasetGenerator] Class Distribution Summary:\nTop-level counts:\n top_level_label\nNormal                302\nNatural Fault         245\nSensor Malfunction     29\nCyber Intrusion        24\nName: count, dtype: int64\n\nSubtype counts:\n subtype_label\nnormal               302\nshort_circuit        125\nline_trip            120\nsensor_drift          29\ncommand_injection     24\nName: count, dtype: int64\n[DatasetGenerator] Saved dataset to C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P2\\impact\\repaired_seed101.csv (600 rows)\n[DatasetGenerator] Wrote run manifest to C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P2\\impact\\run_manifest.json\n"
+    }
+  ],
+  "label_shuffle": {
+    "absolute_gap": 0.00028571428571433355,
+    "accuracy": 0.6857142857142857,
+    "majority_class_rate": 0.6854285714285714,
+    "seed": 101,
+    "train_rows": 7500,
+    "validation_rows": 3500
+  },
+  "observation_inputs": {
+    "polled_telemetry": "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P2\\observation_logs\\polled_telemetry.json",
+    "traffic_events": "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P2\\observation_logs\\traffic_events.json"
+  },
+  "reaudit": {
+    "blind_reextraction_reused": true,
+    "canary_reused": true,
+    "note": "The serialized prior P2 artifacts were rechecked; no held-out dataset was read.",
+    "static_provenance_passed": true,
+    "static_provenance_violations": []
+  },
+  "static_provenance": {
+    "modules": [
+      "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\app\\ml\\feature_engineering.py"
+    ],
+    "passed": true,
+    "violations": []
+  },
+  "task_id": "P2"
+}
