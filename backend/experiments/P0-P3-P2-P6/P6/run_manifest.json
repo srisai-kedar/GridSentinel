@@ -1,0 +1,85 @@
+{
+  "task": "P6",
+  "git_sha": "ec857abe6da883b9506747810a674dd7547d597a",
+  "python": "3.13.7 (tags/v3.13.7:bcee1c3, Aug 14 2025, 14:15:11) [MSC v.1944 64 bit (AMD64)]",
+  "packages": {
+    "pandas": "2.3.3",
+    "numpy": "2.4.6",
+    "sklearn": "1.9.0"
+  },
+  "cpu": "AMD64 Family 26 Model 96 Stepping 0, AuthenticAMD",
+  "cli_arguments": {
+    "ticks": 10,
+    "out": "experiments/P0-P3-P2-P6/P6",
+    "seed": 606
+  },
+  "seeds": {
+    "train": [
+      100,
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+      110,
+      111,
+      112,
+      113,
+      114,
+      115,
+      116,
+      117,
+      118,
+      119
+    ],
+    "validation": [
+      200,
+      201,
+      202,
+      203,
+      204
+    ],
+    "model": 606
+  },
+  "start_time_utc": "2026-11-23T14:18:01.020440+00:00",
+  "end_time_utc": "2026-11-23T14:18:46.495560+00:00",
+  "input_datasets": {
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0-P3-P2-P6\\P6\\generated\\train_seed100.csv": "71dc788c6938400e95acfc072e9b35a22eba82684c6e05ec9249967b12e5a003",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0-P3-P2-P6\\P6\\generated\\train_seed101.csv": "3637ca761685f80c1ee95ad1d60c26496713a68fea36b24ef2a9591c7b8e2882",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0-P3-P2-P6\\P6\\generated\\train_seed102.csv": "a0174e15c890a2ac3beed24dbd409fdfd9d5982ff73d475b5dbb8b28296fbaa0",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0-P3-P2-P6\\P6\\generated\\train_seed103.csv": "3451788b72318ad4b3fdf3852bdd20c7b8c26a1574aed47104f235979fde36f0",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0-P3-P2-P6\\P6\\generated\\train_seed104.csv": "63f5b3c667eaff488ccc63eef185980f67f6a55a21d10887e59ea241b58107c6",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0-P3-P2-P6\\P6\\generated\\train_seed105.csv": "fe0b502fed66979284a8e60ea94788a2c8d7eefcf33b2126930cfe4501db0c60",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0-P3-P2-P6\\P6\\generated\\train_seed106.csv": "2e968713047ee1a91962f57b228f041c02960d2f61586136874075d229e70c94",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0-P3-P2-P6\\P6\\generated\\train_seed107.csv": "a8f98f2d649338b795934f8fc4a57f7f7f7b6722abe82fdcb6702e4fb8857165",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0-P3-P2-P6\\P6\\generated\\train_seed108.csv": "5f098ea2b959fa69191d371c0325a9456db342a9f07a61e266109d28c7e0c19f",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0-P3-P2-P6\\P6\\generated\\train_seed109.csv": "18d593ee442de18a29229122eace725c6dd6078fdbafa7ac946edcb34de50d6f",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0-P3-P2-P6\\P6\\generated\\train_seed110.csv": "2086c321007bfd84168bcb07f7f33981304b846ec36f907a8957958323fb4615",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0-P3-P2-P6\\P6\\generated\\train_seed111.csv": "c447727e943839bce6cf50dafc828a6ca7e96abfe97a3720d020c6348b4b3443",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0-P3-P2-P6\\P6\\generated\\train_seed112.csv": "3c1a2803737cb8cd033f2b2922f5e0fd147dc4af5a1f4ffc0554cf0f189b6c53",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0-P3-P2-P6\\P6\\generated\\train_seed113.csv": "605330e6049c8022affac30de4885349c244f0b52c19096865eebca727cc3a91",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0-P3-P2-P6\\P6\\generated\\train_seed114.csv": "53644daec33f6211c933cc10a0caa052aac95ffe4b9c4c83e0e70aa596628b3c",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0-P3-P2-P6\\P6\\generated\\train_seed115.csv": "b538a0ce621f30fdef125628db0c538a73fd48d7ad3811068adf325177263c60",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0-P3-P2-P6\\P6\\generated\\train_seed116.csv": "cf283d67091e4376d7ed20156b088808829988e5109e14c85af09c145a0a6683",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0-P3-P2-P6\\P6\\generated\\train_seed117.csv": "3597e38fc098b1df356169583ca0abe3b6cdc300b6dad0114693982505083b02",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0-P3-P2-P6\\P6\\generated\\train_seed118.csv": "71ca54ae1844fdf3e8bcc40d5e2ad9c34ec84457192bb724e917c5540207614f",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0-P3-P2-P6\\P6\\generated\\train_seed119.csv": "9405aa95c6898f54d4c6ad394e98bda509806ec390087afd851e50424c27e902",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0-P3-P2-P6\\P6\\generated\\validation_seed200.csv": "54de6a65b75017508a22ea325304bbecb8261df66a718d839f19f85a375d72cd",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0-P3-P2-P6\\P6\\generated\\validation_seed201.csv": "e6e45f1c5fd16eb12b0a7868c575a6c09c6f56c94c8280215f9abe16dc194534",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0-P3-P2-P6\\P6\\generated\\validation_seed202.csv": "d725ad973c684017fada127f4ce8972e31552e4a8c8a6c42f5525fbfc7743cee",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0-P3-P2-P6\\P6\\generated\\validation_seed203.csv": "23d4ad1344f25239697b7374a1349227593b8bdb3e8ceee74d952555df5dd151",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0-P3-P2-P6\\P6\\generated\\validation_seed204.csv": "15ed001facf83c9f5ef393c58fec129f039bb8444d1e085612e3fb0a1578d121"
+  },
+  "output_datasets": {
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0-P3-P2-P6\\P6\\calibration_validation.png": "f1efe70b0d8504a01499b9b925083b9796f6eaf54e0baefefc259f2cc8e10d34",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0-P3-P2-P6\\P6\\grouped_cv_validation_results.csv": "fa51a0634258b5c6c13a124fb79991d2a1d81171c3c669ec78d7ba3b647c851a",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0-P3-P2-P6\\P6\\paired_feature_comparisons.csv": "c65e3d3da935091fa26f64eade01769d000850f845b8fb490327bb87fba872a3",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0-P3-P2-P6\\P6\\selected_candidate.joblib": "f9555cdcd5ead3a989d822a3836c7b683813d69b1a6fd0e12b180262405797d7",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0-P3-P2-P6\\P6\\selected_config.json": "8ee90a7b7377ec41b6e20129352da32a0e2f90636d12f69230b059c0e9c7472a",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P0-P3-P2-P6\\P6\\selected_config.json.sha256": "4a75b2b25c2c9871216bde51f156ba2c4c73a633df5a465b61aee2b6151c335c"
+  }
+}

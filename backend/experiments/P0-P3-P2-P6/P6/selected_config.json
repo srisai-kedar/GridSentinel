@@ -1,0 +1,150 @@
+{
+  "task": "P6",
+  "policy": "attack_active",
+  "feature_arm": "pcd_only",
+  "features": [
+    "pcd_max_lnr",
+    "pcd_is_target_rtu_max_lnr",
+    "pcd_chi2_statistic",
+    "pcd_chi2_ratio",
+    "pcd_chi2_failed",
+    "pcd_target_rtu_v_residual",
+    "pcd_target_rtu_p_residual",
+    "pcd_target_rtu_is_flagged",
+    "pcd_global_bad_data_flag",
+    "pcd_voltage_pu_reported",
+    "pcd_voltage_dev_nominal",
+    "pcd_p_mw_reported",
+    "pcd_status_code",
+    "pcd_physics_network_disagreement_index",
+    "pcd_temporal_dv_dt_3tick",
+    "pcd_temporal_dp_dt_3tick",
+    "pcd_temporal_dq_dt_3tick",
+    "pcd_cross_rtu_voltage_divergence"
+  ],
+  "model": "tree",
+  "threshold": 1.0,
+  "threshold_selection": {
+    "episode_recall": 1.0,
+    "row_recall": 0.5555555555555556,
+    "fpr": 0.0
+  },
+  "validation_calibration": {
+    "ece": 3.400058012914542e-18,
+    "brier_like_mae": 0.03147655324191636
+  },
+  "latency_ms": 0.004696319997310639,
+  "latency_budget_ms": 10.0,
+  "candidate_sha256": "f9555cdcd5ead3a989d822a3836c7b683813d69b1a6fd0e12b180262405797d7",
+  "production_artefact_untouched": true,
+  "validation_metrics": {
+    "validation_precision": 1.0,
+    "validation_recall": 0.5555555555555556,
+    "validation_f1": 0.7142857142857143,
+    "validation_roc_auc": 0.7344398340248963,
+    "validation_pr_auc": 0.5740483091787439,
+    "false_alarm_per_hour": null
+  },
+  "validation_confusion_matrix": [
+    [
+      241,
+      0
+    ],
+    [
+      4,
+      5
+    ]
+  ],
+  "feature_importance": [
+    {
+      "feature": "pcd_is_target_rtu_max_lnr",
+      "share": 0.5463250246725607,
+      "rank": 1
+    },
+    {
+      "feature": "pcd_temporal_dv_dt_3tick",
+      "share": 0.2198912882663284,
+      "rank": 2
+    },
+    {
+      "feature": "pcd_p_mw_reported",
+      "share": 0.11006434550221426,
+      "rank": 3
+    },
+    {
+      "feature": "pcd_physics_network_disagreement_index",
+      "share": 0.08550592628116004,
+      "rank": 4
+    },
+    {
+      "feature": "pcd_voltage_pu_reported",
+      "share": 0.038213415277736563,
+      "rank": 5
+    },
+    {
+      "feature": "pcd_max_lnr",
+      "share": 0.0,
+      "rank": 6
+    },
+    {
+      "feature": "pcd_chi2_statistic",
+      "share": 0.0,
+      "rank": 7
+    },
+    {
+      "feature": "pcd_chi2_ratio",
+      "share": 0.0,
+      "rank": 8
+    },
+    {
+      "feature": "pcd_chi2_failed",
+      "share": 0.0,
+      "rank": 9
+    },
+    {
+      "feature": "pcd_target_rtu_v_residual",
+      "share": 0.0,
+      "rank": 10
+    },
+    {
+      "feature": "pcd_target_rtu_p_residual",
+      "share": 0.0,
+      "rank": 11
+    },
+    {
+      "feature": "pcd_target_rtu_is_flagged",
+      "share": 0.0,
+      "rank": 12
+    },
+    {
+      "feature": "pcd_global_bad_data_flag",
+      "share": 0.0,
+      "rank": 13
+    },
+    {
+      "feature": "pcd_voltage_dev_nominal",
+      "share": 0.0,
+      "rank": 14
+    },
+    {
+      "feature": "pcd_status_code",
+      "share": 0.0,
+      "rank": 15
+    },
+    {
+      "feature": "pcd_temporal_dp_dt_3tick",
+      "share": 0.0,
+      "rank": 16
+    },
+    {
+      "feature": "pcd_temporal_dq_dt_3tick",
+      "share": 0.0,
+      "rank": 17
+    },
+    {
+      "feature": "pcd_cross_rtu_voltage_divergence",
+      "share": 0.0,
+      "rank": 18
+    }
+  ]
+}
