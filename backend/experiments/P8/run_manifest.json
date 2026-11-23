@@ -1,0 +1,32 @@
+{
+  "cli_arguments": {
+    "bundle": "experiments\\P7-complete\\p7_baseline_bundle.joblib",
+    "data_dir": "experiments\\P7-complete\\generated",
+    "out_dir": "experiments\\P8"
+  },
+  "cpu_model": "AMD64 Family 26 Model 96 Stepping 0, AuthenticAMD",
+  "ended_at_utc": "2026-11-23T09:42:00.234380+00:00",
+  "git_sha": "de3e16e406e6f392cf51d69a81a7c0b8d46bf6c8",
+  "input_datasets": {
+    "experiments\\P7-complete\\generated\\clean_validation_seed503.csv": "e7e6a0abc8d616b741374863913e9df6c5e8fc55fd7edecd9cacb380215fc5e6",
+    "experiments\\P7-complete\\generated\\clean_validation_seed504.csv": "d3d9ca99104e6b3e2f392fe4026777069afa93e4db9ff4b6ea42bd6b85001dfd",
+    "experiments\\P7-complete\\generated\\validation_seed200.csv": "5e8b69f1b6f25ebd1f19d40e2123f6cd6771ebc98b801e67adb38a93c4f22dd6",
+    "experiments\\P7-complete\\generated\\validation_seed201.csv": "3f6f428b09ef54d4dfb84367e1869458733d3e0540862cf6c1c58699fdd56188",
+    "experiments\\P7-complete\\generated\\validation_seed202.csv": "194b3a997c473d5b9af96d7407409e2d0d0533ef52eee9e4caedd0b0787af2f2",
+    "experiments\\P7-complete\\p7_baseline_bundle.joblib": "7dac902c5833c9825d286022b05a541d9a8f1ed15a4529058364e3158001b6de"
+  },
+  "output_datasets": {
+    "experiments\\P8\\operating_curves.csv": "0196037423ecbab0e776e7836a7f73fd7805df55c9022c70373afe0564934f7d",
+    "experiments\\P8\\validation_alert_layers.json": "01b22cd1559698fd6014f2e882f333c828d5bc059c76728c7aeab3d180ac76f6"
+  },
+  "package_versions": {
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.9.0",
+    "scipy": "1.18.1"
+  },
+  "python_version": "3.13.7 (tags/v3.13.7:bcee1c3, Aug 14 2025, 14:15:11) [MSC v.1944 64 bit (AMD64)]",
+  "seeds": {},
+  "started_at_utc": "2026-11-23T09:41:58.966987+00:00",
+  "task_id": "P8"
+}
