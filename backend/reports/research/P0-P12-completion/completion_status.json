@@ -1,0 +1,92 @@
+{
+  "acceptance_note": "P8-P12 are not claimed complete where required data or infrastructure is unavailable.",
+  "frozen_artifacts": {
+    "metrics_sha256": "601f6d6ade33d4f870511c5857acc6042f992bb2c058c78603ee065661adaa79",
+    "model_sha256": "ee5211510e41eddac32ed1eed405af982a0a550bd0b75e8867253135b812ccae"
+  },
+  "generated_at_utc": "2026-11-23T14:31:31.951458+00:00",
+  "measured_checks": {
+    "p0_clean_attack_rows": 0,
+    "p0_clean_rows": 25000,
+    "p0_clean_ticks": 5000,
+    "p3_attack_rows": 48,
+    "p3_evidence_visible_rows": 47,
+    "p3_scenario_counts": {
+      "Cyber Intrusion": 240,
+      "Natural Fault": 55,
+      "Normal": 915,
+      "Sensor Malfunction": 40
+    },
+    "p3_seed_files": 40,
+    "p3_train_validation_rows": 1250,
+    "p3_train_validation_runs": 25,
+    "p6_feature_arms": [
+      "base28",
+      "base28_staleness",
+      "full37",
+      "full37_staleness",
+      "nbd_only",
+      "pcd_only"
+    ],
+    "p6_models": [
+      "lightgbm",
+      "logistic",
+      "random_forest",
+      "tree",
+      "xgboost"
+    ],
+    "p6_policies": [
+      "attack_active",
+      "evidence_visible"
+    ],
+    "p6_result_rows": 60,
+    "p6_selected_config": {
+      "feature_arm": "pcd_only",
+      "model": "tree",
+      "threshold": 1.0
+    }
+  },
+  "statuses": {
+    "P0": {
+      "evidence": "5,000-tick clean run, prior reproducibility and concurrency evidence; Docker digest unavailable.",
+      "status": "PASS_WITH_LIMITATION"
+    },
+    "P10": {
+      "evidence": "Jacobian diagnostic exists, but the 13-versus-15 measurement contract is unresolved and traffic is unchanged.",
+      "status": "PARTIAL"
+    },
+    "P11": {
+      "evidence": "Second feeder and authorized cross-condition/cross-topology held-out evaluation are unavailable.",
+      "status": "BLOCKED"
+    },
+    "P12": {
+      "evidence": "Elevated Windows packet capture infrastructure is unavailable; no simulated substitute was used.",
+      "status": "BLOCKED"
+    },
+    "P2": {
+      "evidence": "Static provenance, blind re-extraction and canary evidence are present; fresh historical pre-PR16 checkout is unavailable.",
+      "status": "PARTIAL"
+    },
+    "P3": {
+      "evidence": "All configured train/validation/OOD/clean seed outputs exist at the recorded tick count.",
+      "status": "PASS_FOR_SEED_COVERAGE"
+    },
+    "P6": {
+      "evidence": "All prescribed arms and available model families executed on train/validation only; no held-out evaluation.",
+      "status": "PASS_FOR_ISOLATED_VALIDATION"
+    },
+    "P7": {
+      "evidence": "Pilot final comparison exists, but independent exposure and statistical power are insufficient for production claims.",
+      "status": "PARTIAL"
+    },
+    "P8": {
+      "evidence": "Required 24-hour real-clock clean validation and independent clean held-out exposure are not available.",
+      "status": "BLOCKED"
+    },
+    "P9": {
+      "evidence": "Required magnitude/profile grid and benign/natural-fault corpus are not available.",
+      "status": "BLOCKED"
+    }
+  },
+  "task_id": "P0-P12-completion"
+}
