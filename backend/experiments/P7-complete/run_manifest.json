@@ -1,0 +1,73 @@
+{
+  "cli_arguments": {
+    "out_dir": "experiments\\P7-complete",
+    "ticks": "10"
+  },
+  "cpu_model": "AMD64 Family 26 Model 96 Stepping 0, AuthenticAMD",
+  "ended_at_utc": "2026-11-23T09:21:00.439868+00:00",
+  "git_sha": "cf9ffbd9db97df0b40201599297fd4b8d188be9b",
+  "input_datasets": {},
+  "output_datasets": {
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\clean_train_seed500.csv": "c8f9b78edae12556ebe5eccc2b8d3d0f1aebdd0be06e006ccfb1c34f51f4483d",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\clean_train_seed501.csv": "63c29065ff4b481a793a467f8482d0be2ab02072059ea902459da5888e7323cd",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\clean_train_seed502.csv": "7f111ffa7227eaf6a81a24146e52ca9c18bf42309541f445dc0e42a7172b064e",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\clean_validation_seed503.csv": "e7e6a0abc8d616b741374863913e9df6c5e8fc55fd7edecd9cacb380215fc5e6",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\clean_validation_seed504.csv": "d3d9ca99104e6b3e2f392fe4026777069afa93e4db9ff4b6ea42bd6b85001dfd",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\heldout_seed300.csv": "84a93b90599f5ac7c3779cf7ba521cc5e178cd046277589120a0ad403fb9f6ae",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\heldout_seed301.csv": "59e711aa6ad1d5d4ded60f1d882c37e6d46d3a11f61b64e01b920eda36206e0d",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\heldout_seed302.csv": "369c9540add1105632e45f652050e1fb8da7522854975e071bbad87efadb6cdb",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\heldout_seed303.csv": "dcff11729dcb92668367d7d6f333bb60a74e9bb831276646f968efe565acb219",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\heldout_seed304.csv": "af214d7f1ad0298c51c8c1de37105e005a6ee50bf9d0e167567b8efa021bdf9f",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\train_seed100.csv": "3012ae0fc9c7157377824d5305828e12c9fb91a96ad33b2d340819f8ef2f3691",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\train_seed101.csv": "e7a9845fc25facf2996e84de7d48b4ca6587249c66256c78be7e219441b52837",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\train_seed102.csv": "0cfe6aa6d94ebf644e58f0991de35f9e5b8358c30179d43b41d84c277f650a72",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\train_seed103.csv": "04da193045a0e2f798998cce23a917752d44e60b66ac73d31f2c992b9ba59f2b",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\train_seed104.csv": "80fa9bcca191169736f4fed018dc247826ab561104f7e95376691beceff892af",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\train_seed105.csv": "7d32b9fa11d850a70c157df2df8f8aae33c3bac9da9bce26c59954e1d40fe1e2",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\train_seed106.csv": "8c2397d3042e06da98faed24a237223f58366dd360ea9b5e43566c9762b8c582",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\train_seed107.csv": "5aeee880ecbdcd368ff8462c96231c8ca5f1f703d50121beb4a87d8fb9093a47",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\train_seed108.csv": "4871d4d2b3a3fe90c1ece278c04154afe6f9a0f0d706931875205b5e9bc12edf",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\train_seed109.csv": "05cb0dbec58c5d2c7b7475ee49b022fc92ed7ccebfc67164fa7b288b5acc398d",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\validation_seed200.csv": "5e8b69f1b6f25ebd1f19d40e2123f6cd6771ebc98b801e67adb38a93c4f22dd6",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\validation_seed201.csv": "3f6f428b09ef54d4dfb84367e1869458733d3e0540862cf6c1c58699fdd56188",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\validation_seed202.csv": "194b3a997c473d5b9af96d7407409e2d0d0533ef52eee9e4caedd0b0787af2f2"
+  },
+  "python_version": "3.13.7 (tags/v3.13.7:bcee1c3, Aug 14 2025, 14:15:11) [MSC v.1944 64 bit (AMD64)]",
+  "seeds": {
+    "clean_train": [
+      500,
+      501,
+      502
+    ],
+    "clean_validation": [
+      503,
+      504
+    ],
+    "heldout": [
+      300,
+      301,
+      302,
+      303,
+      304
+    ],
+    "train": [
+      100,
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109
+    ],
+    "validation": [
+      200,
+      201,
+      202
+    ]
+  },
+  "started_at_utc": "2026-11-23T09:13:39.465120+00:00",
+  "task_id": "P7"
+}

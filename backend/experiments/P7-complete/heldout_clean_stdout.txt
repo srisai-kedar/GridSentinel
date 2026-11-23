@@ -1,0 +1,46 @@
+ModbusDeviceContext, ModbusSequentialDataBlock, ModbusSparseDataBlock are deprecated and will be removed in v4.
+Please convert to SimData/SimDevice.
+Please read https://pymodbus.readthedocs.io/en/dev/source/upgrade_40.html#convert-to-simdata-simdevice
+ModbusServerContext is deprecated and will be removed in v4.
+Please convert to SimData/SimDevice.
+Please read https://pymodbus.readthedocs.io/en/dev/source/upgrade_40.html#convert-to-simdata-simdevice
+ModbusDeviceContext, ModbusSequentialDataBlock, ModbusSparseDataBlock are deprecated and will be removed in v4.
+Please convert to SimData/SimDevice.
+Please read https://pymodbus.readthedocs.io/en/dev/source/upgrade_40.html#convert-to-simdata-simdevice
+ModbusServerContext is deprecated and will be removed in v4.
+Please convert to SimData/SimDevice.
+Please read https://pymodbus.readthedocs.io/en/dev/source/upgrade_40.html#convert-to-simdata-simdevice
+ModbusDeviceContext, ModbusSequentialDataBlock, ModbusSparseDataBlock are deprecated and will be removed in v4.
+Please convert to SimData/SimDevice.
+Please read https://pymodbus.readthedocs.io/en/dev/source/upgrade_40.html#convert-to-simdata-simdevice
+ModbusServerContext is deprecated and will be removed in v4.
+Please convert to SimData/SimDevice.
+Please read https://pymodbus.readthedocs.io/en/dev/source/upgrade_40.html#convert-to-simdata-simdevice
+ModbusDeviceContext, ModbusSequentialDataBlock, ModbusSparseDataBlock are deprecated and will be removed in v4.
+Please convert to SimData/SimDevice.
+Please read https://pymodbus.readthedocs.io/en/dev/source/upgrade_40.html#convert-to-simdata-simdevice
+ModbusServerContext is deprecated and will be removed in v4.
+Please convert to SimData/SimDevice.
+Please read https://pymodbus.readthedocs.io/en/dev/source/upgrade_40.html#convert-to-simdata-simdevice
+ModbusDeviceContext, ModbusSequentialDataBlock, ModbusSparseDataBlock are deprecated and will be removed in v4.
+Please convert to SimData/SimDevice.
+Please read https://pymodbus.readthedocs.io/en/dev/source/upgrade_40.html#convert-to-simdata-simdevice
+ModbusServerContext is deprecated and will be removed in v4.
+Please convert to SimData/SimDevice.
+Please read https://pymodbus.readthedocs.io/en/dev/source/upgrade_40.html#convert-to-simdata-simdevice
+[ClassifierService] Bundle schema has 28 features; current code has 37.  New features not in bundle (will be unused): ['pcd_resid_jump', 'pcd_resid_persist', 'pcd_resid_concentration', 'pcd_resid_rtu_share', 'pcd_resid_breadth_count', 'pcd_resid_breadth_frac', 'dpn_legacy', 'dpn_ing_delta', 'dpn_ing_resid'].  Consider re-training to leverage new features.
+[DatasetGenerator] Starting generation: Seed=505, Ticks=10, Mode=clean, Run=P7-heldout-clean-505...
+  ... Tick 10/10 complete (50 samples generated)
+
+[DatasetGenerator] Class Distribution Summary:
+Top-level counts:
+ top_level_label
+Normal    50
+Name: count, dtype: int64
+
+Subtype counts:
+ subtype_label
+normal    50
+Name: count, dtype: int64
+[DatasetGenerator] Saved dataset to experiments\P7-complete\generated\heldout_clean_seed505.csv (50 rows)
+[DatasetGenerator] Wrote run manifest to experiments\P7-complete\generated\run_manifest.json

@@ -1,0 +1,42 @@
+{
+  "cli_arguments": {
+    "bootstrap": "10000",
+    "budget": "5.0",
+    "heldout_dir": "backend\\experiments\\P7-complete\\generated",
+    "out_dir": "backend\\reports\\research\\P7-complete",
+    "p7_bundle": "backend\\experiments\\P7-complete\\p7_baseline_bundle.joblib",
+    "seed": "5005",
+    "test": "None",
+    "validation": "None"
+  },
+  "cpu_model": "AMD64 Family 26 Model 96 Stepping 0, AuthenticAMD",
+  "ended_at_utc": "2026-11-23T09:31:41.358760+00:00",
+  "git_sha": "b08a099da94c6fb786e9868cf24d1212dc8e2d8c",
+  "input_datasets": {
+    "backend\\experiments\\P7-complete\\generated\\heldout_clean_seed505.csv": "4a5c010ad56f90e1fa9ce82ed26cc8d2fbec849cb7173c9eae061ccf5ca7a1e5",
+    "backend\\experiments\\P7-complete\\generated\\heldout_seed300.csv": "84a93b90599f5ac7c3779cf7ba521cc5e178cd046277589120a0ad403fb9f6ae",
+    "backend\\experiments\\P7-complete\\generated\\heldout_seed301.csv": "59e711aa6ad1d5d4ded60f1d882c37e6d46d3a11f61b64e01b920eda36206e0d",
+    "backend\\experiments\\P7-complete\\generated\\heldout_seed302.csv": "369c9540add1105632e45f652050e1fb8da7522854975e071bbad87efadb6cdb",
+    "backend\\experiments\\P7-complete\\generated\\heldout_seed303.csv": "dcff11729dcb92668367d7d6f333bb60a74e9bb831276646f968efe565acb219",
+    "backend\\experiments\\P7-complete\\generated\\heldout_seed304.csv": "af214d7f1ad0298c51c8c1de37105e005a6ee50bf9d0e167567b8efa021bdf9f",
+    "backend\\experiments\\P7-complete\\p7_baseline_bundle.joblib": "7dac902c5833c9825d286022b05a541d9a8f1ed15a4529058364e3158001b6de"
+  },
+  "output_datasets": {
+    "backend\\reports\\research\\P7-complete\\final_results.json": "dc09da1fcc7c41e27c8576ec03420c01ec11dca2e840df6c6f09b183fd366b9a"
+  },
+  "package_versions": {
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.9.0",
+    "scipy": "1.18.1"
+  },
+  "python_version": "3.13.7",
+  "seeds": {
+    "bootstrap": [
+      9107,
+      9108
+    ]
+  },
+  "started_at_utc": "2026-11-23T09:31:38.950973+00:00",
+  "task_id": "P7-final"
+}

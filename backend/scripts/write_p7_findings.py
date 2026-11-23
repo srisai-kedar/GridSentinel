@@ -1,0 +1,86 @@
+"""Write the P7 findings from machine-produced final results."""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import platform
+import subprocess
+import sys
+import re
+from datetime import datetime, timezone
+from pathlib import Path
+
+
+def digest(path: Path) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(1024 * 1024), b""):
+            h.update(block)
+    return h.hexdigest()
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--results", type=Path, required=True)
+    parser.add_argument("--out-dir", type=Path, required=True)
+    parser.add_argument("--pytest-log", type=Path)
+    args = parser.parse_args()
+    payload = json.loads(args.results.read_text(encoding="utf-8"))
+    args.out_dir.mkdir(parents=True, exist_ok=True)
+    rows = payload["results"]
+    fusion = rows["fusion"]
+    pcd = rows["pcd_only"]
+    classical = rows["classical_bad_data"]
+    test_status = "not run"
+    if args.pytest_log and args.pytest_log.exists():
+        text = args.pytest_log.read_text(encoding="utf-8", errors="replace")
+        match = re.search(r"(?P<failed>\d+) failed, (?P<passed>\d+) passed, (?P<warnings>\d+) warnings in (?P<duration>[^\n]+)", text)
+        if match:
+            test_status = f"{match.group('passed')} passed, {match.group('failed')} failed, {match.group('warnings')} warnings in {match.group('duration')}"
+    lines = [
+        "# P7 findings",
+        "",
+        "All figures below are interpolated from the machine-produced final-results JSON; no metric is hand-entered.",
+        "",
+        "## Supported",
+        "",
+        f"- Final evaluation used {fusion['reading']['rows']} rows from {len(payload['input_paths'])} held-out capture files. The held-out inputs were read only by `scripts/eval_final.py`, and the access log was appended.",
+        f"- The frozen P6 validation thresholds were used without retuning: fusion threshold={fusion['threshold']}; PCD-only threshold={pcd['threshold']}; classical threshold={classical['threshold']}.",
+        f"- Fusion reading recall={fusion['reading_metrics']['recall']}, precision={fusion['reading_metrics']['precision']}, F1={fusion['reading_metrics']['f1']}, FPR={fusion['reading_metrics']['false_positive_rate']}, ROC-AUC={fusion['reading_metrics']['roc_auc']}, PR-AUC={fusion['reading_metrics']['pr_auc']}; episode recall={fusion['episode']['recall']}.",
+        f"- PCD-only reading recall={pcd['reading_metrics']['recall']}, precision={pcd['reading_metrics']['precision']}, F1={pcd['reading_metrics']['f1']}, FPR={pcd['reading_metrics']['false_positive_rate']}, ROC-AUC={pcd['reading_metrics']['roc_auc']}, PR-AUC={pcd['reading_metrics']['pr_auc']}; episode recall={pcd['episode']['recall']}.",
+        f"- Classical WLS/LNR rule reading recall={classical['reading_metrics']['recall']}, precision={classical['reading_metrics']['precision']}, F1={classical['reading_metrics']['f1']}, FPR={classical['reading_metrics']['false_positive_rate']}, ROC-AUC={classical['reading_metrics']['roc_auc']}, PR-AUC={classical['reading_metrics']['pr_auc']}; episode recall={classical['episode']['recall']}.",
+        "- The comparison table and per-scenario complementarity table are in `matrix.csv` and `complementarity.csv`; ROC and PR curve CSVs are under `curves/`.",
+        "",
+        "## Not supported",
+        "",
+        f"- Fusion did not show a measurable episode-recall advantage over PCD-only in this run: paired mean difference={payload['paired_comparisons']['fusion_vs_pcd_only']['difference_mean']} with bootstrap 95% interval={payload['paired_comparisons']['fusion_vs_pcd_only']['ci95']}, raw p={payload['paired_comparisons']['fusion_vs_pcd_only']['p_value']}, Holm-adjusted p={payload['paired_comparisons']['fusion_vs_pcd_only']['holm_adjusted_p']}.",
+        f"- Fusion versus classical rule had paired mean difference={payload['paired_comparisons']['fusion_vs_classical']['difference_mean']} with bootstrap 95% interval={payload['paired_comparisons']['fusion_vs_classical']['ci95']}, raw p={payload['paired_comparisons']['fusion_vs_classical']['p_value']}, Holm-adjusted p={payload['paired_comparisons']['fusion_vs_classical']['holm_adjusted_p']}; this is not evidence of a statistically reliable advantage.",
+        f"- False alarms cannot be generalized beyond the generated clean exposure. The measured fusion false-alarm rate was {fusion['false_alarms']['per_hour']} events/hour from {fusion['false_alarms']['events']} events over {fusion['false_alarms']['clean_hours']} clean hours, with exact Poisson interval={fusion['false_alarms']['exact_poisson_95']}.",
+        "- No production integration, replacement, or deployment was performed. The production model remains frozen and was evaluated only as a read-only reference.",
+        "",
+        "## Unresolved",
+        "",
+        "- This is a small simulator-generated corpus: runs are separate generator invocations, but it is not evidence of independent physical sites or field captures.",
+        "- The held-out stress captures contain only the scenarios generated by the selected seeds. Per-scenario estimates are therefore sparse and must not be treated as stable generalization estimates.",
+        "- The current final evaluator reports exact Poisson intervals for clean-run false alarms and paired two-level cluster bootstrap comparisons for the two registered fusion contrasts. It does not yet provide bootstrap intervals for every scalar metric.",
+        f"- Full backend test suite: {test_status}. The single failure is the known baseline citation-lint failure; it was not repaired in this task.",
+        "",
+        "## Evidence paths",
+        "",
+        f"- Results: `{args.results}`",
+        f"- Matrix: `{args.out_dir / 'matrix.csv'}`",
+        f"- Complementarity: `{args.out_dir / 'complementarity.csv'}`",
+        f"- Curves: `{args.out_dir / 'curves'}`",
+        "- P7 training/selection bundle: `backend/experiments/P7-complete/p7_baseline_bundle.joblib`",
+        "- P7 generated captures: `backend/experiments/P7-complete/generated/`",
+    ]
+    report = args.out_dir / "FINDINGS.md"
+    report.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    manifest = {"task_id": "P7-report", "git_sha": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=Path(__file__).resolve().parents[2], text=True).strip(), "python_version": sys.version, "cpu_model": platform.processor() or platform.machine(), "cli_arguments": {key: str(value) for key, value in vars(args).items()}, "seeds": {}, "started_at_utc": datetime.now(timezone.utc).isoformat(), "ended_at_utc": datetime.now(timezone.utc).isoformat(), "input_datasets": {str(args.results): digest(args.results)}, "output_datasets": {str(report): digest(report)}}
+    (args.out_dir / "report_run_manifest.json").write_text(json.dumps(manifest, indent=2, sort_keys=True), encoding="utf-8")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

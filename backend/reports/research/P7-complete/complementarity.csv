@@ -1,0 +1,10 @@
+method,scenario,episodes,detected,recall
+classical_bad_data,Cyber Intrusion,3,1,0.3333333333333333
+frozen_production,Cyber Intrusion,3,2,0.6666666666666666
+fusion,Cyber Intrusion,3,3,1.0
+isolation_forest,Cyber Intrusion,3,1,0.3333333333333333
+logistic,Cyber Intrusion,3,1,0.3333333333333333
+nbd_only,Cyber Intrusion,3,3,1.0
+pcd_only,Cyber Intrusion,3,3,1.0
+rule_nbd_unexpected_write,Cyber Intrusion,3,3,1.0
+tree_depth3,Cyber Intrusion,3,3,1.0

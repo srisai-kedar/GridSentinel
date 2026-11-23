@@ -1,0 +1,1038 @@
+{
+  "ended_at_utc": "2026-11-23T09:31:41.150272+00:00",
+  "input_paths": [
+    "backend\\experiments\\P7-complete\\generated\\heldout_clean_seed505.csv",
+    "backend\\experiments\\P7-complete\\generated\\heldout_seed300.csv",
+    "backend\\experiments\\P7-complete\\generated\\heldout_seed301.csv",
+    "backend\\experiments\\P7-complete\\generated\\heldout_seed302.csv",
+    "backend\\experiments\\P7-complete\\generated\\heldout_seed303.csv",
+    "backend\\experiments\\P7-complete\\generated\\heldout_seed304.csv"
+  ],
+  "paired_comparisons": {
+    "fusion_vs_classical": {
+      "ci95": [
+        0.0,
+        1.0
+      ],
+      "difference_mean": 0.6666666666666666,
+      "episodes": 3,
+      "holm_adjusted_p": 1.0,
+      "p_value": 0.5038,
+      "replicates": 10000,
+      "runs": 2,
+      "seed": 9108
+    },
+    "fusion_vs_pcd_only": {
+      "ci95": [
+        0.0,
+        0.0
+      ],
+      "difference_mean": 0.0,
+      "episodes": 3,
+      "holm_adjusted_p": 1.0,
+      "p_value": 1.0,
+      "replicates": 10000,
+      "runs": 2,
+      "seed": 9107
+    }
+  },
+  "protocol": "P5; thresholds frozen from validation",
+  "results": {
+    "classical_bad_data": {
+      "alert_events": {
+        "false": 1,
+        "total": 2,
+        "true": 1
+      },
+      "configuration": {
+        "gap": 0,
+        "grace": 0,
+        "tail": 0
+      },
+      "episode": {
+        "delays": [
+          0
+        ],
+        "detected": 1,
+        "episodes": 3,
+        "recall": 0.3333333333333333
+      },
+      "episode_results": [
+        {
+          "delay_ticks": 0,
+          "detected": true,
+          "end_tick": 10,
+          "episode_id": "P7-heldout-300:episode:1",
+          "onset_tick": 1,
+          "run_id": "P7-heldout-300",
+          "scenario_type": "Cyber Intrusion"
+        },
+        {
+          "delay_ticks": null,
+          "detected": false,
+          "end_tick": 8,
+          "episode_id": "P7-heldout-303:episode:1",
+          "onset_tick": 1,
+          "run_id": "P7-heldout-303",
+          "scenario_type": "Cyber Intrusion"
+        },
+        {
+          "delay_ticks": null,
+          "detected": false,
+          "end_tick": 10,
+          "episode_id": "P7-heldout-303:episode:2",
+          "onset_tick": 9,
+          "run_id": "P7-heldout-303",
+          "scenario_type": "Cyber Intrusion"
+        }
+      ],
+      "evidence_visible": {
+        "alerts": 14,
+        "rows": 20
+      },
+      "false_alarms": {
+        "clean_hours": 0.0027777777777777,
+        "events": 0,
+        "exact_poisson_95": [
+          0.0,
+          1327.996603481054
+        ],
+        "per_hour": 0.0
+      },
+      "latency": {
+        "median_ms_per_row": 3.966667766993245e-05,
+        "p95_ms_per_row": 0.00025819998700171704
+      },
+      "per_type": {
+        "Cyber Intrusion": {
+          "delays": [
+            0
+          ],
+          "detected": 1,
+          "episodes": 3,
+          "median_delay_ticks": 0,
+          "recall": 0.3333333333333333
+        }
+      },
+      "reading": {
+        "alerts": 70,
+        "attack_rows": 20,
+        "non_attack_rows": 280,
+        "rows": 300
+      },
+      "reading_metrics": {
+        "confusion_matrix": [
+          [
+            216,
+            64
+          ],
+          [
+            14,
+            6
+          ]
+        ],
+        "f1": 0.13333333333333333,
+        "false_positive_rate": 0.22857142857142856,
+        "pr_auc": 0.07238095238095238,
+        "precision": 0.08571428571428572,
+        "recall": 0.3,
+        "roc_auc": 0.5357142857142857
+      },
+      "threshold": 1.0,
+      "tick": {
+        "alarmed_attack_ticks": 6,
+        "attack_ticks": 20,
+        "recall": 0.3,
+        "ticks": 60
+      }
+    },
+    "frozen_production": {
+      "alert_events": {
+        "false": 1,
+        "total": 3,
+        "true": 2
+      },
+      "configuration": {
+        "gap": 0,
+        "grace": 0,
+        "tail": 0
+      },
+      "episode": {
+        "delays": [
+          0,
+          0
+        ],
+        "detected": 2,
+        "episodes": 3,
+        "recall": 0.6666666666666666
+      },
+      "episode_results": [
+        {
+          "delay_ticks": 0,
+          "detected": true,
+          "end_tick": 10,
+          "episode_id": "P7-heldout-300:episode:1",
+          "onset_tick": 1,
+          "run_id": "P7-heldout-300",
+          "scenario_type": "Cyber Intrusion"
+        },
+        {
+          "delay_ticks": null,
+          "detected": false,
+          "end_tick": 8,
+          "episode_id": "P7-heldout-303:episode:1",
+          "onset_tick": 1,
+          "run_id": "P7-heldout-303",
+          "scenario_type": "Cyber Intrusion"
+        },
+        {
+          "delay_ticks": 0,
+          "detected": true,
+          "end_tick": 10,
+          "episode_id": "P7-heldout-303:episode:2",
+          "onset_tick": 9,
+          "run_id": "P7-heldout-303",
+          "scenario_type": "Cyber Intrusion"
+        }
+      ],
+      "evidence_visible": {
+        "alerts": 16,
+        "rows": 20
+      },
+      "false_alarms": {
+        "clean_hours": 0.0027777777777777,
+        "events": 0,
+        "exact_poisson_95": [
+          0.0,
+          1327.996603481054
+        ],
+        "per_hour": 0.0
+      },
+      "latency": {
+        "median_ms_per_row": 0.022256666707107797,
+        "p95_ms_per_row": 0.02459446665792105
+      },
+      "per_type": {
+        "Cyber Intrusion": {
+          "delays": [
+            0,
+            0
+          ],
+          "detected": 2,
+          "episodes": 3,
+          "median_delay_ticks": 0,
+          "recall": 0.6666666666666666
+        }
+      },
+      "reading": {
+        "alerts": 18,
+        "attack_rows": 20,
+        "non_attack_rows": 280,
+        "rows": 300
+      },
+      "reading_metrics": {
+        "confusion_matrix": [
+          [
+            272,
+            8
+          ],
+          [
+            10,
+            10
+          ]
+        ],
+        "f1": 0.5263157894736842,
+        "false_positive_rate": 0.02857142857142857,
+        "pr_auc": 0.5488577303382391,
+        "precision": 0.5555555555555556,
+        "recall": 0.5,
+        "roc_auc": 0.7412500000000001
+      },
+      "threshold": 0.9301061630249023,
+      "tick": {
+        "alarmed_attack_ticks": 10,
+        "attack_ticks": 20,
+        "recall": 0.5,
+        "ticks": 60
+      }
+    },
+    "fusion": {
+      "alert_events": {
+        "false": 1,
+        "total": 4,
+        "true": 3
+      },
+      "configuration": {
+        "gap": 0,
+        "grace": 0,
+        "tail": 0
+      },
+      "episode": {
+        "delays": [
+          2,
+          0,
+          0
+        ],
+        "detected": 3,
+        "episodes": 3,
+        "recall": 1.0
+      },
+      "episode_results": [
+        {
+          "delay_ticks": 2,
+          "detected": true,
+          "end_tick": 10,
+          "episode_id": "P7-heldout-300:episode:1",
+          "onset_tick": 1,
+          "run_id": "P7-heldout-300",
+          "scenario_type": "Cyber Intrusion"
+        },
+        {
+          "delay_ticks": 0,
+          "detected": true,
+          "end_tick": 8,
+          "episode_id": "P7-heldout-303:episode:1",
+          "onset_tick": 1,
+          "run_id": "P7-heldout-303",
+          "scenario_type": "Cyber Intrusion"
+        },
+        {
+          "delay_ticks": 0,
+          "detected": true,
+          "end_tick": 10,
+          "episode_id": "P7-heldout-303:episode:2",
+          "onset_tick": 9,
+          "run_id": "P7-heldout-303",
+          "scenario_type": "Cyber Intrusion"
+        }
+      ],
+      "evidence_visible": {
+        "alerts": 0,
+        "rows": 20
+      },
+      "false_alarms": {
+        "clean_hours": 0.0027777777777777,
+        "events": 0,
+        "exact_poisson_95": [
+          0.0,
+          1327.996603481054
+        ],
+        "per_hour": 0.0
+      },
+      "latency": {
+        "median_ms_per_row": 0.010628666641423479,
+        "p95_ms_per_row": 0.011956866685068235
+      },
+      "per_type": {
+        "Cyber Intrusion": {
+          "delays": [
+            0,
+            0,
+            2
+          ],
+          "detected": 3,
+          "episodes": 3,
+          "median_delay_ticks": 0,
+          "recall": 1.0
+        }
+      },
+      "reading": {
+        "alerts": 19,
+        "attack_rows": 20,
+        "non_attack_rows": 280,
+        "rows": 300
+      },
+      "reading_metrics": {
+        "confusion_matrix": [
+          [
+            263,
+            17
+          ],
+          [
+            18,
+            2
+          ]
+        ],
+        "f1": 0.10256410256410256,
+        "false_positive_rate": 0.060714285714285714,
+        "pr_auc": 0.07052631578947369,
+        "precision": 0.10526315789473684,
+        "recall": 0.1,
+        "roc_auc": 0.5148214285714287
+      },
+      "threshold": 0.981424148606811,
+      "tick": {
+        "alarmed_attack_ticks": 9,
+        "attack_ticks": 20,
+        "recall": 0.45,
+        "ticks": 60
+      }
+    },
+    "isolation_forest": {
+      "alert_events": {
+        "false": 1,
+        "total": 2,
+        "true": 1
+      },
+      "configuration": {
+        "gap": 0,
+        "grace": 0,
+        "tail": 0
+      },
+      "episode": {
+        "delays": [
+          0
+        ],
+        "detected": 1,
+        "episodes": 3,
+        "recall": 0.3333333333333333
+      },
+      "episode_results": [
+        {
+          "delay_ticks": null,
+          "detected": false,
+          "end_tick": 10,
+          "episode_id": "P7-heldout-300:episode:1",
+          "onset_tick": 1,
+          "run_id": "P7-heldout-300",
+          "scenario_type": "Cyber Intrusion"
+        },
+        {
+          "delay_ticks": null,
+          "detected": false,
+          "end_tick": 8,
+          "episode_id": "P7-heldout-303:episode:1",
+          "onset_tick": 1,
+          "run_id": "P7-heldout-303",
+          "scenario_type": "Cyber Intrusion"
+        },
+        {
+          "delay_ticks": 0,
+          "detected": true,
+          "end_tick": 10,
+          "episode_id": "P7-heldout-303:episode:2",
+          "onset_tick": 9,
+          "run_id": "P7-heldout-303",
+          "scenario_type": "Cyber Intrusion"
+        }
+      ],
+      "evidence_visible": {
+        "alerts": 0,
+        "rows": 20
+      },
+      "false_alarms": {
+        "clean_hours": 0.0027777777777777,
+        "events": 0,
+        "exact_poisson_95": [
+          0.0,
+          1327.996603481054
+        ],
+        "per_hour": 0.0
+      },
+      "latency": {
+        "median_ms_per_row": 0.040168000026217975,
+        "p95_ms_per_row": 0.050256266695214435
+      },
+      "per_type": {
+        "Cyber Intrusion": {
+          "delays": [
+            0
+          ],
+          "detected": 1,
+          "episodes": 3,
+          "median_delay_ticks": 0,
+          "recall": 0.3333333333333333
+        }
+      },
+      "reading": {
+        "alerts": 5,
+        "attack_rows": 20,
+        "non_attack_rows": 280,
+        "rows": 300
+      },
+      "reading_metrics": {
+        "confusion_matrix": [
+          [
+            275,
+            5
+          ],
+          [
+            20,
+            0
+          ]
+        ],
+        "f1": 0.0,
+        "false_positive_rate": 0.017857142857142856,
+        "pr_auc": 0.08936694243366221,
+        "precision": 0.0,
+        "recall": 0.0,
+        "roc_auc": 0.6558928571428572
+      },
+      "threshold": 0.1862548923398838,
+      "tick": {
+        "alarmed_attack_ticks": 2,
+        "attack_ticks": 20,
+        "recall": 0.1,
+        "ticks": 60
+      }
+    },
+    "logistic": {
+      "alert_events": {
+        "false": 0,
+        "total": 1,
+        "true": 1
+      },
+      "configuration": {
+        "gap": 0,
+        "grace": 0,
+        "tail": 0
+      },
+      "episode": {
+        "delays": [
+          0
+        ],
+        "detected": 1,
+        "episodes": 3,
+        "recall": 0.3333333333333333
+      },
+      "episode_results": [
+        {
+          "delay_ticks": 0,
+          "detected": true,
+          "end_tick": 10,
+          "episode_id": "P7-heldout-300:episode:1",
+          "onset_tick": 1,
+          "run_id": "P7-heldout-300",
+          "scenario_type": "Cyber Intrusion"
+        },
+        {
+          "delay_ticks": null,
+          "detected": false,
+          "end_tick": 8,
+          "episode_id": "P7-heldout-303:episode:1",
+          "onset_tick": 1,
+          "run_id": "P7-heldout-303",
+          "scenario_type": "Cyber Intrusion"
+        },
+        {
+          "delay_ticks": null,
+          "detected": false,
+          "end_tick": 10,
+          "episode_id": "P7-heldout-303:episode:2",
+          "onset_tick": 9,
+          "run_id": "P7-heldout-303",
+          "scenario_type": "Cyber Intrusion"
+        }
+      ],
+      "evidence_visible": {
+        "alerts": 6,
+        "rows": 20
+      },
+      "false_alarms": {
+        "clean_hours": 0.0027777777777777,
+        "events": 0,
+        "exact_poisson_95": [
+          0.0,
+          1327.996603481054
+        ],
+        "per_hour": 0.0
+      },
+      "latency": {
+        "median_ms_per_row": 0.0059690000004290296,
+        "p95_ms_per_row": 0.00839120002153019
+      },
+      "per_type": {
+        "Cyber Intrusion": {
+          "delays": [
+            0
+          ],
+          "detected": 1,
+          "episodes": 3,
+          "median_delay_ticks": 0,
+          "recall": 0.3333333333333333
+        }
+      },
+      "reading": {
+        "alerts": 29,
+        "attack_rows": 20,
+        "non_attack_rows": 280,
+        "rows": 300
+      },
+      "reading_metrics": {
+        "confusion_matrix": [
+          [
+            257,
+            23
+          ],
+          [
+            14,
+            6
+          ]
+        ],
+        "f1": 0.24489795918367346,
+        "false_positive_rate": 0.08214285714285714,
+        "pr_auc": 0.2310027200263294,
+        "precision": 0.20689655172413793,
+        "recall": 0.3,
+        "roc_auc": 0.854107142857143
+      },
+      "threshold": 0.9952702237544316,
+      "tick": {
+        "alarmed_attack_ticks": 6,
+        "attack_ticks": 20,
+        "recall": 0.3,
+        "ticks": 60
+      }
+    },
+    "nbd_only": {
+      "alert_events": {
+        "false": 1,
+        "total": 4,
+        "true": 3
+      },
+      "configuration": {
+        "gap": 0,
+        "grace": 0,
+        "tail": 0
+      },
+      "episode": {
+        "delays": [
+          2,
+          0,
+          0
+        ],
+        "detected": 3,
+        "episodes": 3,
+        "recall": 1.0
+      },
+      "episode_results": [
+        {
+          "delay_ticks": 2,
+          "detected": true,
+          "end_tick": 10,
+          "episode_id": "P7-heldout-300:episode:1",
+          "onset_tick": 1,
+          "run_id": "P7-heldout-300",
+          "scenario_type": "Cyber Intrusion"
+        },
+        {
+          "delay_ticks": 0,
+          "detected": true,
+          "end_tick": 8,
+          "episode_id": "P7-heldout-303:episode:1",
+          "onset_tick": 1,
+          "run_id": "P7-heldout-303",
+          "scenario_type": "Cyber Intrusion"
+        },
+        {
+          "delay_ticks": 0,
+          "detected": true,
+          "end_tick": 10,
+          "episode_id": "P7-heldout-303:episode:2",
+          "onset_tick": 9,
+          "run_id": "P7-heldout-303",
+          "scenario_type": "Cyber Intrusion"
+        }
+      ],
+      "evidence_visible": {
+        "alerts": 8,
+        "rows": 20
+      },
+      "false_alarms": {
+        "clean_hours": 0.0027777777777777,
+        "events": 0,
+        "exact_poisson_95": [
+          0.0,
+          1327.996603481054
+        ],
+        "per_hour": 0.0
+      },
+      "latency": {
+        "median_ms_per_row": 0.003605666667378197,
+        "p95_ms_per_row": 0.005667666671797632
+      },
+      "per_type": {
+        "Cyber Intrusion": {
+          "delays": [
+            0,
+            0,
+            2
+          ],
+          "detected": 3,
+          "episodes": 3,
+          "median_delay_ticks": 0,
+          "recall": 1.0
+        }
+      },
+      "reading": {
+        "alerts": 69,
+        "attack_rows": 20,
+        "non_attack_rows": 280,
+        "rows": 300
+      },
+      "reading_metrics": {
+        "confusion_matrix": [
+          [
+            218,
+            62
+          ],
+          [
+            13,
+            7
+          ]
+        ],
+        "f1": 0.15730337078651685,
+        "false_positive_rate": 0.22142857142857142,
+        "pr_auc": 0.14496453682635344,
+        "precision": 0.10144927536231885,
+        "recall": 0.35,
+        "roc_auc": 0.6067857142857143
+      },
+      "threshold": 0.7905236907730653,
+      "tick": {
+        "alarmed_attack_ticks": 7,
+        "attack_ticks": 20,
+        "recall": 0.35,
+        "ticks": 60
+      }
+    },
+    "pcd_only": {
+      "alert_events": {
+        "false": 5,
+        "total": 7,
+        "true": 2
+      },
+      "configuration": {
+        "gap": 0,
+        "grace": 0,
+        "tail": 0
+      },
+      "episode": {
+        "delays": [
+          0,
+          0,
+          0
+        ],
+        "detected": 3,
+        "episodes": 3,
+        "recall": 1.0
+      },
+      "episode_results": [
+        {
+          "delay_ticks": 0,
+          "detected": true,
+          "end_tick": 10,
+          "episode_id": "P7-heldout-300:episode:1",
+          "onset_tick": 1,
+          "run_id": "P7-heldout-300",
+          "scenario_type": "Cyber Intrusion"
+        },
+        {
+          "delay_ticks": 0,
+          "detected": true,
+          "end_tick": 8,
+          "episode_id": "P7-heldout-303:episode:1",
+          "onset_tick": 1,
+          "run_id": "P7-heldout-303",
+          "scenario_type": "Cyber Intrusion"
+        },
+        {
+          "delay_ticks": 0,
+          "detected": true,
+          "end_tick": 10,
+          "episode_id": "P7-heldout-303:episode:2",
+          "onset_tick": 9,
+          "run_id": "P7-heldout-303",
+          "scenario_type": "Cyber Intrusion"
+        }
+      ],
+      "evidence_visible": {
+        "alerts": 0,
+        "rows": 20
+      },
+      "false_alarms": {
+        "clean_hours": 0.0027777777777777,
+        "events": 3,
+        "exact_poisson_95": [
+          222.72196424242273,
+          3156.218305107325
+        ],
+        "per_hour": 1080.0000000000302
+      },
+      "latency": {
+        "median_ms_per_row": 0.004871999990427867,
+        "p95_ms_per_row": 0.008005933351038644
+      },
+      "per_type": {
+        "Cyber Intrusion": {
+          "delays": [
+            0,
+            0,
+            0
+          ],
+          "detected": 3,
+          "episodes": 3,
+          "median_delay_ticks": 0,
+          "recall": 1.0
+        }
+      },
+      "reading": {
+        "alerts": 49,
+        "attack_rows": 20,
+        "non_attack_rows": 280,
+        "rows": 300
+      },
+      "reading_metrics": {
+        "confusion_matrix": [
+          [
+            233,
+            47
+          ],
+          [
+            18,
+            2
+          ]
+        ],
+        "f1": 0.057971014492753624,
+        "false_positive_rate": 0.16785714285714284,
+        "pr_auc": 0.06408163265306122,
+        "precision": 0.04081632653061224,
+        "recall": 0.1,
+        "roc_auc": 0.46428571428571436
+      },
+      "threshold": 0.6302186878727638,
+      "tick": {
+        "alarmed_attack_ticks": 20,
+        "attack_ticks": 20,
+        "recall": 1.0,
+        "ticks": 60
+      }
+    },
+    "rule_nbd_unexpected_write": {
+      "alert_events": {
+        "false": 4,
+        "total": 6,
+        "true": 2
+      },
+      "configuration": {
+        "gap": 0,
+        "grace": 0,
+        "tail": 0
+      },
+      "episode": {
+        "delays": [
+          0,
+          0,
+          0
+        ],
+        "detected": 3,
+        "episodes": 3,
+        "recall": 1.0
+      },
+      "episode_results": [
+        {
+          "delay_ticks": 0,
+          "detected": true,
+          "end_tick": 10,
+          "episode_id": "P7-heldout-300:episode:1",
+          "onset_tick": 1,
+          "run_id": "P7-heldout-300",
+          "scenario_type": "Cyber Intrusion"
+        },
+        {
+          "delay_ticks": 0,
+          "detected": true,
+          "end_tick": 8,
+          "episode_id": "P7-heldout-303:episode:1",
+          "onset_tick": 1,
+          "run_id": "P7-heldout-303",
+          "scenario_type": "Cyber Intrusion"
+        },
+        {
+          "delay_ticks": 0,
+          "detected": true,
+          "end_tick": 10,
+          "episode_id": "P7-heldout-303:episode:2",
+          "onset_tick": 9,
+          "run_id": "P7-heldout-303",
+          "scenario_type": "Cyber Intrusion"
+        }
+      ],
+      "evidence_visible": {
+        "alerts": 20,
+        "rows": 20
+      },
+      "false_alarms": {
+        "clean_hours": 0.0027777777777777,
+        "events": 1,
+        "exact_poisson_95": [
+          9.114410874344612,
+          2005.7916207380597
+        ],
+        "per_hour": 360.0000000000101
+      },
+      "latency": {
+        "median_ms_per_row": 2.4999996336797874e-05,
+        "p95_ms_per_row": 0.00015273336127089956
+      },
+      "per_type": {
+        "Cyber Intrusion": {
+          "delays": [
+            0,
+            0,
+            0
+          ],
+          "detected": 3,
+          "episodes": 3,
+          "median_delay_ticks": 0,
+          "recall": 1.0
+        }
+      },
+      "reading": {
+        "alerts": 300,
+        "attack_rows": 20,
+        "non_attack_rows": 280,
+        "rows": 300
+      },
+      "reading_metrics": {
+        "confusion_matrix": [
+          [
+            0,
+            280
+          ],
+          [
+            0,
+            20
+          ]
+        ],
+        "f1": 0.125,
+        "false_positive_rate": 1.0,
+        "pr_auc": 0.3,
+        "precision": 0.06666666666666667,
+        "recall": 1.0,
+        "roc_auc": 0.625
+      },
+      "threshold": 0.0,
+      "tick": {
+        "alarmed_attack_ticks": 20,
+        "attack_ticks": 20,
+        "recall": 1.0,
+        "ticks": 60
+      }
+    },
+    "tree_depth3": {
+      "alert_events": {
+        "false": 1,
+        "total": 4,
+        "true": 3
+      },
+      "configuration": {
+        "gap": 0,
+        "grace": 0,
+        "tail": 0
+      },
+      "episode": {
+        "delays": [
+          2,
+          0,
+          0
+        ],
+        "detected": 3,
+        "episodes": 3,
+        "recall": 1.0
+      },
+      "episode_results": [
+        {
+          "delay_ticks": 2,
+          "detected": true,
+          "end_tick": 10,
+          "episode_id": "P7-heldout-300:episode:1",
+          "onset_tick": 1,
+          "run_id": "P7-heldout-300",
+          "scenario_type": "Cyber Intrusion"
+        },
+        {
+          "delay_ticks": 0,
+          "detected": true,
+          "end_tick": 8,
+          "episode_id": "P7-heldout-303:episode:1",
+          "onset_tick": 1,
+          "run_id": "P7-heldout-303",
+          "scenario_type": "Cyber Intrusion"
+        },
+        {
+          "delay_ticks": 0,
+          "detected": true,
+          "end_tick": 10,
+          "episode_id": "P7-heldout-303:episode:2",
+          "onset_tick": 9,
+          "run_id": "P7-heldout-303",
+          "scenario_type": "Cyber Intrusion"
+        }
+      ],
+      "evidence_visible": {
+        "alerts": 0,
+        "rows": 20
+      },
+      "false_alarms": {
+        "clean_hours": 0.0027777777777777,
+        "events": 0,
+        "exact_poisson_95": [
+          0.0,
+          1327.996603481054
+        ],
+        "per_hour": 0.0
+      },
+      "latency": {
+        "median_ms_per_row": 0.004542333287342141,
+        "p95_ms_per_row": 0.007108733310208965
+      },
+      "per_type": {
+        "Cyber Intrusion": {
+          "delays": [
+            0,
+            0,
+            2
+          ],
+          "detected": 3,
+          "episodes": 3,
+          "median_delay_ticks": 0,
+          "recall": 1.0
+        }
+      },
+      "reading": {
+        "alerts": 19,
+        "attack_rows": 20,
+        "non_attack_rows": 280,
+        "rows": 300
+      },
+      "reading_metrics": {
+        "confusion_matrix": [
+          [
+            263,
+            17
+          ],
+          [
+            18,
+            2
+          ]
+        ],
+        "f1": 0.10256410256410256,
+        "false_positive_rate": 0.060714285714285714,
+        "pr_auc": 0.07052631578947369,
+        "precision": 0.10526315789473684,
+        "recall": 0.1,
+        "roc_auc": 0.5148214285714287
+      },
+      "threshold": 0.981424148606811,
+      "tick": {
+        "alarmed_attack_ticks": 9,
+        "attack_ticks": 20,
+        "recall": 0.45,
+        "ticks": 60
+      }
+    }
+  },
+  "started_at_utc": "2026-11-23T09:31:38.950973+00:00",
+  "task_id": "P7-complete"
+}

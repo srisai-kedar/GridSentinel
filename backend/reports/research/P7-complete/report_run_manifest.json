@@ -1,0 +1,20 @@
+{
+  "cli_arguments": {
+    "out_dir": "backend\\reports\\research\\P7-complete",
+    "pytest_log": "backend\\reports\\research\\P7-complete\\full_pytest.txt",
+    "results": "backend\\reports\\research\\P7-complete\\final_results.json"
+  },
+  "cpu_model": "AMD64 Family 26 Model 96 Stepping 0, AuthenticAMD",
+  "ended_at_utc": "2026-11-23T09:31:43.016580+00:00",
+  "git_sha": "b08a099da94c6fb786e9868cf24d1212dc8e2d8c",
+  "input_datasets": {
+    "backend\\reports\\research\\P7-complete\\final_results.json": "dc09da1fcc7c41e27c8576ec03420c01ec11dca2e840df6c6f09b183fd366b9a"
+  },
+  "output_datasets": {
+    "backend\\reports\\research\\P7-complete\\FINDINGS.md": "eb4dcc3623cd79f9b0435c8b15731c66212d0974c5bf1afaa037dab4d087d782"
+  },
+  "python_version": "3.13.7 (tags/v3.13.7:bcee1c3, Aug 14 2025, 14:15:11) [MSC v.1944 64 bit (AMD64)]",
+  "seeds": {},
+  "started_at_utc": "2026-11-23T09:31:43.016532+00:00",
+  "task_id": "P7-report"
+}

@@ -472,15 +472,21 @@ class ScenarioInjector:
 
     def get_active_scenarios(self) -> Dict[str, Any]:
         """Return structured summary of active attacks and faults."""
+        drift_summary = {}
+        for rtu_id, item in self.sensor_drifts.items():
+            if "drift_percent" in item:
+                drift_summary[rtu_id] = item["drift_percent"]
+            elif "magnitude" in item:
+                drift_summary[rtu_id] = item["magnitude"]
+            else:
+                raise ValueError(f"Sensor-drift state for RTU {rtu_id} has no magnitude field")
         return {
             "summary": self.active_scenario_summary,
             "silent_overrides": {
                 rtu_id: item["overrides"] for rtu_id, item in self.silent_overrides.items()
             },
             "replay_attacks": list(self.replay_attacks.keys()),
-            "sensor_drifts": {
-                rtu_id: item["drift_percent"] for rtu_id, item in self.sensor_drifts.items()
-            },
+            "sensor_drifts": drift_summary,
             "sustained_setpoints": {
                 rtu_id: {key: value for key, value in item.items() if key != "remaining_ticks"}
                 for rtu_id, item in self.sustained_setpoints.items()
