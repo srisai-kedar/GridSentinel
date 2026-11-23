@@ -1,0 +1,9 @@
+method,scenario,episode_recall,paired_interval_95,status
+classical_bad_data,unavailable,,,blocked_by_input_metadata
+rule_nbd_unexpected_write,unavailable,,,blocked_by_input_metadata
+isolation_forest,unavailable,,,blocked_by_input_metadata
+logistic,unavailable,,,blocked_by_input_metadata
+tree_depth3,unavailable,,,blocked_by_input_metadata
+nbd_only,unavailable,,,blocked_by_input_metadata
+pcd_only,unavailable,,,blocked_by_input_metadata
+fusion,unavailable,,,blocked_by_input_metadata

@@ -1,0 +1,69 @@
+C:\Users\K Srisai Kedar\OneDrive\Documents\Projects\GridSentinel - SIH\gridsentinel\backend\.venv\Lib\site-packages\pytest_asyncio\plugin.py:208: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+=================================== ERRORS ====================================
+____________ ERROR collecting tests/test_evaluate_gsbp_cp_step3.py ____________
+ImportError while importing test module 'C:\Users\K Srisai Kedar\OneDrive\Documents\Projects\GridSentinel - SIH\gridsentinel\backend\tests\test_evaluate_gsbp_cp_step3.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\..\..\..\..\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\test_evaluate_gsbp_cp_step3.py:3: in <module>
+    from backend.scripts.evaluate_gsbp_cp_step3 import metrics, feature_groups
+E   ModuleNotFoundError: No module named 'backend.scripts'
+___________ ERROR collecting tests/test_gsbp_cp_recall_recovery.py ____________
+ImportError while importing test module 'C:\Users\K Srisai Kedar\OneDrive\Documents\Projects\GridSentinel - SIH\gridsentinel\backend\tests\test_gsbp_cp_recall_recovery.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\..\..\..\..\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\test_gsbp_cp_recall_recovery.py:3: in <module>
+    from backend.reports.gsbp_cp_recall_recovery_20261025_195436.compare_runtime_candidates import FEATURE_SETS, score
+E   ModuleNotFoundError: No module named 'backend.reports.gsbp_cp_recall_recovery_20261025_195436'
+___________ ERROR collecting tests/test_gsbp_cp_step4_comparison.py ___________
+ImportError while importing test module 'C:\Users\K Srisai Kedar\OneDrive\Documents\Projects\GridSentinel - SIH\gridsentinel\backend\tests\test_gsbp_cp_step4_comparison.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\..\..\..\..\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\test_gsbp_cp_step4_comparison.py:3: in <module>
+    from backend.reports.gsbp_cp_step4_candidate_comparison_20261025_181647.compare_candidates import binary_metrics, threshold_profiles
+E   ModuleNotFoundError: No module named 'backend.reports.gsbp_cp_step4_candidate_comparison_20261025_181647'
+___________ ERROR collecting tests/test_gsbp_cp_step5_robustness.py ___________
+ImportError while importing test module 'C:\Users\K Srisai Kedar\OneDrive\Documents\Projects\GridSentinel - SIH\gridsentinel\backend\tests\test_gsbp_cp_step5_robustness.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\..\..\..\..\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\test_gsbp_cp_step5_robustness.py:3: in <module>
+    from backend.reports.gsbp_cp_step5_robustness_20261025_182617.validate_robustness import metrics
+E   ModuleNotFoundError: No module named 'backend.reports.gsbp_cp_step5_robustness_20261025_182617'
+______ ERROR collecting tests/test_gsbp_runtime_compatible_candidate.py _______
+ImportError while importing test module 'C:\Users\K Srisai Kedar\OneDrive\Documents\Projects\GridSentinel - SIH\gridsentinel\backend\tests\test_gsbp_runtime_compatible_candidate.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\..\..\..\..\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\test_gsbp_runtime_compatible_candidate.py:3: in <module>
+    from backend.reports.gsbp_cp_runtime_compatible_20261025_191910.train_compatible_candidate import metrics, RUNTIME_FEATURES
+E   ModuleNotFoundError: No module named 'backend.reports.gsbp_cp_runtime_compatible_20261025_191910'
+________ ERROR collecting tests/test_gsbp_runtime_feature_recovery.py _________
+ImportError while importing test module 'C:\Users\K Srisai Kedar\OneDrive\Documents\Projects\GridSentinel - SIH\gridsentinel\backend\tests\test_gsbp_runtime_feature_recovery.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\..\..\..\..\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\test_gsbp_runtime_feature_recovery.py:2: in <module>
+    from backend.reports.gsbp_cp_runtime_feature_recovery_20261025_194615.recover_runtime_features import FEATURE_SETS, metric
+E   ModuleNotFoundError: No module named 'backend.reports.gsbp_cp_runtime_feature_recovery_20261025_194615'
+=========================== short test summary info ===========================
+ERROR tests/test_evaluate_gsbp_cp_step3.py
+ERROR tests/test_gsbp_cp_recall_recovery.py
+ERROR tests/test_gsbp_cp_step4_comparison.py
+ERROR tests/test_gsbp_cp_step5_robustness.py
+ERROR tests/test_gsbp_runtime_compatible_candidate.py
+ERROR tests/test_gsbp_runtime_feature_recovery.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 6 errors during collection !!!!!!!!!!!!!!!!!!!
+6 errors in 25.48s
