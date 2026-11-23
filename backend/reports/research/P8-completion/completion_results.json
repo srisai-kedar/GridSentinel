@@ -1,0 +1,33 @@
+{
+  "acceptance": {
+    "24_real_clock_hours": false,
+    "benign_event_coverage": false,
+    "independent_clean_heldout_final_eval": false,
+    "target_0_125_fa_per_hour_supported": false
+  },
+  "blocker": "The measured generator throughput is 1.465759 ticks/second; 86400 real-clock ticks are not feasible in this unattended run. The benign pilot generated no requested benign event subtypes.",
+  "pilot": {
+    "clean_hours": 0.0277777777777777,
+    "files": 4,
+    "requested_benign_rows_observed": 0,
+    "requested_benign_subtypes": [
+      "authorized_control_write",
+      "authorized_write",
+      "communication_stall",
+      "load_step",
+      "planned_switching"
+    ],
+    "rows": 2000,
+    "run_ids": 4,
+    "subtype_counts": {
+      "normal": 2000
+    }
+  },
+  "selected_budgets": {
+    "1.0": true,
+    "20.0": true,
+    "5.0": true
+  },
+  "task_id": "P8-completion",
+  "validation_alert_candidates": 41
+}

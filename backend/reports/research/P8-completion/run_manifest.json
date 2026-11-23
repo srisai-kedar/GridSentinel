@@ -1,0 +1,36 @@
+{
+  "cli_arguments": [
+    "backend/scripts/expo/p8_completion_report.py",
+    "--alert-results",
+    "backend/experiments/P8-completion/alert_validation/validation_alert_layers.json",
+    "--pilot-dir",
+    "backend/experiments/P8-completion/benign_pilot",
+    "--out-dir",
+    "backend/reports/research/P8-completion"
+  ],
+  "cpu_model": "AMD64 Family 26 Model 96 Stepping 0, AuthenticAMD",
+  "ended_at_utc": "2026-11-23T18:01:43.425408+00:00",
+  "git_sha": "f44c523db400edbff8a84fdf82111d8a8a67aaad",
+  "input_datasets": {
+    "backend\\experiments\\P8-completion\\alert_validation\\validation_alert_layers.json": "7ae802f7530097c2cb59f0f63de374c9fe1ab28793a726212499d0c11a102049",
+    "backend\\experiments\\P8-completion\\benign_pilot\\clean_seed800.csv": "0a04085a44ca5009dc21177840c1b64594ce81734a656fa9b248232a66d23f34",
+    "backend\\experiments\\P8-completion\\benign_pilot\\clean_seed801.csv": "bf043afce4d77e74540b1375894e1ec6c8ab97ddda71017ace84506a31d6862b",
+    "backend\\experiments\\P8-completion\\benign_pilot\\clean_seed802.csv": "846ac5be2863f1cee557bdcc6d6b873aa39b0603e73d4cb95e57aa49a8555bcd",
+    "backend\\experiments\\P8-completion\\benign_pilot\\clean_seed803.csv": "cd27698f36ecebbbc0d6f9dcfa489d222dfe9f8a5f1ee2d4acbc76f8eb7ed803"
+  },
+  "output_datasets": {
+    "backend\\reports\\research\\P8-completion\\FINDINGS.md": "5be675789fcdc8dd357ebf46ba8f1d927d491911fb77b84eb67c8c9165570d60",
+    "backend\\reports\\research\\P8-completion\\completion_results.json": "614700ee38b475a2a20f6ee5e362f87c93827406823a2fc383131bc89d44438f"
+  },
+  "python_version": "3.13.7 (tags/v3.13.7:bcee1c3, Aug 14 2025, 14:15:11) [MSC v.1944 64 bit (AMD64)]",
+  "seeds": {
+    "benign_pilot": [
+      800,
+      801,
+      802,
+      803
+    ]
+  },
+  "started_at_utc": "2026-11-23T18:01:43.107497+00:00",
+  "task_id": "P8-completion"
+}
