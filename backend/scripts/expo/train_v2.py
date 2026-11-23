@@ -22,6 +22,7 @@ from sklearn.calibration import calibration_curve
 from sklearn.isotonic import IsotonicRegression
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import average_precision_score, roc_auc_score
+from sklearn.metrics import confusion_matrix, f1_score, precision_score, recall_score
 from sklearn.model_selection import GroupKFold
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
@@ -245,11 +246,18 @@ def main() -> None:
                 threshold, tuning = threshold_for_validation(val_policy, score, policy)
                 normal = ~val_policy["attack_active"].astype(bool).to_numpy()
                 positive = val_policy["attack_active"].astype(bool).to_numpy() if policy == "attack_active" else (val_policy["attack_active"].astype(bool) & val_policy["evidence_visible"].astype(bool)).to_numpy()
+                predicted = (score >= threshold).astype(int)
+                validation_precision = float(precision_score(y_val, predicted, zero_division=0))
+                validation_recall = float(recall_score(y_val, predicted, zero_division=0))
+                validation_f1 = float(f1_score(y_val, predicted, zero_division=0))
+                validation_roc = float(roc_auc_score(y_val, score)) if len(np.unique(y_val)) > 1 else None
+                validation_pr = float(average_precision_score(y_val, score)) if len(np.unique(y_val)) > 1 else None
+                cm = confusion_matrix(y_val, predicted, labels=[0, 1]).tolist()
                 t0 = time.perf_counter()
                 for _ in range(5):
                     probability(model, x_val)
                 latency_ms = (time.perf_counter() - t0) * 1000.0 / max(1, 5 * len(x_val))
-                record = {"policy": policy, "feature_arm": arm, "model": name, **cv, **tuning, "validation_positive_rows": int(positive.sum()), "validation_normal_rows": int(normal.sum()), "latency_ms": float(latency_ms), "latency_budget_ok": bool(latency_ms <= 10.0)}
+                record = {"policy": policy, "feature_arm": arm, "model": name, **cv, **tuning, "validation_precision": validation_precision, "validation_recall": validation_recall, "validation_f1": validation_f1, "validation_roc_auc": validation_roc, "validation_pr_auc": validation_pr, "validation_confusion_matrix": json.dumps(cm), "validation_positive_rows": int(positive.sum()), "validation_normal_rows": int(normal.sum()), "latency_ms": float(latency_ms), "latency_budget_ok": bool(latency_ms <= 10.0), "false_alarm_per_hour": None}
                 rows.append(record)
                 selected.append(record)
     results = pd.DataFrame(rows)
@@ -279,6 +287,8 @@ def main() -> None:
     candidate_path = root / "selected_candidate.joblib"
     joblib.dump({"model": model, "features": features, "policy": policy, "threshold": threshold}, candidate_path)
     selected_config = {"task": TASK, "policy": policy, "feature_arm": arm, "features": features, "model": model_name, "threshold": threshold, "threshold_selection": tuning, "validation_calibration": calibration, "latency_ms": float(chosen["latency_ms"]), "latency_budget_ms": 10.0, "candidate_sha256": sha256(candidate_path), "production_artefact_untouched": True}
+    selected_config["validation_metrics"] = {key: chosen[key] for key in ["validation_precision", "validation_recall", "validation_f1", "validation_roc_auc", "validation_pr_auc", "false_alarm_per_hour"]}
+    selected_config["validation_confusion_matrix"] = json.loads(str(chosen["validation_confusion_matrix"]))
     if hasattr(model, "feature_importances_"):
         importances = np.asarray(model.feature_importances_, dtype=float)
         total = float(importances.sum()) or 1.0
