@@ -1,0 +1,25 @@
+{
+  "cli_arguments": [
+    "scripts/expo/p0_completion.py",
+    "--clean",
+    "..\\backend\\experiments\\P0-P3-P2-P6\\P0\\clean_5000\\generated.csv",
+    "--out",
+    "..\\backend\\reports\\research\\P0-P3-P2-P6\\P0"
+  ],
+  "cpu_model": "AMD64 Family 26 Model 96 Stepping 0, AuthenticAMD",
+  "ended_at_utc": "2026-11-23T14:00:41.068837+00:00",
+  "git_sha": "ec857abe6da883b9506747810a674dd7547d597a",
+  "input_datasets": {
+    "..\\backend\\experiments\\P0-P3-P2-P6\\P0\\clean_5000\\generated.csv": "b9aed6ae754971f1b4519257355e96b4baf4baa0ee510ff4919ab30e8579da3e"
+  },
+  "output_datasets": {
+    "..\\backend\\reports\\research\\P0-P3-P2-P6\\P0\\FINDINGS.md": "ed78e421bc81edf7443aa1e77ce584006fbf3cba520b708f1ff2a87943232ac8",
+    "..\\backend\\reports\\research\\P0-P3-P2-P6\\P0\\p0_evidence.json": "750afec3c7cab7582470ed3dba6c2a06ce36dead30960237179c8afb07e5a57c"
+  },
+  "python_version": "3.13.7 (tags/v3.13.7:bcee1c3, Aug 14 2025, 14:15:11) [MSC v.1944 64 bit (AMD64)]",
+  "seeds": {
+    "clean": 5050
+  },
+  "started_at_utc": "2026-11-23T14:00:40.525332+00:00",
+  "task_id": "P0"
+}

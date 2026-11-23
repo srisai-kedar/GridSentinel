@@ -1,0 +1,23 @@
+{
+  "cli_arguments": [
+    "scripts/expo/p2_completion.py",
+    "--out",
+    "..\\backend\\reports\\research\\P0-P3-P2-P6\\P2"
+  ],
+  "cpu_model": "AMD64 Family 26 Model 96 Stepping 0, AuthenticAMD",
+  "ended_at_utc": "2026-11-23T14:17:06.401655+00:00",
+  "git_sha": "ec857abe6da883b9506747810a674dd7547d597a",
+  "input_datasets": {
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\reports\\research\\P2\\leakage_audit.json": "40a99102aaf043738a7939cb6afd961ff0292a257a8ad3113a84e42a543cf5ab"
+  },
+  "output_datasets": {
+    "..\\backend\\reports\\research\\P0-P3-P2-P6\\P2\\FINDINGS.md": "01af6a5b6b317d8e459325f38cf462078d4ef7c8eac28a20460fe034283033e0",
+    "..\\backend\\reports\\research\\P0-P3-P2-P6\\P2\\p2_reaudit.json": "f67b6334dea12202a2887257ba2e0320427a3cd02dbcd771427d68775576a3aa"
+  },
+  "python_version": "3.13.7 (tags/v3.13.7:bcee1c3, Aug 14 2025, 14:15:11) [MSC v.1944 64 bit (AMD64)]",
+  "seeds": {
+    "prior_diagnostic": 101
+  },
+  "started_at_utc": "2026-11-23T14:17:06.108481+00:00",
+  "task_id": "P2"
+}
