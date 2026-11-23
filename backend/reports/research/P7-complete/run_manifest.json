@@ -10,8 +10,8 @@
     "validation": "None"
   },
   "cpu_model": "AMD64 Family 26 Model 96 Stepping 0, AuthenticAMD",
-  "ended_at_utc": "2026-11-23T09:24:20.496377+00:00",
-  "git_sha": "cf9ffbd9db97df0b40201599297fd4b8d188be9b",
+  "ended_at_utc": "2026-11-23T09:30:33.197523+00:00",
+  "git_sha": "662de0492972cf4ee5d703c8a97563cabf38ea63",
   "input_datasets": {
     "backend\\experiments\\P7-complete\\generated\\heldout_clean_seed505.csv": "4a5c010ad56f90e1fa9ce82ed26cc8d2fbec849cb7173c9eae061ccf5ca7a1e5",
     "backend\\experiments\\P7-complete\\generated\\heldout_seed300.csv": "84a93b90599f5ac7c3779cf7ba521cc5e178cd046277589120a0ad403fb9f6ae",
@@ -22,7 +22,7 @@
     "backend\\experiments\\P7-complete\\p7_baseline_bundle.joblib": "7dac902c5833c9825d286022b05a541d9a8f1ed15a4529058364e3158001b6de"
   },
   "output_datasets": {
-    "backend\\reports\\research\\P7-complete\\final_results.json": "99235c8246acd0734b13193bf870501de6992eabd658229306e027720306eb82"
+    "backend\\reports\\research\\P7-complete\\final_results.json": "2b47ab8f8c689a6047a72db73ea4370b5496103a1f55a89bd7f688872652a1c2"
   },
   "package_versions": {
     "numpy": "2.4.6",
@@ -37,6 +37,6 @@
       9108
     ]
   },
-  "started_at_utc": "2026-11-23T09:24:18.234502+00:00",
+  "started_at_utc": "2026-11-23T09:30:30.439813+00:00",
   "task_id": "P7-final"
 }

@@ -1,5 +1,5 @@
 {
-  "ended_at_utc": "2026-11-23T09:24:20.317273+00:00",
+  "ended_at_utc": "2026-11-23T09:30:32.983797+00:00",
   "input_paths": [
     "backend\\experiments\\P7-complete\\generated\\heldout_clean_seed505.csv",
     "backend\\experiments\\P7-complete\\generated\\heldout_seed300.csv",
@@ -98,8 +98,8 @@
         "per_hour": 0.0
       },
       "latency": {
-        "median_ms_per_row": 3.999996503504614e-05,
-        "p95_ms_per_row": 0.0002956666673223177
+        "median_ms_per_row": 5.6666661597167454e-05,
+        "p95_ms_per_row": 0.0004787333212637653
       },
       "per_type": {
         "Cyber Intrusion": {
@@ -207,8 +207,8 @@
         "per_hour": 0.0
       },
       "latency": {
-        "median_ms_per_row": 0.033643666635422655,
-        "p95_ms_per_row": 0.034347999967091404
+        "median_ms_per_row": 0.041537333357458316,
+        "p95_ms_per_row": 0.043224200004866965
       },
       "per_type": {
         "Cyber Intrusion": {
@@ -318,8 +318,8 @@
         "per_hour": 0.0
       },
       "latency": {
-        "median_ms_per_row": 0.005299999999503295,
-        "p95_ms_per_row": 0.008683799969730899
+        "median_ms_per_row": 0.00929899998785307,
+        "p95_ms_per_row": 0.01213899998886821
       },
       "per_type": {
         "Cyber Intrusion": {
@@ -428,8 +428,8 @@
         "per_hour": 0.0
       },
       "latency": {
-        "median_ms_per_row": 0.03869533335091546,
-        "p95_ms_per_row": 0.04298000001775411
+        "median_ms_per_row": 0.05731066664642034,
+        "p95_ms_per_row": 0.09496260001712167
       },
       "per_type": {
         "Cyber Intrusion": {
@@ -536,8 +536,8 @@
         "per_hour": 0.0
       },
       "latency": {
-        "median_ms_per_row": 0.004300000000512227,
-        "p95_ms_per_row": 0.010289533325703813
+        "median_ms_per_row": 0.007005000031009938,
+        "p95_ms_per_row": 0.009355666697956622
       },
       "per_type": {
         "Cyber Intrusion": {
@@ -646,8 +646,8 @@
         "per_hour": 0.0
       },
       "latency": {
-        "median_ms_per_row": 0.007021999966430788,
-        "p95_ms_per_row": 0.011771800015897801
+        "median_ms_per_row": 0.007286333372273172,
+        "p95_ms_per_row": 0.00837526667358664
       },
       "per_type": {
         "Cyber Intrusion": {
@@ -758,8 +758,8 @@
         "per_hour": 1080.0000000000302
       },
       "latency": {
-        "median_ms_per_row": 0.006877333313847582,
-        "p95_ms_per_row": 0.007918199989944696
+        "median_ms_per_row": 0.00560433332187434,
+        "p95_ms_per_row": 0.007017800021761407
       },
       "per_type": {
         "Cyber Intrusion": {
@@ -870,8 +870,8 @@
         "per_hour": 360.0000000000101
       },
       "latency": {
-        "median_ms_per_row": 2.3333316979308922e-05,
-        "p95_ms_per_row": 0.00019459998778377968
+        "median_ms_per_row": 3.466668810384969e-05,
+        "p95_ms_per_row": 0.0002579999951800952
       },
       "per_type": {
         "Cyber Intrusion": {
@@ -982,8 +982,8 @@
         "per_hour": 0.0
       },
       "latency": {
-        "median_ms_per_row": 0.006501666697052618,
-        "p95_ms_per_row": 0.008301533341485387
+        "median_ms_per_row": 0.007624666662498687,
+        "p95_ms_per_row": 0.00823619999573566
       },
       "per_type": {
         "Cyber Intrusion": {
@@ -1031,6 +1031,6 @@
       }
     }
   },
-  "started_at_utc": "2026-11-23T09:24:18.234502+00:00",
+  "started_at_utc": "2026-11-23T09:30:30.439813+00:00",
   "task_id": "P7-complete"
 }
