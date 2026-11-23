@@ -1,0 +1,20 @@
+{
+  "cli_arguments": {
+    "out_dir": "reports\\research\\P8",
+    "pytest_log": "reports\\research\\P8\\full_pytest.txt",
+    "results": "experiments\\P8\\validation_alert_layers.json"
+  },
+  "cpu_model": "AMD64 Family 26 Model 96 Stepping 0, AuthenticAMD",
+  "ended_at_utc": "2026-11-23T09:45:47.016833+00:00",
+  "git_sha": "de3e16e406e6f392cf51d69a81a7c0b8d46bf6c8",
+  "input_datasets": {
+    "experiments\\P8\\validation_alert_layers.json": "01b22cd1559698fd6014f2e882f333c828d5bc059c76728c7aeab3d180ac76f6"
+  },
+  "output_datasets": {
+    "reports\\research\\P8\\FINDINGS.md": "31dbffbb93e307e0b95ad7f6134ffdb4d7ab92fedfd71d5f00284f4be7674de4"
+  },
+  "python_version": "3.13.7 (tags/v3.13.7:bcee1c3, Aug 14 2025, 14:15:11) [MSC v.1944 64 bit (AMD64)]",
+  "seeds": {},
+  "started_at_utc": "2026-11-23T09:45:47.016794+00:00",
+  "task_id": "P8-report"
+}
