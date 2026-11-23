@@ -103,7 +103,7 @@ def _paired_cluster_bootstrap(results_a: dict, results_b: dict, *, seed: int, re
                 values.extend(rng.choice(vals, size=len(vals), replace=True).tolist())
             boot.append(float(np.mean(values)))
     interval = [float(np.quantile(boot, 0.025)), float(np.quantile(boot, 0.975))] if boot else [None, None]
-    pvalue = float(2 * min(np.mean(np.asarray(boot) <= 0), np.mean(np.asarray(boot) >= 0))) if boot else None
+    pvalue = min(1.0, float(2 * min(np.mean(np.asarray(boot) <= 0), np.mean(np.asarray(boot) >= 0)))) if boot else None
     return {"episodes": len(keys), "runs": len(runs), "difference_mean": observed, "ci95": interval, "p_value": pvalue, "replicates": reps, "seed": seed}
 
 
@@ -160,6 +160,9 @@ def run_p7(args: argparse.Namespace) -> int:
         "fusion_vs_pcd_only": _paired_cluster_bootstrap(results["fusion"], results["pcd_only"], seed=9107, reps=args.bootstrap),
         "fusion_vs_classical": _paired_cluster_bootstrap(results["fusion"], results["classical_bad_data"], seed=9108, reps=args.bootstrap),
     }
+    ordered = sorted(comparisons.items(), key=lambda item: (item[1]["p_value"] if item[1]["p_value"] is not None else 1.0))
+    for rank, (name, comparison) in enumerate(ordered, start=1):
+        comparison["holm_adjusted_p"] = min(1.0, float((len(ordered) - rank + 1) * (comparison["p_value"] if comparison["p_value"] is not None else 1.0)))
     payload = {"task_id": "P7-complete", "results": results, "paired_comparisons": comparisons, "input_paths": [str(p) for p in input_paths], "protocol": "P5; thresholds frozen from validation", "started_at_utc": started.isoformat(), "ended_at_utc": dt.datetime.now(dt.timezone.utc).isoformat()}
     result_path = out / "final_results.json"
     result_path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")

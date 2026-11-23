@@ -4,17 +4,17 @@
     "results": "backend\\reports\\research\\P7-complete\\final_results.json"
   },
   "cpu_model": "AMD64 Family 26 Model 96 Stepping 0, AuthenticAMD",
-  "ended_at_utc": "2026-11-23T09:30:34.212834+00:00",
-  "git_sha": "662de0492972cf4ee5d703c8a97563cabf38ea63",
+  "ended_at_utc": "2026-11-23T09:31:42.483868+00:00",
+  "git_sha": "b08a099da94c6fb786e9868cf24d1212dc8e2d8c",
   "input_datasets": {
-    "backend\\reports\\research\\P7-complete\\final_results.json": "2b47ab8f8c689a6047a72db73ea4370b5496103a1f55a89bd7f688872652a1c2"
+    "backend\\reports\\research\\P7-complete\\final_results.json": "dc09da1fcc7c41e27c8576ec03420c01ec11dca2e840df6c6f09b183fd366b9a"
   },
   "output_datasets": {
     "backend\\reports\\research\\P7-complete\\complementarity.csv": "b9c1c0ef4d3415985be4af00aa49f86fb9558eb74b1ae326a35cb86b6a1155c0",
-    "backend\\reports\\research\\P7-complete\\matrix.csv": "f75a11168b3443af0e9ad82b011a2e7efa154ca39a4e2c6be0ee4f6eca22b48e"
+    "backend\\reports\\research\\P7-complete\\matrix.csv": "8cdd7547cac0154ee40084ca1ff4a121325d6226cc1ac14afaffed6818e0328d"
   },
   "python_version": "3.13.7 (tags/v3.13.7:bcee1c3, Aug 14 2025, 14:15:11) [MSC v.1944 64 bit (AMD64)]",
   "seeds": {},
-  "started_at_utc": "2026-11-23T09:30:34.212795+00:00",
+  "started_at_utc": "2026-11-23T09:31:42.483826+00:00",
   "task_id": "P7-matrix"
 }
