@@ -1,0 +1,34 @@
+{
+  "capture_probe": {
+    "tool": "pktmon",
+    "executable": "C:\\Windows\\system32\\pktmon.EXE",
+    "available": true,
+    "status_command_returncode": 5,
+    "status_output": "Failed to communicate with the PktMon driver: Access is denied.",
+    "capture_ready": false,
+    "status": "blocked"
+  },
+  "capture": {
+    "status": "not_run",
+    "events": []
+  },
+  "comparison": {
+    "tap_event_count": 0,
+    "capture_event_count": 0,
+    "aligned_event_count": 0,
+    "timing_tolerance_ms": 2.0,
+    "feature_agreement": {
+      "function_code": null,
+      "response_matched": null,
+      "success": null,
+      "transaction_id": null,
+      "unit_id": null
+    },
+    "timing_bias_ms": null,
+    "alignment_method": "positional only; production capture run required before interpretation"
+  },
+  "overhead": {
+    "status": "blocked",
+    "reason": "No paired live loopback capture and trace-hook-disabled control run."
+  }
+}
