@@ -1,0 +1,33 @@
+{
+  "task": "P12",
+  "git_sha": "5673b159f44bbff5488c1c9cda751d7aac2b9bae",
+  "python": "3.13.7 (tags/v3.13.7:bcee1c3, Aug 14 2025, 14:15:11) [MSC v.1944 64 bit (AMD64)]",
+  "packages": {
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "pandapower": "3.5.4",
+    "pymodbus": "3.15.0"
+  },
+  "cpu_model": "AMD64 Family 26 Model 96 Stepping 0, AuthenticAMD",
+  "cli_arguments": {
+    "out_dir": "backend/experiments/P12",
+    "report_dir": "backend/reports/research/P12",
+    "capture": null,
+    "pytest_output": "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P12\\full_suite.txt"
+  },
+  "seeds": {},
+  "start_time_utc": "2026-11-23T12:54:22.220413+00:00",
+  "end_time_utc": "2026-11-23T12:54:22.264226+00:00",
+  "input_sha256": {
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\scripts\\adapt_modbus_pcap.py": "0b9ed70d759e8c65382711a42c62b423df0f39bcf863351006e69cf1cd9e4039",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\app\\ot\\traffic_logger.py": "4f49c1dd8704f5bf24a86b22919087ae9cd1fba6f1dcdfa8b344996237761b6a",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\app\\ot\\rtu_server.py": "05a68fdc715a3638172858e592ffde7e8d48b387428b5c4d6c4482b220df3ba7"
+  },
+  "output_sha256": {
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P12\\p12_results.json": "316c7e937952a4bcdae3954bfc68e56355b0460a23dca7f24bd5eb7c81877d31",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\reports\\research\\P12\\FINDINGS.md": "2a70c98e0fbc42a36222e4a56e82f9b3333b99af98486660bc19ed420b3f7085",
+    "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P12\\full_suite.txt": "79e0d0f17341892adbf48407557ff442b4678792d3d5bac4c29f0bf4ae7f3ba1"
+  },
+  "test_set_read": false,
+  "pytest_summary": "399 passed, 1 failed (raw output: C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P12\\full_suite.txt)"
+}
