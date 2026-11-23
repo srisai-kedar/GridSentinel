@@ -1,0 +1,160 @@
+{
+  "availability": {
+    "cross_condition": {
+      "expected_seed_band": [
+        400,
+        401,
+        402,
+        403,
+        404,
+        405,
+        406,
+        407,
+        408,
+        409
+      ],
+      "present_paths": [],
+      "missing_paths": [
+        "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P6-complete\\generated\\ood_seed400.csv",
+        "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P6-complete\\generated\\ood_seed401.csv",
+        "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P6-complete\\generated\\ood_seed402.csv",
+        "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P6-complete\\generated\\ood_seed403.csv",
+        "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P6-complete\\generated\\ood_seed404.csv",
+        "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P6-complete\\generated\\ood_seed405.csv",
+        "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P6-complete\\generated\\ood_seed406.csv",
+        "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P6-complete\\generated\\ood_seed407.csv",
+        "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P6-complete\\generated\\ood_seed408.csv",
+        "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P6-complete\\generated\\ood_seed409.csv",
+        "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\ood_seed400.csv",
+        "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\ood_seed401.csv",
+        "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\ood_seed402.csv",
+        "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\ood_seed403.csv",
+        "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\ood_seed404.csv",
+        "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\ood_seed405.csv",
+        "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\ood_seed406.csv",
+        "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\ood_seed407.csv",
+        "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\ood_seed408.csv",
+        "C:\\Users\\K Srisai Kedar\\OneDrive\\Documents\\Projects\\GridSentinel - SIH\\gridsentinel\\backend\\experiments\\P7-complete\\generated\\ood_seed409.csv"
+      ],
+      "available_for_p11": false,
+      "reason": "No generated OOD 400-409 files were found; P11 does not generate or read held-out files."
+    },
+    "cross_topology": {
+      "status": "blocked",
+      "available_second_feeder": false,
+      "evidence": "No second feeder implementation or approved Baran-Wu topology exists in the repository."
+    }
+  },
+  "redundancy_latency": [
+    {
+      "measurement_count": 18,
+      "state_variable_count": 13,
+      "redundancy_ratio": 1.3846153846153846,
+      "success": true,
+      "jacobian_rows": 18,
+      "state_variables": 13,
+      "jacobian_rank": 13,
+      "observable": true,
+      "samples": 20,
+      "estimation_successes": 20,
+      "p50_total_cycle_ms": 99.03584999847226,
+      "p95_total_cycle_ms": 116.511654992064,
+      "p99_total_cycle_ms": 118.31065099890111,
+      "min_total_cycle_ms": 91.51030000066385,
+      "max_total_cycle_ms": 118.76040000061039,
+      "verdict_counts": {
+        "Natural Fault": 25
+      },
+      "measurement_method": "per-cycle wall time: deep-copied network, WLS/LNR/chi2, feature extraction, production-model predict; five warmups excluded"
+    },
+    {
+      "measurement_count": 16,
+      "state_variable_count": 0,
+      "redundancy_ratio": null,
+      "success": false,
+      "jacobian_rows": 0,
+      "state_variables": 0,
+      "jacobian_rank": 0,
+      "observable": false,
+      "samples": 20,
+      "estimation_successes": 0,
+      "p50_total_cycle_ms": 55.41694999556057,
+      "p95_total_cycle_ms": 57.50389999739127,
+      "p99_total_cycle_ms": 58.14078000286827,
+      "min_total_cycle_ms": 50.79130000376608,
+      "max_total_cycle_ms": 58.30000000423752,
+      "verdict_counts": {
+        "Natural Fault": 25
+      },
+      "measurement_method": "per-cycle wall time: deep-copied network, WLS/LNR/chi2, feature extraction, production-model predict; five warmups excluded"
+    },
+    {
+      "measurement_count": 15,
+      "state_variable_count": 0,
+      "redundancy_ratio": null,
+      "success": false,
+      "jacobian_rows": 0,
+      "state_variables": 0,
+      "jacobian_rank": 0,
+      "observable": false,
+      "samples": 20,
+      "estimation_successes": 0,
+      "p50_total_cycle_ms": 71.6676500014728,
+      "p95_total_cycle_ms": 79.70948000074715,
+      "p99_total_cycle_ms": 98.4462159934628,
+      "min_total_cycle_ms": 59.96080000477377,
+      "max_total_cycle_ms": 103.13039999164175,
+      "verdict_counts": {
+        "Natural Fault": 25
+      },
+      "measurement_method": "per-cycle wall time: deep-copied network, WLS/LNR/chi2, feature extraction, production-model predict; five warmups excluded"
+    },
+    {
+      "measurement_count": 14,
+      "state_variable_count": 0,
+      "redundancy_ratio": null,
+      "success": false,
+      "jacobian_rows": 0,
+      "state_variables": 0,
+      "jacobian_rank": 0,
+      "observable": false,
+      "samples": 20,
+      "estimation_successes": 0,
+      "p50_total_cycle_ms": 53.64494999230374,
+      "p95_total_cycle_ms": 70.67758999401121,
+      "p99_total_cycle_ms": 71.91167800148833,
+      "min_total_cycle_ms": 50.915999992867,
+      "max_total_cycle_ms": 72.2202000033576,
+      "verdict_counts": {
+        "Natural Fault": 25
+      },
+      "measurement_method": "per-cycle wall time: deep-copied network, WLS/LNR/chi2, feature extraction, production-model predict; five warmups excluded"
+    },
+    {
+      "measurement_count": 13,
+      "state_variable_count": 0,
+      "redundancy_ratio": null,
+      "success": false,
+      "jacobian_rows": 0,
+      "state_variables": 0,
+      "jacobian_rank": 0,
+      "observable": false,
+      "samples": 20,
+      "estimation_successes": 0,
+      "p50_total_cycle_ms": 52.881499999784864,
+      "p95_total_cycle_ms": 58.92906499648234,
+      "p99_total_cycle_ms": 61.91229299613041,
+      "min_total_cycle_ms": 51.371499997912906,
+      "max_total_cycle_ms": 62.65809999604244,
+      "verdict_counts": {
+        "Natural Fault": 25
+      },
+      "measurement_method": "per-cycle wall time: deep-copied network, WLS/LNR/chi2, feature extraction, production-model predict; five warmups excluded"
+    }
+  ],
+  "design": {
+    "cross_condition_training": "P6 selected configuration would be required, but no OOD files are available and P11 does not read held-out files.",
+    "cluster_bootstrap": "not computed because no independent cross-condition or cross-topology episode set is available",
+    "production_model_read_only": true
+  }
+}
